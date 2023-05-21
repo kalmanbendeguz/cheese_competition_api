@@ -9,8 +9,8 @@ const object_schema = Joi.object({
     // barion_transaction_id // its forbidden at creation
     // amount // its forbidden at creation
     // currency // its forbidden at creation
-    pos_transaction_id: Joi.string().trim().lowercase().alphanum().length(32).prefs({ convert: false }).required(),
-    confirm_payment_id: Joi.string().trim().lowercase().alphanum().length(32).prefs({ convert: false }).required(),
+    // pos_transaction_id // generated
+    // confirm_payment_id // generated
 }).required()
 
 const array_schema = Joi.array().items(object_schema).min(1).required()

@@ -1,7 +1,8 @@
 // ONLY SERVER
 module.exports = async (body, user) => {
-    //const User_Model = require('../../models/User')
-    //const Active_Password_Reset_Model = require('../../models/Active_Password_Reset')
+    // resource and its dependency models
+    const Entry_Fee_Payment_Model = require('../../models/Entry_Fee_Payment')
+    const Product_Model = require('../../models/Product')
 
     // 1. validate body
     const create_entry_fee_payment_validator = require('../../validators/requests/api/entry_fee_payment/create')
@@ -12,67 +13,89 @@ module.exports = async (body, user) => {
     body = Array.isArray(body) ? body : [body]
 
     // 3. authorize {body, user}
-    const authorizer = require('../../authorizers/active_password_reset')
-    const authorizer_results = body.map(active_password_reset => authorizer(active_password_reset, 'create', user))
+    const authorizer = require('../../authorizers/entry_fee_payment')
+    const authorizer_results = body.map(entry_fee_payment => authorizer(entry_fee_payment, 'create', user))
     const violation = authorizer_results.find(result => !result.authorized)
     if (violation) { return { code: 403, data: violation.message } }
 
     // 4. check_dependencies
-    // there can be multiple documents for the same user. this is by design: if he accidentally sends 2 emails, both links 
-    // should work. the unused document will be deleted after the expiry time, anyways.
-    // if regular user: no dependency checks, bc he is already authenticated, so we know that he exists and not a temporary user.
-    // if SERVER or UNAUTHENTICATED: are all the users exists and are not temporary users?
-    //if (['SERVER', 'UNAUTHENTICATED'].includes(user.role)) {
-    const unique_user_ids = [...new Set(body.map(active_password_reset => active_password_reset.user_id.toString()))]
-    if ((await User_Model.countDocuments({
-        _id: { $in: unique_user_ids },
-        registration_temporary: false
-    })) !== unique_user_ids.length) return {
+    // all products should exist
+    const unique_product_ids = [...new Set(body.flatMap(entry_fee_payment => entry_fee_payment.product_ids))]
+    if ((await Product_Model.countDocuments({
+        _id: { $in: unique_product_ids },
+    })) !== unique_product_ids.length) return {
         code: 403,
-        data: 'one_or_more_provided_users_are_not_existing_or_have_temporary_registrations'
+        data: 'one_or_more_provided_product_ids_are_not_existing'
     }
-    //}
+    // a product cannot be paid twice
+    if ((await Entry_Fee_Payment_Model.exists({
+        product_ids: { $in: unique_product_ids },
+        pending: false
+    }))) return {
+        code: 403,
+        data: 'at_least_one_of_the_provided_products_are_already_paid'
+    }
+    // an approved product cannot be paid
+    if ((await Product_Model.exists({
+        _id: { $in: unique_product_ids },
+        approved: true
+    }))) return {
+        code: 403,
+        data: 'at_least_one_of_the_provided_products_are_already_approved'
+    }
 
     // 5. prepare
-    // user_ids are required if SERVER or UNAUTH, set here if regular user
-    //if (!['SERVER', 'UNAUTHENTICATED'].includes(user.role)) {
-    //    for (let active_password_reset of body) {
-    //        active_password_reset.user_id = user._id
-    //    }
-    //}
-    // restore_ids
+    // product_ids: provided.
+    // pending: always true.
+    // pos_transaction_id: generate here
+    // confirm_payment_id: generate here
     const randomstring = require('randomstring')
-    let existing_active_password_reset
+    let existing_entry_fee_payment
 
-    for (const active_password_reset of body) {
-        let restore_id
+    for (const entry_fee_payment of body) {
+        let pos_transaction_id
         do {
-            restore_id = randomstring.generate({
+            pos_transaction_id = randomstring.generate({
                 length: 32,
                 charset: 'alphanumeric',
                 capitalization: 'lowercase'
             })
 
-            existing_active_password_reset = await Active_Password_Reset_Model.exists({ 'restore_id': restore_id })
-                || body.some(active_password_reset => active_password_reset.restore_id === restore_id)
+            existing_entry_fee_payment = await Entry_Fee_Payment_Model.exists({ 'pos_transaction_id': pos_transaction_id })
+                || body.some(entry_fee_payment => entry_fee_payment.pos_transaction_id === pos_transaction_id)
 
-        } while (existing_active_password_reset)
-        active_password_reset.restore_id = restore_id
+        } while (existing_entry_fee_payment)
+        entry_fee_payment.pos_transaction_id = pos_transaction_id
+
+        let confirm_payment_id
+        do {
+            confirm_payment_id = randomstring.generate({
+                length: 32,
+                charset: 'alphanumeric',
+                capitalization: 'lowercase'
+            })
+
+            existing_entry_fee_payment = await Entry_Fee_Payment_Model.exists({ 'confirm_payment_id': confirm_payment_id })
+                || body.some(entry_fee_payment => entry_fee_payment.confirm_payment_id === confirm_payment_id)
+
+        } while (existing_entry_fee_payment)
+        entry_fee_payment.confirm_payment_id = confirm_payment_id
     }
 
-    const _active_password_resets = body.map(active_password_reset => ({
-        user_id: active_password_reset.user_id,
-        restore_id: active_password_reset.restore_id,
-        // expiring_started is autogenerated
+    const _entry_fee_payments = body.map(entry_fee_payment => ({
+        product_ids: entry_fee_payment.product_ids,
+        pending: true,
+        pos_transaction_id: entry_fee_payment.pos_transaction_id,
+        confirm_payment_id: entry_fee_payment.confirm_payment_id
     }))
 
     // 6. create
-    const active_password_resets = _active_password_resets.map(active_password_reset => new Active_Password_Reset_Model(active_password_reset))
+    const entry_fee_payments = _entry_fee_payments.map(entry_fee_payment => new Entry_Fee_Payment_Model(entry_fee_payment))
 
     // 7. validate_documents
-    const active_password_reset_validator = require('../../validators/schemas/Active_Password_Reset')
+    const entry_fee_payment_validator = require('../../validators/schemas/Entry_Fee_Payment')
     try {
-        const validator_promises = active_password_resets.map(active_password_reset => active_password_reset_validator.validateAsync(active_password_reset))
+        const validator_promises = entry_fee_payments.map(entry_fee_payment => entry_fee_payment_validator.validateAsync(entry_fee_payment))
         await Promise.all(validator_promises)
     } catch (err) { return { code: 400, data: err.details } }
 
@@ -80,7 +103,7 @@ module.exports = async (body, user) => {
     // nothing needs to be updated
 
     // 9. save
-    const saver_promises = active_password_resets.map(active_password_reset => active_password_reset.save())
+    const saver_promises = entry_fee_payments.map(entry_fee_payment => entry_fee_payment.save())
     await Promise.all(saver_promises)
 
     // 10. reply
