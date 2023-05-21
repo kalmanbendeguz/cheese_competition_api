@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>" class="notranslate" translate="no">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="UTF-8">
+	<meta name="google" content="notranslate">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title><%= dict[lang].modify_rating_page_title %> | <%= dict[lang].application_name %></title>
+	<link rel="icon" type="image/x-icon" href="/static/images/MSE_1_32x32.png">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" onerror="this.onerror=null;this.removeAttribute('integrity');this.href='/static/css/cached/bootstrap.min.css';">
+	<script src="/static/scripts/modify_rating/before_unload.js" defer></script>
+	<script src="/static/scripts/modify_rating/score_sum.js" defer></script>
+	<% if (user.table_leader ?? false) { %>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.0/dist/browser-image-compression.js" defer></script>
+	<script src="/static/scripts/modify_rating/picture_inputs.js" defer></script>
+	<link rel="stylesheet" href="/static/css/picture_input_progress_bar.css">
+    <link rel="stylesheet" href="/static/css/picture_input_blocks.css">
+    <% } %>
+
+	<link rel="stylesheet" href="/static/css/normalize.css">
+	<link rel="stylesheet" href="/static/css/style_2.css">
+    
+
+</head>
+
+<body>
+
+	<%- include('header_authenticated') %>
+
+	<main class="container" style="overflow-wrap: break-word">
+		<%- include('feedback') %>
+		<div class="container">
+			<div class="col-12 h3 mb-3 fw-normal">
+				<%= dict[lang].modify_rating_heading_prefix %> <%= cheese.secret_id %>
+			</div>
+			<div class="row justify-content-center">
+				<%- include('modify_rating_form') %>
+			</div>
+		</div>
+	</main>
+
+	<%- include('footer') %>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+</body>
+
+</html>

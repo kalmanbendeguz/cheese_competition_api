@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Adminisztrátorok | Admin</title>
+	<link rel="icon" type="image/x-icon" href="/assets/css/MSE_1_32x32.png">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<link rel="stylesheet" href="/assets/css/style_2.css">
+	<link rel="stylesheet" href="/assets/css/th_mouseover.css">
+	<script src="/assets/scripts/sort_table.js" defer></script>
+	<script src="/assets/scripts/admins/admins.js" defer></script>
+	<script src="/assets/scripts/admins/allowed_admin_email_dialog.js" defer></script>
+</head>
+
+<body>
+	<%- include('header') %>
+
+	<main class="container-fluid text-center">
+		<div class="container col-12 col-sm-12 col-md-8 col-lg-4 col-xl-4 col-xxl-4">
+			<%- include('feedback') %>
+		</div>
+
+		<% if(allowed_admins.length === 0) { %>
+		<div>Még nincs egy adminisztrátor sem az engedélyezett adminisztrátorok között.</div>
+		<% } else { %>
+		<div class="col-12 h3 mb-3 fw-normal">
+			Engedélyezett adminisztrátorok
+		</div>
+
+		<div class="col-12 h5 mb-2 fw-normal">
+			Engedélyezett adminisztrátorok száma: <%= allowed_admins.length %>
+		</div>
+
+		<!--div id="add_allowed_judge">
+			<a href="/add_allowed_judge" class="btn btn-primary disabled">Új engedélyezett bíra</a>
+		</div-->
+
+		<div class="text-center">
+			<button class="w-20 btn btn-lg btn-primary mb-3 mt-3" id="add_allowed_admin_button">Új engedélyezett adminisztrátor</button>
+		</div>
+
+		<dialog class="border-0 rounded shadow" id="allowed_admin_email_dialog">
+			<div class="container">
+				<div class="row justify-content-center">
+					<form class="row g-3 justify-content-center text-center" action="/add_allowed_admin" id="add_allowed_admin_form" method="POST">
+
+						<div class="col-12 col-sm-7 h5 mb-2 ">
+							<label class="form-label" for="new_allowed_admin_email">Új adminisztrátor e-mail címe</label>
+						</div>
+
+						<div class="col-12 col-sm-7 mb-3 ">
+							<input class="form-control" type="text" id="new_allowed_admin_email" name="new_allowed_admin_email" placeholder="uj_admin@gmail.com" required>
+						</div>
+
+						<!-- Mégse gomb  -->
+						<div class="col-12 col-sm-6">
+							<button class="w-100 btn btn-sm btn-primary" id="cancel_allowed_admin_email_button" type="reset">Mégse</button>
+						</div>
+
+						<!-- OK gomb  -->
+						<div class="col-12 col-sm-6">
+							<button class="w-100 btn btn-sm btn-primary" id="submit_allowed_admin_email_button" type="submit">OK</button>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</dialog>
+		<div style="display: flex; justify-content: center;">
+			<div style="overflow-x:auto;">
+				<table id="allowed_admins_table" class="table table-striped table-bordered table-hover table-responsive">
+					<thead>
+						<tr>
+							<th id="table_admin_email_header" data_sort="lexicographic">
+								<span>E-mail</span>
+								<%- include('sorting_arrows') %>
+							</th>
+							<th id="table_admin_registered_header" data_sort="lexicographic">
+								<span>Regisztrált</span>
+								<%- include('sorting_arrows') %>
+							</th>
+							<th id="table_admins_options_header">
+								<span>Lehetőségek</span>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% allowed_admins.forEach(allowed_admin => { %>
+						<tr>
+							<td class="table_admin_email_cell"><%= allowed_admin.email %></td>
+							<td class="table_admin_registered_cell">
+								<% if(allowed_admin.registered) { %>
+								<div style="color:green; font-weight: bolder; font-size: larger;">&#10003;</div>
+								<% } else { %>
+								<div style="color:red; font-weight: bolder; font-size: large;">&#9587;</div>
+								<% } %>
+							</td>
+							<td class="table_admins_options_cell">
+								<form action="/remove_allowed_admin" class="remove_allowed_admin_form" method="GET">
+									<input type="hidden" name="allowed_admin_email" value="<%= allowed_admin.email %>">
+									<input class="btn btn-primary disabled" type="submit" value="Törlés">
+								</form>
+							</td>
+							<!--td class="table_handed_in_cell">
+                            <#% if(hand_ins.findIndex(hand_in => hand_in.public_id === cheese.public_id) !== -1) { %>
+                            <div style="color:green; font-weight: bolder; font-size: larger;">&#10003;</div>
+                            <#% } else { %>
+                            <div style="color:red; font-weight: bolder; font-size: large;">&#9587;</div>
+                            <#% } %>
+                        </td>
+                        <td style="display: flex; justify-content: center;" class="table_options_cell">
+                            <form action="/take_cheese" class="take_cheese_form" method="GET">
+                                <input type="hidden" name="public_id" value="<#%= cheese.public_id %>">
+                                <input class="btn btn-primary" type="submit" value="Átvétel">
+                            </form>
+                            <a href="/view_cheese?public_id=<#%=cheese.public_id%>" class="btn btn-primary">Megtekintés</a>
+                            <a href="/edit_cheese?public_id=<#%=cheese.public_id%>" class="btn btn-primary">Szerkesztés</a>
+                            <form action="/delete_cheese" class="delete_cheese_form" method="GET">
+                                <input type="hidden" name="public_id" value="<#%= cheese.public_id %>">
+                                <input class="btn btn-primary" type="submit" value="Törlés">
+                            </form>
+                        </td-->
+						</tr>
+						<% }) %>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<% } %>
+	</main>
+
+	<%- include('footer') %>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,96 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+    display: flex;
+    padding-top: 80px;
+    padding-bottom: 40px;
+    background-color: #f5f5f5;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+
+}
+
+.logopicture
+{
+ width: 220px; 
+ height: 111px;
+}
+
+.form-signin {
+ width: 100%;
+ max-width: 330px;
+ padding: 10px;
+ /*margin: auto;*/
+}
+
+.form-signin .checkbox {
+ font-weight: 400;
+}
+
+.form-signin .form-floating:focus-within {
+ z-index: 2;
+}
+
+.form-signin input[type="email"] {
+ margin-bottom: -1px;
+ border-bottom-right-radius: 0;
+ border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+ margin-bottom: 10px;
+ border-top-left-radius: 0;
+ border-top-right-radius: 0;
+}
+
+.btn-primary{
+   color: #954824;
+   background-color: #ffd06c;
+   border-color: #ffd06c;
+}
+
+.btn-primary:hover
+{
+   color: #954824;
+   background-color: #f7c353;
+   border-color: #f7c353;
+}
+
+.errormsg
+{
+   text-align: left;
+   color: red;
+}
+
+.picture
+{
+   padding: 10px;
+}
+
+.link
+{
+   padding: 2.5px;
+   text-align: center;
+}
+
+.padding
+{
+ padding: 5px;
+}
+
+.d-flex {
+ display: flex!important;
+ justify-content: center;
+ flex-wrap: nowrap;
+ align-items: center;
+ align-content: center;
+}
+
+.barion_logo
+{
+  width: 90%;
+}

@@ -1,0 +1,100 @@
+th:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+#export_id_pairs {
+    margin-block: 1.5rem;
+}
+
+th, td {
+    overflow-wrap: break-word;
+    vertical-align: middle;
+}
+
+#table_factory_name_header, .table_factory_name_cell {
+    min-width: 15rem;
+    max-width: 20rem;
+}
+
+#table_product_name_header, .table_product_name_cell {
+    min-width: 15rem;
+    max-width: 20rem;
+}
+
+#table_category_header, .table_category_cell {
+    min-width: 15rem;
+    max-width: 20rem;
+}
+
+#table_options_header, .table_options_cell {
+    min-width: 27rem;
+}
+
+
+#table_judge_email_header, .table_judge_email_cell {
+    min-width: 10rem;
+    max-width: 25rem;
+}
+
+#table_judge_registered_header, .table_judge_registered_cell {
+    min-width: 7rem;
+    max-width: 9rem;
+}
+
+#table_judge_name_header, .table_judge_name_cell {
+    min-width: 10rem;
+    max-width: 30rem;
+}
+
+#table_judges_options_header, .table_judges_options_cell {
+    min-width: 8rem;
+    max-width: 8rem; /* TOVÁBBI FUNKCIÓGOMBOKNÁL EZEKET VÁLTOZTATNI  */
+}
+
+#add_allowed_judge_button {
+    margin-block: 1.5rem;
+}
+
+#add_allowed_admin_button {
+    margin-block: 1.5rem;
+}
+
+
+
+#table_admin_email_header, .table_admin_email_cell {
+    min-width: 10rem;
+    max-width: 25rem;
+}
+
+#table_admin_registered_header, .table_admin_registered_cell {
+    min-width: 7rem;
+    max-width: 9rem;
+}
+
+#table_admins_options_header, .table_admins_options_cell {
+    min-width: 8rem;
+    max-width: 8rem; /* TOVÁBBI FUNKCIÓGOMBOKNÁL EZEKET VÁLTOZTATNI  */
+}
+
+
+
+#table_user_email_header, .table_user_email_cell {
+    min-width: 15rem;
+    max-width: 25rem;
+}
+
+#table_user_full_name_header, .table_user_full_name_cell {
+    min-width: 10rem;
+    max-width: 30rem;
+}
+
+#table_user_contact_phone_number_header, .table_user_contact_phone_number_cell {
+    min-width: 8rem;
+    max-width: 15rem; /* TOVÁBBI FUNKCIÓGOMBOKNÁL EZEKET VÁLTOZTATNI  */
+}
+
+#table_user_registered_cheese_number_header, .table_user_registered_cheese_number_cell {
+    min-width: 10rem;
+    max-width: 10rem;
+}

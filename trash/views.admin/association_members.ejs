@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Egyesületi tagok | Admin</title>
+	<link rel="icon" type="image/x-icon" href="/assets/css/MSE_1_32x32.png">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<link rel="stylesheet" href="/assets/css/style_2.css">
+	<link rel="stylesheet" href="/assets/css/th_mouseover.css">
+	<script src="/assets/scripts/sort_table.js" defer></script>
+	<script src="/assets/scripts/association_members/reset_all_association_members.js" defer></script>
+</head>
+
+<body>
+	<%- include('header') %>
+
+	<main class="container-fluid text-center">
+		<div class="container col-12 col-sm-12 col-md-8 col-lg-4 col-xl-4 col-xxl-4">
+			<%- include('feedback') %>
+		</div>
+
+		<% if(users.length === 0) { %>
+		<div>Még nem regisztrált egy versenyző sem.</div>
+		<% } else { %>
+		<div class="col-12 h3 mb-3 fw-normal">
+			Regisztrált versenyzők
+		</div>
+		<div class="col-12 h5 mb-2 fw-normal">
+			Regisztrált versenyzők száma: <%= users.length %>
+		</div>
+
+		<div class="container alert alert-warning col-xxl-2 col-xl-2 col-lg-4 col-sm-4 col-12 mt-3" role="alert">
+			<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:">
+				<use xlink:href="#exclamation-triangle-fill"></use>
+			</svg>
+			<div>
+				A beállítások érvényre juttatása a "Mentés" gombbal lehetséges.
+			</div>
+		</div>
+
+		<div class="col-12 text-center">
+			<button class="w-20 btn btn-lg btn-primary mt-3 mb-5" type="button" id="reset_all_association_member_checkboxes_button">Alaphelyzet (törlés mindenkiről)</button>
+		</div>
+
+		<div style="display: flex; justify-content: center;">
+			<div style="overflow-x:auto;">
+				<form action="/association_members" id="association_members_form" method="POST">
+					<table id="association_members_table" class="table table-striped table-bordered table-hover table-responsive">
+						<thead>
+							<tr>
+								<th id="table_user_email_header" data_sort="lexicographic">
+									<span>E-mail</span>
+									<%- include('sorting_arrows') %>
+								</th>
+								<th id="table_user_full_name_header" data_sort="lexicographic">
+									<span>Teljes név</span>
+									<%- include('sorting_arrows') %>
+								</th>
+								<th id="table_user_contact_phone_number_header">
+									<span>Telefonszám</span>
+								</th>
+								<th id="table_user_association_member_header" data_sort="lexicographic">
+									<span>Egyesületi tag</span>
+									<%- include('sorting_arrows') %>
+								</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<% users.forEach(user => { %>
+							<tr>
+								<td class="table_user_email_cell"><%= user.email %></td>
+								<td class="table_user_full_name_cell"><%= user.full_name %></td>
+								<td class="table_user_contact_phone_number_cell"><%= user.contact_phone_number %></td>
+								<td class="table_user_association_member_cell">
+									<input <% if(user?.association_member ?? false) { %> checked <% } %> class="form-check-input flex-shrink-0 association_member_checkbox" name="association_member_<%= user.email %>" type="checkbox" id="association_member_<%= user.email %>">
+								</td>
+							</tr>
+							<% }) %>
+						</tbody>
+
+					</table>
+					<div class="col-12 text-center"><input class="mt-5 w-50 btn btn-lg btn-primary" type="submit" id="submit_association_members_button" value="Mentés"></div>
+				</form>
+			</div>
+		</div>
+		<% } %>
+	</main>
+
+	<%- include('footer') %>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>
+
+</html>

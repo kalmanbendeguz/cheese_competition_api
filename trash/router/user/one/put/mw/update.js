@@ -1,0 +1,15 @@
+module.exports = async function (req, res, next) {
+    try {
+        console.log('mw:update(product/one/put/mw/update)')
+
+        res.locals.product.set(res.locals.update)
+        
+        for(const key of res.locals.remove) {
+            res.locals.product[key] = undefined
+        }
+
+        return next()
+    } catch (err) {
+        return next(err)
+    }
+}

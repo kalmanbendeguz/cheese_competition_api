@@ -1,0 +1,69 @@
+<div>
+	<input <% if(temporary_rating.rating.anonymous){ %>checked<% }%> disabled type="checkbox" id="anonymous_rating">
+	<label class="fw-bold" for="anonymous_rating">Anonim módon bírálok</label>
+
+	<% rating_sheet.forEach(function(aspect){ %>
+	<div class="mt-5 mb-3">
+		<h3><%= dictionary[aspect.title] %></h3>
+	</div>
+
+	<div>
+		<label class="h5" for="score_<%= aspect.title %>">Pontszám:</label>
+		<input class="score_input text-center" disabled type="text" value="<%= temporary_rating.rating.aspects.find(e => e.title === aspect.title).score %>/<%= aspect.score %>" id="score_<%= aspect.title %>">
+	</div>
+
+	<div class="row mt-2 mb-2">
+		<% aspect.blocks.forEach(function(block, blocknumber){ %>
+		<div class="col-sm-4 list-group mb-2">
+			<% block.forEach(function(property){ %>
+			<label class="list-group-item">
+				<input class="form-check-input flex-shrink-0" <% if(temporary_rating.rating.aspects.find(e => e.title === aspect.title).blocks[blocknumber].includes(property)){ %> checked <% } %> disabled type="checkbox" id="property_checkbox-<%= aspect.title %>-<%= blocknumber+1 %>-<%= property %>">
+				<span for="property_checkbox-<%= aspect.title %>-<%= blocknumber+1 %>-<%= property %>"><%= dictionary[property] %></span>
+			</label>
+			<% }) %>
+		</div>
+		<% }) %>
+	</div>
+
+	<div class="h5 mb-2">
+		<label for="comment_<%= aspect.title %>">Megjegyzés:</label>
+	</div>
+
+	<div class="text-center">
+		<textarea class="form-control" disabled id="comment_<%= aspect.title %>" rows="3" cols="40"><%= temporary_rating.rating.aspects.find(e => e.title === aspect.title).comment %></textarea>
+	</div>
+	<% }) %>
+
+	<div class="h5 mb-2 mt-5">
+		<label for="overall_impression">Összbenyomás:</label>
+	</div>
+
+	<div class="text-center">
+		<textarea class="form-control" disabled id="overall_impression" rows="3" cols="40"><%= temporary_rating.rating.overall_impression %></textarea>
+	</div>
+
+	<div class="h5 mb-2 mt-4 text-center">
+		<div>Összpontszám:</div>
+		<div>
+			<% let sc=0; temporary_rating.rating.aspects.forEach(a => { sc += Number.parseInt(a.score) }) %>
+			<%= sc %>
+		</div>
+	</div>
+
+	<div class="row aligncenter text-center py-4">
+		<div class="col-6">
+			<form action="/modify_rating" id="modify_rating_form" method="GET">
+				<input type="hidden" name="confirm_id" value="<%= temporary_rating.confirm_string %>">
+				<input class="w-20 btn btn-lg btn-primary text-center" id="modify_button" type="submit" value="Módosítás">
+			</form>
+		</div>
+
+		<div class="col-6">
+			<form action="/confirm_rating" id="confirm_rating_form" method="POST">
+				<input type="hidden" name="confirm_link_identifier" value="<%= temporary_rating.confirm_string %>">
+				<input class="w-20 btn btn-lg btn-primary text-center" type="submit" id="submit_rating_button" value="Megerősítés">
+			</form>
+		</div>
+	</div>
+
+</div>

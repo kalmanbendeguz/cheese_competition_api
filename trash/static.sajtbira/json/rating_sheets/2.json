@@ -1,0 +1,134 @@
+[
+    {
+        "title": "kulso",
+        "score": 15,
+        "blocks": [
+            [
+                "peneszes",
+                "szennyezett",
+                "foltos",
+                "nyalkas",
+                "erosen_elszinezodott",
+                "repedezett"
+            ],
+            [
+                "kisse_foltos",
+                "kisse_eltero",
+                "kisse_gyurodott_felulet",
+                "feluleten_nagyobb_roghezagok",
+                "erosen_nedves_feluletu"
+            ],
+            [
+                "kereg_nelkuli",
+                "egyenletes_szinu",
+                "sajtkendo_sajtforma_mintaja_halvanyan_latszik",
+                "gyurodesmentes",
+                "felulete_zart",
+                "csontfeher_v_halvany_sarga_szinu"
+            ]
+        ]
+    },
+    {
+        "title": "belso_szin_es_allomany",
+        "score": 15,
+        "blocks": [
+            [
+                "erosen_pepes",
+                "morzsalodo",
+                "foltos",
+                "elszinezodott",
+                "savoereszto"
+            ],
+            [
+                "kisse_pepes",
+                "daras_morzsalodo",
+                "ragos",
+                "kisse_szaraz_fojtos",
+                "gyengen_savoereszto"
+            ],
+            [
+                "csontfeher_v_halvany_sarga_szinu",
+                "egynemu",
+                "nem_savo_ereszto",
+                "szajban_konnyen_elomlo",
+                "kisse_rugalmas"
+            ]
+        ]
+    },
+    {
+        "title": "illat",
+        "score": 15,
+        "blocks": [
+            [
+                "kifejezetten_elesztos",
+                "erosen_savanyu",
+                "fulledt",
+                "erjedt",
+                "szaghibas"
+            ],
+            [
+                "kevesbe_jellegzetes",
+                "enyhen_bomlott",
+                "enyhen_elesztos",
+                "gyenge_idegen_szag",
+                "kisse_ures"
+            ],
+            [
+                "jellegzetesen_tiszta",
+                "aromas",
+                "kellemesen_savanykas",
+                "gyengen_tejsavas"
+            ]
+        ]
+    },
+    {
+        "title": "lyukazottsag",
+        "score": 15,
+        "blocks": [
+            [
+                "repedezett",
+                "puffadt",
+                "ezerlyukas",
+                "sok_erjedesi_lyukas",
+                "tobb_es_nagy_savozarvany"
+            ],
+            [
+                "1_3_repedes_lathato",
+                "egyenlotlen_lyukazottsag",
+                "kisebb_savozarvanyok",
+                "kisse_repedezett",
+                "1_2_erjedesi_lyuk"
+            ],
+            [
+                "egyenletes_roglyukazottsag",
+                "zart_tesztaju"
+            ]
+        ]
+    },
+    {
+        "title": "iz",
+        "score": 40,
+        "blocks": [
+            [
+                "erjedt",
+                "csipos_iz",
+                "fanyar",
+                "ecetesen_savanyu",
+                "erosen_kesernyes_iz"
+            ],
+            [
+                "enyhen_savanyu",
+                "kisse_ures_de_tiszta_izu",
+                "kevesbe_zamatos",
+                "enyhen_kesernyes"
+            ],
+            [
+                "jellegzetesen_tiszta",
+                "aromas_zamatos",
+                "kellemesen_savanykas",
+                "kellemesen_sos",
+                "enyhen_tejsavas"
+            ]
+        ]
+    }
+]

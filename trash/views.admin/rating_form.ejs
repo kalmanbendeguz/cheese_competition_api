@@ -1,0 +1,69 @@
+<form action="/rate_cheese" id="rating_form" method="POST">
+	<input type="hidden" name="secret_id" value="<%= secret_id %>">
+
+	<div class="container">
+		<div class="row">
+			<div class="col">
+				<input class="form-check-input flex-shrink-0" type="checkbox" id="anonymous_rating" name="anonymous_rating">
+				<label class="fw-bold" for="anonymous_rating">Anonim módon bírálok</label>
+			</div>
+			<div class="col">
+				<div class="fw-bold">Kategória:</div>
+				<div>
+					<li><%= category_dictionary[cheese.milk_type] %></li>
+				</div>
+				<div>
+					<li><%= category_dictionary[cheese.product_category_list.at(-1)] %></li>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<% rating_sheet.forEach(function(aspect){ %>
+	<div class="mt-5 mb-3">
+		<h3><%= dictionary[aspect.title] %></h3>
+	</div>
+
+	<div class="row g-1 mt-2 mb-2">
+		<% aspect.blocks.forEach(function(block, blocknumber){ %>
+		<div class="col-sm-4 list-group mb-2">
+			<% block.forEach(function(property){ %>
+			<label class="list-group-item">
+				<input class="form-check-input flex-shrink-0" name="property_checkbox-<%= aspect.title %>-<%= blocknumber+1 %>-<%= property %>" type="checkbox" id="property_checkbox-<%= aspect.title %>-<%= blocknumber+1 %>-<%= property %>">
+				<span for="property_checkbox-<%= aspect.title %>-<%= blocknumber+1 %>-<%= property %>"><%= dictionary[property] %></span>
+			</label>
+			<% }) %>
+		</div>
+		<% }) %>
+	</div>
+
+	<div class="col-12 col-sm-12">
+		<label class="h5" for="score_<%= aspect.title %>">Pontszám:</label>
+		<input class="col-3 mt-1 score_input text-center" type="number" id="score_<%= aspect.title %>" name="score_<%= aspect.title %>" min="0" max="<%= aspect.score %>" placeholder="0-<%= aspect.score %>" required>
+	</div>
+
+	<div class="h5 mb-2 mt-2">
+		<label for="comment_<%= aspect.title %>">Megjegyzés:</label>
+	</div>
+
+	<div class="text-center">
+		<textarea class="form-control" id="comment_<%= aspect.title %>" maxlength="250" minlength="12" name="comment_<%= aspect.title %>" required rows="3" cols="40"></textarea>
+	</div>
+	<% }) %>
+
+	<div class="h5 mb-2 mt-5">
+		<label for="overall_impression">Összbenyomás:</label>
+	</div>
+
+	<div class="text-center">
+		<textarea class="form-control" id="overall_impression" maxlength="250" minlength="25" name="overall_impression" required rows="3" cols="40"></textarea>
+	</div>
+
+	<div class="h5 mb-2 mt-4 text-center">
+		<div>Összpontszám:</div>
+		<div id="score_sum"></div>
+	</div>
+
+	<div class="col-12 text-center"><input class="mt-5 w-50 btn btn-lg btn-primary" type="submit" id="submit_rating_button" value="Mentés"></div>
+
+</form>

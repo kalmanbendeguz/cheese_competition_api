@@ -1,0 +1,124 @@
+[
+    {
+        "title": "kulso",
+        "score": 15,
+        "blocks": [
+            [
+                "peneszes",
+                "deformalt",
+                "kezeletlen",
+                "rancos",
+                "erosen_elszinezodott",
+                "repedezett"
+            ],
+            [
+                "kisse_foltos",
+                "matt",
+                "kisse_sotetebb_szinu",
+                "nyalkas"
+            ],
+            [
+                "aranysarga_szinu",
+                "vagy_csontfeher",
+                "kereg_nelkuli",
+                "gyengen_zsiros_tapintasu"
+            ]
+        ]
+    },
+    {
+        "title": "belso_szin_es_allomany",
+        "score": 15,
+        "blocks": [
+            [
+                "sajtteszta_elszinezodott",
+                "szetmallo",
+                "foltos",
+                "pepes",
+                "ragacsos"
+            ],
+            [
+                "kisse_pepes",
+                "retegek_kozott_hezag_lathato",
+                "ragos",
+                "kisse_szaraz_fojtos"
+            ],
+            [
+                "egyenletes_sargas_feheres_szinu",
+                "vagy_csontfeher",
+                "szalas_sajtteszta",
+                "szajban_konnyen_elomlo",
+                "zart_tesztaju",
+                "legfeljebb_nehany_erjedesi_lyuk"
+            ]
+        ]
+    },
+    {
+        "title": "illat",
+        "score": 15,
+        "blocks": [
+            [
+                "buzos",
+                "dohos",
+                "tisztatalan",
+                "szaghibas"
+            ],
+            [
+                "kevesbe_jellegzetes",
+                "enyhen_savanyu",
+                "enyhen_tisztatalan",
+                "kisse_ures"
+            ],
+            [
+                "jellegzetesen_natur",
+                "illetve_jellegzetesen_fustolt",
+                "enyhen_savanykas"
+            ]
+        ]
+    },
+    {
+        "title": "lyukazottsag",
+        "score": 15,
+        "blocks": [
+            [
+                "repedezett",
+                "szeteso",
+                "mallos"
+            ],
+            [
+                "retegek_kozott_hezagok",
+                "sok_erjedesi_v_roglyuk",
+                "laza_szerkezetu"
+            ],
+            [
+                "altalaban_lyuk_nelkuli",
+                "vagy_1_2_erjedesi_lyuk",
+                "retegek_jol_lathatok"
+            ]
+        ]
+    },
+    {
+        "title": "iz",
+        "score": 40,
+        "blocks": [
+            [
+                "keseru",
+                "fanyar",
+                "tul_sos",
+                "tisztatalan"
+            ],
+            [
+                "enyhen_savanyu",
+                "nem_eleg_jellegzetes",
+                "kisse_sotlan_v_sos",
+                "enyhen_kesernyes"
+            ],
+            [
+                "jellegzetesen_tiszta",
+                "aromas_zamatos",
+                "kellemesen_savanykas",
+                "kellemesen_sos",
+                "vagy_enyhen_sos"
+            ]
+        ]
+    }
+]

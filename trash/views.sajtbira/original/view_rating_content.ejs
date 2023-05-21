@@ -1,0 +1,96 @@
+<div>
+
+	<div class="container">
+		<div class="row">
+			<div>
+				<div class="fw-bold"><%= dict[lang].category %></div>
+				<div>
+					<li><%= dict[lang][cheese.milk_type] %></li>
+				</div>
+				<div>
+					<li><%= dict[lang][cheese.product_category_list.at(-1)] %></li>
+				</div>
+				<div class="fw-bold mt-3"><%= dict[lang].product_presentation %></div>
+				<div>
+					<%= cheese.product_description %>
+				</div>
+			</div>
+
+            <% if((locals?.rating_pictures?.length ?? 0) !== 0 && ((user.table_leader ?? false) || (locals?.rating_archived ?? false)) ) { %>
+                <div class="mt-5 mb-3">
+                    <h3><%= dict[lang].view_rating_pictures_title %></h3>
+                </div>
+                <div id="picture_previews_block">
+                    <% for(let i=0; i < rating_pictures.length; ++i) { %>
+                    <div class="picture_preview"><img src="<%= process.env.SERVER_URL %>/rating_pictures?picture_state=<%= (locals?.rating_archived ?? false) ? 'archived' : 'regular' %>&secret_id=<%= locals?.rating?.secret_id %>&index=<%= i %>"></div>
+                    <% } %>
+                </div>
+            <% } else if ((locals?.rating_pictures?.length ?? 0) === 0 && ((user.table_leader ?? false) || (locals?.rating_archived ?? false))){ %>
+                <div class="mt-5 mb-3">
+                    <h3><%= dict[lang].view_rating_no_pictures_title %></h3>
+                </div>
+            <% } %>
+
+			<div class="mt-5 text-center">
+				<input <% if(rating.anonymous){ %>checked<% }%> disabled type="checkbox" id="anonymous_rating">
+				<label class="fw-bold" for="anonymous_rating"><%= dict[lang].i_rate_anonymously %></label>
+			</div>
+
+		</div>
+	</div>
+
+	<% rating_sheet.forEach(function(aspect){ %>
+	<div class="mt-5 mb-3">
+		<h3><%= dict[lang][aspect.title] %></h3>
+	</div>
+
+	<div>
+		<label class="h5" for="score_<%= aspect.title %>"><%= dict[lang].score %></label>
+		<input class="score_input text-center" disabled type="text" value="<%= rating.aspects.find(e => e.title === aspect.title).score %>/<%= aspect.score %>" id="score_<%= aspect.title %>">
+	</div>
+
+	<div class="row mt-2 mb-2">
+		<% aspect.blocks.forEach(function(block, blocknumber){ %>
+		<div class="col-sm-4 list-group mb-2">
+			<% block.forEach(function(property){ %>
+			<label class="list-group-item">
+				<input class="form-check-input flex-shrink-0" <% if(rating.aspects.find(e => e.title === aspect.title).blocks[blocknumber].includes(property)){ %> checked <% } %> disabled type="checkbox" id="property_checkbox-<%= aspect.title %>-<%= blocknumber+1 %>-<%= property %>">
+				<span for="property_checkbox-<%= aspect.title %>-<%= blocknumber+1 %>-<%= property %>"><%= dict[lang][property] %></span>
+			</label>
+			<% }) %>
+		</div>
+		<% }) %>
+	</div>
+
+	<div class="h5 mb-2">
+		<label for="comment_<%= aspect.title %>"><%= dict[lang].comment %></label>
+	</div>
+
+	<div class="text-center">
+		<textarea class="form-control" disabled id="comment_<%= aspect.title %>" rows="3" cols="40"><%= rating.aspects.find(e => e.title === aspect.title).comment %></textarea>
+	</div>
+	<% }) %>
+
+	<div class="h5 mb-2 mt-5">
+		<label for="overall_impression"><%= dict[lang].overall_impression %></label>
+	</div>
+
+	<div class="text-center">
+		<textarea class="form-control" disabled id="overall_impression" rows="3" cols="40"><%= rating.overall_impression %></textarea>
+	</div>
+
+	<div class="h5 mb-2 mt-4 text-center">
+		<div><%= dict[lang].total_score %></div>
+		<div>
+			<% let sc=0; rating.aspects.forEach(a => { sc += Number.parseInt(a.score) }) %>
+			<%= sc %>
+		</div>
+	</div>
+
+	<div class="row aligncenter text-center py-4">
+		<div>
+			<a class="col-3 btn btn-primary" href="/"><%= dict[lang].ok %></a>
+		</div>
+	</div>
+
+</div>

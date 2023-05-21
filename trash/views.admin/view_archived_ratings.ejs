@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="./assets/css/MSE_1_32x32.png">
+	<title>Archivált termék bírálatai | Sajtmustra admin</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<link rel="stylesheet" href="./assets/css/style_2.css">
+    <link rel="stylesheet" href="./assets/css/view_rating_pictures.css">
+</head>
+
+<body>
+	<%- include('header') %>
+
+	<main class="container-fluid">
+        <div class="col-12 h3 mb-3 fw-normal text-center">
+            Archivált termék bírálatai
+        </div>
+        <%- include('feedback') %>
+        <div class="container text-center col-12" style="overflow-x:auto;">
+        <% if(ratings.length !== 0) { %>
+                <div>Bírálatok száma: <%= ratings.length %></div>
+                <div>Átlagpontszám: <%= Math.round(cheese.average_score) %></div>
+           
+                <table id="view_ratings_table" class="table table-striped table-bordered table-hover table-responsive">
+                    <tr>
+                        <th>Bíra</th>
+                        <th>Adott pontszám</th>
+                        <th style="max-width:400px !important; ">Összbenyomás</th>
+                        <th>Lehetőségek</th>
+                    </tr>
+                    <% ratings.forEach(rating => { %>
+                    <tr>
+                        <td style="max-width:300px !important; overflow-wrap: break-word;">
+                            <% if(!rating.anonymous) {%>
+                            <%= rating.judge_name %>
+                            <% } else { %>
+                            <i>ANONIM</i>
+                            <% } %>
+                        </td>
+                        <td><%= rating.total_score %></td>
+                        <td style="max-width:300px !important; overflow-wrap: break-word;"><%= rating.overall_impression %></td>
+                        <td>
+                            <div style="display: flex; justify-content: center;">
+                                <a href="/view_archived_rating?secret_id=<%=rating.secret_id%>&judge_email=<%= rating.judge_email %>" class="btn btn-primary">Részletek</a>
+                            </div>
+                            
+                        </td>
+                    </tr>
+                    <% }) %>
+                </table>
+           
+        <% } else { %>
+            <div class="text-center" style="margin-block:1rem;">
+                Erre a termékre nem érkezett bírálat.
+            </div>
+            
+        <% } %>
+    </div>
+        
+        <div class="col-12 h3 mb-3 fw-normal text-center">
+			Termék adatai
+		</div>
+		
+		<div class="text-break">
+			<div class="row justify-content-center">
+				<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-10 col-xxl-8">
+
+					<div class="row aligncenter border-bottom">
+						<div class="col-6 fw-bold">Publikus azonosító:</div>
+						<div class="col-6"><%= cheese.public_id %></div>
+					</div>
+
+					<div class="row aligncenter border-bottom">
+						<div class="col-6 fw-bold">Titkos azonosító:</div>
+						<div class="col-6"><%= cheese.secret_id %></div>
+					</div>
+
+					<div class="row aligncenter border-bottom">
+						<div class="col-6 fw-bold">Termék neve:</div>
+						<div class="col-6"><%= cheese.product_name %></div>
+					</div>
+
+					<div class="row aligncenter border-bottom">
+						<div class="col-6 fw-bold">Készítő vagy sajtműhely neve:</div>
+						<div class="col-6"><%= cheese.factory_name %></div>
+					</div>
+
+					<div class="row aligncenter border-bottom">
+						<div class="col-6 fw-bold">Érlelési idő:</div>
+						<div class="col-6">
+							<% if(cheese.maturation_time_type === 'fresh') { %>
+							<div>Friss sajt</div>
+							<% } %>
+							<% if(cheese.maturation_time_type === 'matured') { %>
+							<div><%= `${cheese.maturation_time_quantity} ${dictionary[cheese.maturation_time_unit]}` %></div>
+							<% } %>
+						</div>
+					</div>
+
+					<div class="row aligncenter border-bottom">
+						<div class="col-6 fw-bold">Milyen tejből készült:</div>
+						<div class="col-6"><%= dictionary[cheese.milk_type] %></div>
+					</div>
+
+					<div class="row aligncenter border-bottom">
+						<div class="col-6 fw-bold">Termékkategória:</div>
+						<div class="col-6"> <% cheese.product_category_list.forEach(category => { %>
+							<div><%= dictionary[category] %></div>
+							<% }) %>
+						</div>
+					</div>
+
+					<div class="row aligncenter border-bottom">
+						<div class="col-6 fw-bold">A termék bemutatása néhány mondatban:</div>
+						<div class="col-6 text-break">
+							<div><%= cheese.product_description %></div>
+						</div>
+					</div>
+
+				</div>
+                <div>
+                    <% if((locals?.rating_pictures?.length ?? 0) !== 0) { %>
+                        <div class="col-12 h3 mt-5 mb-3 fw-normal text-center">
+                            Az asztalvezető bíra által készített képek:
+                        </div>
+                        <div id="picture_previews_block">
+                            <% for(let i=0; i < rating_pictures.length; ++i) { %>
+                            <div class="picture_preview"><img src="<%= process.env.SERVER_URL %>/rating_pictures?picture_state=archived&secret_id=<%= locals?.table_leader_rating?.secret_id %>&index=<%= i %>"></div>
+                            <% } %>
+                        </div>
+                    <% } else { %>
+                        <div class="col-12 h3 mt-5 mb-3 fw-normal text-center">
+                            Ehhez a termékhez az asztalvezető bíra nem kapcsolt fotókat.
+                        </div>
+                    <% } %>
+                </div>
+                <div class="col-8 mt-3 text-center">
+                    <a class="w-50 btn btn-lg btn-primary" href="/archive/results">Vissza</a>
+                </div>
+			</div>
+            
+		</div>
+        
+	</main>
+
+	<%- include('footer') %>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>
+
+</html>

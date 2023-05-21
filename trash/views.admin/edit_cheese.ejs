@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="./assets/scripts/edit_cheese/edit_cheese.js" defer></script>
+	<link rel="icon" type="image/x-icon" href="./assets/css/MSE_1_32x32.png">
+	<title>Sajt szerkesztése | Sajtmustra admin</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<link rel="stylesheet" href="./assets/css/style_2.css">
+</head>
+
+<body>
+
+	<%- include('header') %>
+
+	<main class="container-fluid">
+		<div class="col-12 h3 mb-3 fw-normal text-center">
+			Nevezett sajt szerkesztése
+		</div>
+
+		<%- include('feedback') %>
+
+		<div class="text-break">
+			<div class="row justify-content-center">
+
+				<div class="col-xl-6 col-xxl-5 col-lg-7">
+
+					<div class="errormsg mb-3"> A *-al jelölt mezők kitöltése kötelező!</div>
+
+
+					<form class="row g-3" action="/edit_cheese" id="edit_cheese_form" method="POST">
+						<input type="hidden" name="public_id" value="<%= cheese.public_id %>">
+
+						<!-- Product name -->
+						<div class="col-12 col-sm-6">
+							<label class="form-label" for="product_name">Termék neve:<span style="color:red;font-weight:bold">*</span></label>
+							<input class="form-control" type="text" id="product_name" maxlength="25" minlength="3" name="product_name" required value="<%= cheese.product_name %>">
+						</div>
+
+						<!-- Manufacturer name -->
+						<div class="col-12 col-sm-6">
+							<label class="form-label" for="factory_name">Készítő vagy sajtműhely neve:<span style="color:red;font-weight:bold">*</span></label>
+							<input class="form-control" type="text" id="factory_name" maxlength="80" minlength="3" name="factory_name" required value="<%= cheese.factory_name %>">
+						</div>
+
+						<!-- Maturation time -->
+						<div class="col-12">
+							<label class="form-label text-center" for="maturation_time_type">Érlelési idő:</label>
+						</div>
+
+						<div class="col-6">
+							<label class="form-label list-group-item" for="matured">
+								<input class="form-check-input me-1" <% if(cheese.maturation_time_type === 'matured'){ %> checked <% } %> type="radio" name="maturation_time_type" value="matured" required>
+								Érlelt
+							</label>
+						</div>
+
+						<div class="col-6">
+							<label class="form-label list-group-item" for="fresh">
+								<input class="form-check-input me-1" <% if(cheese.maturation_time_type === 'fresh'){ %> checked <% } %> type="radio" name="maturation_time_type" value="fresh" required>
+								Friss
+							</label>
+						</div>
+
+
+
+						<!-- Maturation time: matured -->
+						<div class="col-12" <% if(cheese.maturation_time_type === 'fresh'){ %> hidden <% } %> id="maturation_time_matured_block">
+							<label class="form-label" for="maturation_time_list">Érlelési idő: <span style="color:red;font-weight:bold">*</span></label>
+							<input class="form-control text-center" <% if(cheese.maturation_time_type === 'fresh'){ %> disabled <% } else { %> required <% } %> type="number" id="maturation_time_quantity" name="maturation_time_quantity" min="1" value="<%= cheese.maturation_time_quantity %>">
+							<select class="form-select" <% if(cheese.maturation_time_type === 'fresh'){ %> disabled <% } else { %> required <% } %> id="maturation_time_unit" name="maturation_time_unit">
+								<option disabled hidden <% if(cheese.maturation_time_type === 'fresh'){ %> selected <% } %> value="">Válaszd ki az időtartamot:</option>
+								<option <% if(cheese.maturation_time_unit === 'day'){ %> selected <% } %> value="day">nap</option>
+								<option <% if(cheese.maturation_time_unit === 'week'){ %> selected <% } %> value="week">hét</option>
+								<option <% if(cheese.maturation_time_unit === 'month'){ %> selected <% } %> value="month">hónap</option>
+							</select>
+						</div>
+
+						<!-- Milk type -->
+						<div class="col-12">
+							<label class="form-label" for="milk_type">Milyen tejből készült?<span style="color:red;font-weight:bold">*</span></label>
+						</div>
+						<% milk_types.forEach(function(milk_type){ %>
+						<div class="col-6">
+							<input type="radio" id="<%= milk_type.id %>" name="milk_type" required <% if(cheese.milk_type === milk_type.id){ %> checked <% } %> value="<%= milk_type.id %>">
+							<label class="form-label" for="<%= milk_type.id %>"><%= milk_type.name %></label>
+						</div>
+						<% }) %>
+
+						<!-- Product category list -->
+						<% select_group_HTMLs.forEach(function(select_group_HTML_array, index){ %>
+						<div class="select_category" <% if(cheese.milk_type !== milk_types[index].id){ %> hidden <% } %> id="select_category_<%= milk_types[index].id %>">
+							<label class="form-label" for="product_category_list_<%= milk_types[index].id %>">Termékkategória lista: <span style="color:red;font-weight:bold">*</span></label>
+							<select class="product_category_list form-select" id="product_category_list_<%= milk_types[index].id %>" name="product_category_list" <% if(cheese.milk_type !== milk_types[index].id){ %> disabled <% } else { %> required <% } %>>
+								<option disabled hidden <% if(cheese.milk_type !== milk_types[index].id){ %> selected <% } %> value="">Válasszon kategóriát:</option>
+								<% select_group_HTML_array.forEach(function(select_group_HTML){ %>
+								<%- select_group_HTML %>
+								<% }) %>
+							</select>
+						</div>
+						<% }) %>
+
+						<!-- Product description -->
+						<div class="col-12">
+							<label class="form-label" for="product_description">Termék leírás:
+								<span style="color:red;font-weight:bold">*</span>
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" data-bs-toggle="tooltip" title="Tartalmazzon minimum 25, maximum 1000 karaktert!" viewBox="0 0 16 16">
+									<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+									<path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+								</svg>
+							</label>
+							<textarea class="form-control" cols="40" rows="5" id="product_description" maxlength="1000" minlength="25" required name="product_description"><%= cheese.product_description %></textarea>
+						</div>
+
+						<div class="row aligncenter text-center py-4">
+							<div class="col-6">
+								<a href="/cheeses" class="w-50 btn btn-lg btn-primary" type="button">Mégse</a>
+							</div>
+
+							<!-- Submit editing button -->
+							<div class="col-6">
+								<input class="w-50 btn btn-lg btn-primary" id="submit_button" type="submit" value="Mentés">
+							</div>
+						</div>
+
+					</form>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</main>
+
+	<%- include('footer') %>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<script>
+		// Initialize tooltips
+		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+		var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+			return new bootstrap.Tooltip(tooltipTriggerEl)
+		})
+	</script>
+</body>
+
+</html>
