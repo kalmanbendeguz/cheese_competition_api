@@ -2,12 +2,12 @@
 module.exports = async (data, user) => {
 
     // 1. validate data
-    const update_active_password_reset_validator = require('../../validators/requests/api/active_password_reset/update')
-    try { await update_active_password_reset_validator.validateAsync(data) }
+    const update_entry_fee_payment_validator = require('../../validators/requests/api/entry_fee_payment/update')
+    try { await update_entry_fee_payment_validator.validateAsync(data) }
     catch (err) { return { code: 400, data: err.details } }
 
     // 2. authorize updatable
-    const authorizer = require('../../authorizers/active_password_reset')
+    const authorizer = require('../../authorizers/entry_fee_payment')
     const updatable_authorizer_result = authorizer(data.query, 'updatable', user)
     if (!updatable_authorizer_result.authorized) { return { code: 403, data: updatable_authorizer_result.message } }
 
@@ -19,45 +19,42 @@ module.exports = async (data, user) => {
     const filter = data.query
 
     // 4. find
-    const Active_Password_Reset_Model = require('../../models/Active_Password_Reset')
-    const active_password_resets = await Active_Password_Reset_Model.find(
+    const Entry_Fee_Payment_Model = require('../../models/Entry_Fee_Payment')
+    const entry_fee_payments = await Entry_Fee_Payment_Model.find(
         filter,
         //projection, // is undefined okay? or should i convert to null
         //options // is undefined okay? or should i convert to null
     )
-    if (active_password_resets.length === 0) return {
+    if (entry_fee_payments.length === 0) return {
         code: 404,
         data: 'no_documents_found_to_update'
     }
 
-    // 5. check dependencies
-    // if array.length is 0, 1, or more.
-    if (active_password_resets.length === 0) {
+    // 5. check dependencies: will the database be consistent after this update?
+    if (entry_fee_payments.length === 0) {
         ; // check nothing; code wont even reach this ever
     }
-    if (active_password_resets.length >= 1) {
-        if ('restore_id' in data.body
-            && data.body.restore_id !== filter.restore_id
-            && (await Active_Password_Reset_Model.exists({
-                restore_id: data.body.restore_id
-            }))) return {
-                code: 409,
-                data: 'can_not_change_restore_id_to_an_existing_restore_id'
-            }
-        const User_Model = require('../../models/User')
-        if ('user_id' in data.body && !(await User_Model.exists({
-            _id: data.body.user_id,
-            registration_temporary: false
-        }))) return {
-            code: 403,
-            data: 'provided_user_id_does_not_exist_or_user_not_activated'
-        }
+    if (entry_fee_payments.length > 1) return {
+        code: 403,
+        data: 'only_possible_to_update_one_entry_fee_payment_at_a_time'
     }
-    if (active_password_resets.length >= 2) {
-        if ('restore_id' in filter) return {
-            code: 409,
-            data: 'multiple_active_password_resets_can_not_have_the_same_restore_id'
-        }
+    if (data.body.pending === true) return {
+        code: 403,
+        data: 'not_possible_to_set_pending_to_true'
+    }
+    //barion_payment_id should be unique
+    if (await Entry_Fee_Payment_Model.exists({
+        barion_payment_id: data.body.barion_payment_id
+    })) return {
+        code: 409,
+        data: 'barion_payment_id_already_exists'
+    }
+    //barion_transaction_id should be unique
+    if (await Entry_Fee_Payment_Model.exists({
+        barion_transaction_id: data.body.barion_transaction_id
+    })) return {
+        code: 409,
+        data: 'barion_transaction_id_already_exists'
     }
 
     // 6. prepare_update
@@ -65,23 +62,23 @@ module.exports = async (data, user) => {
     const remove = []
 
     // 7. update
-    for (const active_password_reset of active_password_resets) {
-        active_password_reset.set(update)
+    for (const entry_fee_payment of entry_fee_payments) {
+        entry_fee_payment.set(update)
 
         for (const key of remove) {
-            active_password_reset[key] = undefined
+            entry_fee_payment[key] = undefined
         }
     }
 
     // 8. validate documents
-    const active_password_reset_validator = require('../../validators/schemas/Active_Password_Reset')
+    const entry_fee_payment_validator = require('../../validators/schemas/Entry_Fee_Payment')
     try {
-        const validator_promises = active_password_resets.map(active_password_reset => active_password_reset_validator.validateAsync(active_password_reset))
+        const validator_promises = entry_fee_payments.map(entry_fee_payment => entry_fee_payment_validator.validateAsync(entry_fee_payment))
         await Promise.all(validator_promises)
     } catch (err) { return { code: 500, data: err.details } }
 
     // 9. update dependencies
-    // nothing to do here
+    // if we set a payment to succeeded, then all the products should be approved.
 
     // 10. save
     const saver_promises = active_password_resets.map(active_password_reset => active_password_reset.save())

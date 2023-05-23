@@ -47,6 +47,9 @@ router.use('/active_password_reset', active_password_reset)
 const entry_fee_payment = require('./entry_fee_payment')
 router.use('/entry_fee_payment', entry_fee_payment)
 
+const user = require('./user')
+router.use('/user', user)
+
 //const allowed_role = require('./allowed_role')
 //router.use('/allowed_role', allowed_role)
 

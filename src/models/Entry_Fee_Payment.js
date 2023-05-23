@@ -12,9 +12,11 @@ const Entry_Fee_Payment_Schema = new Schema({
     pending: {
         type: Boolean,
         default: true,
-        // DOES THIS EXPIRE ? // i think yes, because if there is one pending, and there is another one for the same product
-        // that is succeeded, then this will be pending forever. so this needs to be deleted after some time.
-        // but maybe ill do it with the update logic, we'll see.
+    },
+    expiring_started: {
+        type: Date,
+        default: Date.now,
+        expires: 15 * 60,
     },
     barion_payment_id: {
         type: String,
