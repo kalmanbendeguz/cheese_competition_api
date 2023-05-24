@@ -1,6 +1,6 @@
 // ONLY SERVER
 module.exports = async (query, user) => {
-    const update_user = require('../../controllers/user/update')
+    const update_user = require('../user/update')
 
     // 1. validate query
     const remove_allowed_role_validator = require('../../validators/requests/api/allowed_role/remove')

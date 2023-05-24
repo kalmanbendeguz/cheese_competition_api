@@ -11,18 +11,18 @@ router.post('/', async (req, res, _) => {
     return res.status(result.code).json(result.data)
 })
 
-//router.get('/', (req, res, _) => {
-//    const result = find(req.query, req.user)
+//router.get('/', async (req, res, _) => {
+//    const result = await find(req.query, req.user)
 //    return res.status(result.code).json(result.data)
 //})
 //
-//router.put('/', (req, res, _) => {
-//    const result = update(req.query, req.body, req.user)
+//router.put('/', async (req, res, _) => {
+//    const result = await update(req.query, req.body, req.user)
 //    return res.status(result.code).json(result.data)
 //})
 //
-//router.delete('/', (req, res, _) => {
-//    const result = remove(req.query, req.user)
+//router.delete('/', async (req, res, _) => {
+//    const result = await remove(req.query, req.user)
 //    return res.status(result.code).json(result.data)
 //})
 

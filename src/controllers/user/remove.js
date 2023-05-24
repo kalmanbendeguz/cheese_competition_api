@@ -1,9 +1,9 @@
 // ONLY SERVER
 module.exports = async (query, user) => {
     const User_Model = require('../../models/User')
-    const remove_active_password_reset = require('../../controllers/active_password_reset/remove')
-    const remove_product = require('../../controllers/product/remove')
-    const remove_rating = require('../../controllers/rating/remove')
+    const remove_active_password_reset = require('../active_password_reset/remove')
+    const remove_product = require('../product/remove')
+    const remove_rating = require('../rating/remove')
 
     // 1. validate query
     const remove_user_validator = require('../../validators/requests/api/user/remove')

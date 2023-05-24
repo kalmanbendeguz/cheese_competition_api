@@ -413,10 +413,7 @@ module.exports = (data, verb, user) => {
             update: {}, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
-            remove: { // user can use this field in DELETE QUERY
-                SERVER: 'optional',
-                organizer: 'optional'
-            },
+            remove: {},
         },
         certificate_template: {
             create: {
@@ -439,10 +436,7 @@ module.exports = (data, verb, user) => {
             update: {}, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
-            remove: { // user can use this field in DELETE QUERY
-                SERVER: 'optional',
-                organizer: 'optional'
-            },
+            remove: {},
         },
         ignore_extreme_values: {
             create: {
@@ -478,7 +472,7 @@ module.exports = (data, verb, user) => {
 
     for (let key in rules) {
         if (rules[key][verb][user.role] === 'required') {
-            if (key in data) continue 
+            if (key in data) continue
             else return { authorized: false, message: `field__${key}__for_role__${user.role}__is_required_for_action__${verb}__` }
         } else if (rules[key][verb][user.role] === 'optional') continue
         else if (key in data) return { authorized: false, message: `field__${key}__for_role__${user.role}__is_forbidden_for_action__${verb}__` }
