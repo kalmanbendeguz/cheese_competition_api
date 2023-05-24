@@ -1,91 +1,475 @@
 module.exports = (data, verb, user) => {
     const rules = {
-        restore_id: {
+        _id: {
             create: {}, // generated // POST BODY
             find: { //user can use this field in GET QUERY
                 //authorize query for find
-                competitor: 'optional and everything is allowed',
-                judge: 'optional and everything is allowed',
-                organizer: 'optional and everything is allowed',
-                receiver: 'optional and everything is allowed',
+                SERVER: 'optional'
             },
-            project: {},
+            project: {
+                SERVER: 'optional'
+            },
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
-            update: { // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: 'optional and everything is allowed',
-                judge: 'forbidden',
-                organizer: 'optional and everything is allowed',
-                receiver: 'forbidden',
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
             },
+            update: {}, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
-                // authorize query for find and remove as well.
-                competitor: 'optional and everything is allowed',
-                judge: 'forbidden',
-                organizer: 'optional and everything is allowed',
-                receiver: 'forbidden',
+                SERVER: 'optional',
+                organizer: 'optional'
             },
         },
-        user_id: {
+        name: {
             create: {
                 SERVER: 'required',
-            },
-            find: { // user can use this field in GET QUERY
+                organizer: 'required'
+            }, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
                 //authorize query for find
-                competitor: 'optional and everything is allowed',
-                judge: 'optional and everything is allowed',
-                organizer: 'optional and everything is allowed',
-                receiver: 'optional and everything is zallowed',
+                SERVER: 'optional'
             },
-            project: {},
+            project: {
+                SERVER: 'optional'
+            },
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
-            update: { // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: 'optional and everything is allowed',
-                judge: 'forbidden',
-                organizer: 'optional and everything is allowed',
-                receiver: 'forbidden',
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
             },
+            update: {}, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
-                // authorize query for find and remove as well.
-                competitor: 'optional and everything is allowed',
-                judge: 'forbidden',
-                organizer: 'optional and everything is allowed',
-                receiver: 'forbidden',
+                SERVER: 'optional',
+                organizer: 'optional'
             },
         },
-        expiring_started: {
-            create: {}, // generated
-            find: { // user can use this field in GET QUERY
+        place: {
+            create: {
+                SERVER: 'required',
+                organizer: 'required'
+            }, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
                 //authorize query for find
-                competitor: 'forbidden',
-                judge: 'forbidden',
-                organizer: 'optional',
-                receiver: 'optional'
+                SERVER: 'optional'
             },
-            project: {},
+            project: {
+                SERVER: 'optional'
+            },
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
-            update: { // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
             },
+            update: {}, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
-                // authorize query for find and remove as well.
-                competitor: true,
-                organizer: user._id === data.competitor_id
+                SERVER: 'optional',
+                organizer: 'optional'
             },
         },
-
+        creation_date: {
+            create: {}, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        entry_opened: {
+            create: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        last_entry_open_date: {
+            create: {}, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        last_entry_close_date: {
+            create: {}, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        competition_opened: {
+            create: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        last_competition_open_date: {
+            create: {}, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        last_competition_close_date: {
+            create: {}, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        archived: {
+            create: {}, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        archival_date: {
+            create: {}, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        payment_needed: {
+            create: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        association_members_need_to_pay: {
+            create: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        entry_fee_amount: {
+            create: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        entry_fee_currency: {
+            create: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        product_category_tree: {
+            create: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        certificate_template: {
+            create: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
+        ignore_extreme_values: {
+            create: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
     }
 
     for (let key in data) {
@@ -94,7 +478,7 @@ module.exports = (data, verb, user) => {
 
     for (let key in rules) {
         if (rules[key][verb][user.role] === 'required') {
-            if (key in data) continue
+            if (key in data) continue 
             else return { authorized: false, message: `field__${key}__for_role__${user.role}__is_required_for_action__${verb}__` }
         } else if (rules[key][verb][user.role] === 'optional') continue
         else if (key in data) return { authorized: false, message: `field__${key}__for_role__${user.role}__is_forbidden_for_action__${verb}__` }

@@ -1,5 +1,6 @@
 const { Schema: Schema, Schema: { Types: { Decimal128, Mixed } } } = require('mongoose')
 const db = require('../config/db')
+const File_Schema = require('./schemas/File')
 
 const Competition_Schema = new Schema({
     name: {
@@ -12,11 +13,19 @@ const Competition_Schema = new Schema({
         type: Date,
         default: Date.now,
     },
+    entry_opened: {
+        type: Boolean,
+        default: false,
+    },
     last_entry_open_date: {
         type: Date,
     },
     last_entry_close_date: {
         type: Date,
+    },
+    competition_opened: {
+        type: Boolean,
+        default: false,
     },
     last_competition_open_date: {
         type: Date,
@@ -24,20 +33,12 @@ const Competition_Schema = new Schema({
     last_competition_close_date: {
         type: Date,
     },
-    archival_date: {
-        type: Date,
-    },
     archived: {
         type: Boolean,
         default: false,
     },
-    entry_opened: {
-        type: Boolean,
-        default: false,
-    },
-    competition_opened: {
-        type: Boolean,
-        default: false,
+    archival_date: {
+        type: Date,
     },
     payment_needed: {
         type: Boolean,
@@ -57,7 +58,7 @@ const Competition_Schema = new Schema({
         type: Mixed,
     },
     certificate_template: {
-        type: Mixed
+        type: File_Schema
     },
     ignore_extreme_values: {
         type: Boolean,
