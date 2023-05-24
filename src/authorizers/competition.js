@@ -41,7 +41,10 @@ module.exports = (data, verb, user) => {
                 SERVER: 'optional',
                 organizer: 'optional'
             },
-            update: {}, // user can use this field in PUT BODY
+            update: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
@@ -67,7 +70,10 @@ module.exports = (data, verb, user) => {
                 SERVER: 'optional',
                 organizer: 'optional'
             },
-            update: {}, // user can use this field in PUT BODY
+            update: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
@@ -116,7 +122,10 @@ module.exports = (data, verb, user) => {
                 SERVER: 'optional',
                 organizer: 'optional'
             },
-            update: {}, // user can use this field in PUT BODY
+            update: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
@@ -188,7 +197,10 @@ module.exports = (data, verb, user) => {
                 SERVER: 'optional',
                 organizer: 'optional'
             },
-            update: {}, // user can use this field in PUT BODY
+            update: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
@@ -257,7 +269,10 @@ module.exports = (data, verb, user) => {
                 SERVER: 'optional',
                 organizer: 'optional'
             },
-            update: {}, // user can use this field in PUT BODY
+            update: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
@@ -306,7 +321,10 @@ module.exports = (data, verb, user) => {
                 SERVER: 'optional',
                 organizer: 'optional'
             },
-            update: {}, // user can use this field in PUT BODY
+            update: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
@@ -332,7 +350,10 @@ module.exports = (data, verb, user) => {
                 SERVER: 'optional',
                 organizer: 'optional'
             },
-            update: {}, // user can use this field in PUT BODY
+            update: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
@@ -358,7 +379,10 @@ module.exports = (data, verb, user) => {
                 SERVER: 'optional',
                 organizer: 'optional'
             },
-            update: {}, // user can use this field in PUT BODY
+            update: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
@@ -384,7 +408,10 @@ module.exports = (data, verb, user) => {
                 SERVER: 'optional',
                 organizer: 'optional'
             },
-            update: {}, // user can use this field in PUT BODY
+            update: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
@@ -406,10 +433,7 @@ module.exports = (data, verb, user) => {
             },
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
-            updatable: {
-                SERVER: 'optional',
-                organizer: 'optional'
-            },
+            updatable: {},
             update: {}, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -429,11 +453,11 @@ module.exports = (data, verb, user) => {
             },
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
-            updatable: {
+            updatable: {},
+            update: {
                 SERVER: 'optional',
                 organizer: 'optional'
-            },
-            update: {}, // user can use this field in PUT BODY
+            }, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: {},
@@ -456,7 +480,10 @@ module.exports = (data, verb, user) => {
                 SERVER: 'optional',
                 organizer: 'optional'
             },
-            update: {}, // user can use this field in PUT BODY
+            update: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            }, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
