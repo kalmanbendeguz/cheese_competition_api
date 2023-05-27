@@ -22,9 +22,7 @@ module.exports = Joi.object({
         otherwise: Joi.forbidden(),
     }),
     milk_type: Joi.string().trim().required().min(1).prefs({ convert: false }), // should validate based on tree
-    product_category_list: Joi.array().items( // should validate based on tree
-        Joi.string().trim().min(1).prefs({ convert: false })
-    ).required().min(1),
+    product_category_id: Joi.string().trim().required().min(1).prefs({ convert: false }), // needs better validation: pl. '1_2_3__12' erre könnyű regexet írni.
     product_description: Joi.string().trim().required().min(25).max(1000).prefs({ convert: false }),
     anonimized_product_description: Joi.string().trim().optional().min(25).max(1000).prefs({ convert: false }),
     approved: Joi.boolean().required(),

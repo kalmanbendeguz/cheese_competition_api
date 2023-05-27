@@ -3,14 +3,14 @@ const Joi = require('joi')
 const object_schema = Joi.object({
     competition_id: Joi.string().trim().min(1).prefs({ convert: false }).required(),
 
-    competitor_id: Joi.string().trim().min(1).prefs({ convert: false }).optional(),
+    competitor_id: Joi.string().trim().min(1).prefs({ convert: false }).optional(), // if competitor, it is forbidden, if server, it is required
 
-    //public_id
-    //secret_id
+    //public_id // auto generated
+    //secret_id // auto generated
 
     product_name: Joi.string().trim().min(3).max(25).prefs({ convert: false }).required(),
 
-    anonimized_product_name: Joi.string().trim().min(3).max(25).prefs({ convert: false }).optional(),
+    anonimized_product_name: Joi.string().trim().min(3).max(25).prefs({ convert: false }).optional(), // server can set
 
     factory_name: Joi.string().trim().min(3).max(80).prefs({ convert: false }).required(),
 
@@ -28,15 +28,15 @@ const object_schema = Joi.object({
         otherwise: Joi.forbidden(),
     }),
 
-    milk_type: Joi.string().trim().min(1).prefs({ convert: false }).required(), // should validate based on json tree!!!!!
+    milk_type: Joi.string().trim().min(1).prefs({ convert: false }).required(), // milk_types should be stored in a file, and this should validate based on that.
 
-    product_category_list: Joi.array().items( // should validate based on json tree!!!!! 
-        Joi.string().trim().min(1).prefs({ convert: false })
-    ).min(1).required(),
+    product_category_id: Joi.string().trim().min(1).prefs({ convert: false }).required(),
 
     product_description: Joi.string().trim().min(25).max(1000).prefs({ convert: false }).required(),
 
-    approved: Joi.boolean().optional(),
+    anonimized_product_description: Joi.string().trim().min(25).max(1000).prefs({ convert: false }).optional(), // server can set
+
+    approved: Joi.boolean().optional(), // only server can set this at creation, and only to "bypass"
 
     approval_type : Joi.when('approved', {
         is: true,
@@ -44,9 +44,7 @@ const object_schema = Joi.object({
         otherwise: Joi.forbidden(),
     }),
 
-    anonimized_product_description: Joi.string().trim().min(25).max(1000).prefs({ convert: false }).optional(),
-
-    handed_in: Joi.boolean().optional()
+    handed_in: Joi.boolean().optional() // only server can set this at creation
 }).required()
 
 const array_schema = Joi.array().items(object_schema).min(1).required()

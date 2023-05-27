@@ -17,7 +17,7 @@ router.post('/', async (req, res, _) => {
 //})
 //
 //router.put('/', async (req, res, _) => {
-//    const result = await update(req.query, req.body, req.user)
+//    const result = await update({ query: req.query, body: req.body }, req.user)
 //    return res.status(result.code).json(result.data)
 //})
 //

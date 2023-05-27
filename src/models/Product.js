@@ -39,10 +39,8 @@ const Product_Schema = new Schema({
     milk_type: {
         type: String,
     },
-    product_category_list: {
-        type: [{
-            type: String,
-        }],
+    product_category_id: {
+        type: String,
     },
     product_description: {
         type: String,

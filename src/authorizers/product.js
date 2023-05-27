@@ -5,6 +5,29 @@ module.exports = (data, verb, user) => {
     // console.log(user)
 
     const rules = {
+        _id: {
+            create: {}, // generated // POST BODY
+            find: { //user can use this field in GET QUERY
+                //authorize query for find
+                SERVER: 'optional'
+            },
+            project: {
+                SERVER: 'optional'
+            },
+            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
+            // only the PUT BODY
+            updatable: {
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+            update: {}, // user can use this field in PUT BODY
+            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
+            // for this: DELETE QUERY.
+            remove: { // user can use this field in DELETE QUERY
+                SERVER: 'optional',
+                organizer: 'optional'
+            },
+        },
         competition_id: {
             create: {
                 competitor: 'required',
@@ -314,7 +337,7 @@ module.exports = (data, verb, user) => {
                 organizer: user._id === data.competitor_id
             },
         },
-        product_category_list: {
+        product_category_id: {
             create: {
                 competitor: 'required',
                 SERVER: 'required'
