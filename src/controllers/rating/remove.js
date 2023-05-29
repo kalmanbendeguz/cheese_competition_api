@@ -1,8 +1,9 @@
-// JUDGE, ORGANIZER, SERVER
+// ORGANIZER, SERVER
 module.exports = async (query, user) => {
-    //const Competition_Model = require('../../models/Competition')
-    //const Product_Model = require('../../models/Product')
-    //const remove_product = require('../product/remove')
+    const Competition_Model = require('../../models/Competition')
+    const Product_Model = require('../../models/Product')
+    const Rating_Model = require('../../models/Rating')
+    const remove_rating_picture = require('../rating_picture/remove')
 
     // 1. validate query
     const remove_rating_validator = require('../../validators/requests/api/rating/remove')
@@ -10,7 +11,7 @@ module.exports = async (query, user) => {
     catch (err) { return { code: 400, data: err.details } }
 
     // 2. authorize {query, user}
-    const authorizer = require('../../authorizers/competition')
+    const authorizer = require('../../authorizers/rating')
     const authorizer_result = authorizer(query, 'remove', user)
     if (!authorizer_result.authorized) { return { code: 403, data: authorizer_result.message } }
 
@@ -18,38 +19,40 @@ module.exports = async (query, user) => {
     const filter = query
 
     // 4. find
-    const competitions = await Competition_Model.find(filter)
-    if (competitions.length === 0) return {
+    const ratings = await Rating_Model.find(filter)
+    if (ratings.length === 0) return {
         code: 404,
         data: 'no_documents_found_to_remove'
     }
 
     // 5. check dependencies: is there anything that prevents this remove?
-    // a competition has no dependencies, so only look for property things.
-    // it is not possible to remove paid products
-    const ids_to_delete = competitions.map(competition => competition._id)
-    if (await Product_Model.exists({
-        competition_id: { $in: ids_to_delete },
-        approval_type: 'payment'
-    })) return {
-        code: 403,
-        data: 'cannot_remove_competition_because_there_are_paid_products_associated_with_it'
+    // Rating_Picture: no. Rating: no. Product: no. Competition: it should be opened.
+    // rating -> product -> competition.
+    // this can be refactored using unique_product_ids and unique_competition_ids
+    for(const rating of ratings) {
+        const product_of_rating = await Product_Model.findById(rating.product_id)
+        const competition_of_product = await Competition_Model.findById(product_of_rating.competition_id)
+        if(!competition_of_product.competition_opened) return {
+            code: 403,
+            data: 'can_not_remove_a_rating_which_belongs_to_a_closed_competition'
+        }
     }
 
-    // 6. update dependents: CHECK IF THIS OPERATION SUCCEEDS.
-    // remove all products of all competitions
-    const remove_product_promises = competitions.map(competition => remove_product(
+    // 6. update dependents: CHECK IF THIS OPERATION SUCCEEDS?
+    // remove all rating_pictures of all ratings
+    const remove_rating_picture_promises = ratings.map(rating => remove_rating_picture(
         {
-            competition_id: competition._id.toString()
+            rating_id: rating._id.toString()
         },
         {
             role: 'SERVER'
         }
     ))
-    await Promise.all(remove_product_promises)
+    await Promise.all(remove_rating_picture_promises)
 
     // 7. remove
-    await Competition_Model.deleteMany({
+    const ids_to_delete = ratings.map(rating => rating._id)
+    await Rating_Model.deleteMany({
         _id: { $in: ids_to_delete }
     })
 

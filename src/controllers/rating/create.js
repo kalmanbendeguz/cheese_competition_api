@@ -24,7 +24,7 @@ module.exports = async (body, user) => {
     for (const rating of body) {
         if (await Rating_Model.exists({
             product_id: rating.product_id,
-            judge_id: rating.judge_id ?? user._id
+            judge_id: rating.judge_id
         })) return {
             code: 409,
             data: 'product_id_and_judge_id_should_be_compound_unique'
@@ -44,10 +44,9 @@ module.exports = async (body, user) => {
 
     // all users should be activated judges, and they should be arrived to this competition.
     for (const rating of body) {
-        const judge_id = user.role === 'judge' ? user._id.toString() : rating.judge_id.toString()
         const competition_id = (await Product_Model.findById(rating.product_id)).competition_id
         if (!(await User_Model.exists({
-            _id: judge_id,
+            _id: rating.judge_id,
             roles: { $in: ['judge'] },
             registration_temporary: false,
             arrived: { $in: [competition_id] },
@@ -69,8 +68,8 @@ module.exports = async (body, user) => {
     }
 
     // we need to check aspects's integrity 
-    const rating_sheet_of_category_id = require('../../utils/rating_sheet_of_category_id')
-    const rating_satisfies_sheet = require('../../utils/rating_satisfies_sheet')
+    const rating_sheet_of_category_id = require('../../helpers/rating_sheet_of_category_id')
+    const rating_satisfies_sheet = require('../../helpers/rating_satisfies_sheet')
     for (const rating of body) {
         const product_of_rating = products.find(product => product._id.toString() === rating.product_id)
         const rating_sheet = rating_sheet_of_category_id(product_of_rating.product_category_id)
@@ -82,12 +81,7 @@ module.exports = async (body, user) => {
 
     // 5. prepare
     // product_ids are required and checked
-    // judge_ids are required if server, set here if judge
-    if (user.role === 'judge') {
-        for (const rating of body) {
-            rating.judge_id = user._id
-        }
-    }
+    // judge_ids are required and checked
     // anonymous is optional, default will be false
     // aspects are required and checked
     // overall impression is required and checked

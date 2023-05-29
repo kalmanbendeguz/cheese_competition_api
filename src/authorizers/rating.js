@@ -1,4 +1,4 @@
-// Judge, Server
+// Judge, organizer, Server
 module.exports = (data, verb, user) => {
     const rules = {
         _id: {
@@ -19,12 +19,12 @@ module.exports = (data, verb, user) => {
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
+                organizer: 'optional',
                 SERVER: 'optional'
             },
         },
         product_id: {
             create: {
-                judge: 'required',
                 SERVER: 'required'
             }, // generated // POST BODY
             find: { //user can use this field in GET QUERY
@@ -43,6 +43,7 @@ module.exports = (data, verb, user) => {
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
+                organizer: 'optional',
                 SERVER: 'optional'
             },
         },
@@ -66,12 +67,12 @@ module.exports = (data, verb, user) => {
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
+                organizer: 'optional',
                 SERVER: 'optional'
             },
         },
         anonymous: {
             create: {
-                judge: 'optional',
                 SERVER: 'optional'
             }, // generated // POST BODY
             find: { //user can use this field in GET QUERY
@@ -90,12 +91,12 @@ module.exports = (data, verb, user) => {
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
+                organizer: 'optional',
                 SERVER: 'optional'
             },
         },
         aspects: {
             create: {
-                judge: 'required',
                 SERVER: 'required'
             }, // generated // POST BODY
             find: { //user can use this field in GET QUERY
@@ -114,12 +115,12 @@ module.exports = (data, verb, user) => {
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: { // user can use this field in DELETE QUERY
+                organizer: 'optional',
                 SERVER: 'optional'
             },
         },
         overall_impression: {
             create: {
-                judge: 'required',
                 SERVER: 'required'
             }, // generated // POST BODY
             find: { //user can use this field in GET QUERY
@@ -137,7 +138,8 @@ module.exports = (data, verb, user) => {
             update: {}, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
-            remove: { // user can use this field in DELETE QUERY
+            remove: {
+                organizer: 'optional',
                 SERVER: 'optional'
             },
         },

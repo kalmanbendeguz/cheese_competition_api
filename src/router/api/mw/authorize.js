@@ -38,10 +38,10 @@ module.exports = (req, res, next) => {
             DELETE: ['judge', 'organizer', 'SERVER'],
         },
         "/rating": {
-            POST: ['judge', 'SERVER'],
+            POST: ['SERVER'],
             GET: ['judge', 'organizer', 'SERVER'],
             PUT: ['judge', 'organizer', 'SERVER'],
-            DELETE: ['judge', 'organizer', 'SERVER'],
+            DELETE: ['organizer', 'SERVER'],
         },
         "/user": {
             POST: ['SERVER'],

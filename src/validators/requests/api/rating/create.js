@@ -1,10 +1,10 @@
-// judge, server
+//only server
 const Joi = require('joi')
 const Rating_Aspect_Validator = require('../../../schemas/Rating_Aspect')
 
 const object_schema = Joi.object({
     product_id: Joi.string().trim().min(1).prefs({ convert: false }).required(),
-    user_id: Joi.string().trim().min(1).prefs({ convert: false }).optional(), // required for server, (omitted for judge)
+    judge_id: Joi.string().trim().min(1).prefs({ convert: false }).required(), // required for server, (omitted for judge)
     anonymous: Joi.boolean().optional(), // default: false
     aspects: Joi.array().items( // check the format later, in 'check_dependencies'
         Rating_Aspect_Validator
