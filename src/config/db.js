@@ -10,7 +10,6 @@ const mongoose_options = {
     dbName: process.env.DB_NAME,
     autoCreate: true,
 
-
     // connectTimeoutMS // could be useful, see docs (ne kelljen annyit várni a hibára indításkor)
     // maxPoolSize:  // could be useful, see docs
     // minPoolSize:  // could be useful, see docs
@@ -36,7 +35,7 @@ try {
     console.error('Error connecting to database:', error)
 }
 
-mongoose.connection.on('error', err => {
+mongoose.connection.on('error', (err) => {
     // TODO
 })
 

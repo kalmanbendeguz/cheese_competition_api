@@ -7,17 +7,15 @@ const query_validator = Joi.object({
         restore_id: Joi.any().optional(),
         expiring_started: Joi.any().optional(),
     }).required(),
-    projection: Joi.object().pattern(
-        Joi.string(),
-        Joi.valid(1).required()
-    ).min(1).required(),
+    projection: Joi.object()
+        .pattern(Joi.string(), Joi.valid(1).required())
+        .min(1)
+        .required(),
     options: Joi.object({
         limit: Joi.number().integer().positive().optional(),
         skip: Joi.number().integer().min(0).optional(),
-        sort: Joi.object().pattern(
-            Joi.string(), Joi.valid(1, -1)
-        ).optional()
-    }).optional()
+        sort: Joi.object().pattern(Joi.string(), Joi.valid(1, -1)).optional(),
+    }).optional(),
 }).required()
 
 module.exports = query_validator

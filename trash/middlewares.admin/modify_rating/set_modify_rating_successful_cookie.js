@@ -1,12 +1,11 @@
-const set_modify_rating_successful_cookie = function() {
+const set_modify_rating_successful_cookie = function () {
+  return function (req, res, next) {
+    console.log("set_modify_rating_successful_cookie");
 
-    return function(req, res, next) {
-        console.log('set_modify_rating_successful_cookie')
+    req.app.push_cookie_array(req, res, "successes", "Sikeres módosítás.");
 
-        req.app.push_cookie_array(req, res, 'successes', 'Sikeres módosítás.')
-        
-        return next()
-    }
-}
+    return next();
+  };
+};
 
-module.exports = set_modify_rating_successful_cookie
+module.exports = set_modify_rating_successful_cookie;

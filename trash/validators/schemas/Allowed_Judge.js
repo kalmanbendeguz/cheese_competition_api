@@ -1,5 +1,5 @@
-const Joi = require('joi')
+const Joi = require("joi");
 
 module.exports = Joi.object({
-    email: Joi.string().email().required()
-}).unknown(true)
+  email: Joi.string().email().required(),
+}).unknown(true);

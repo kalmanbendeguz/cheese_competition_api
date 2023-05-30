@@ -1,13 +1,15 @@
 const get_ratings = async function (req, res, next) {
-    try {
-        //console.log('get_ratings')
+  try {
+    //console.log('get_ratings')
 
-        res.locals.ratings = await req.app.models.rating.find({ judge_email: req.user.email })
+    res.locals.ratings = await req.app.models.rating.find({
+      judge_email: req.user.email,
+    });
 
-        return next()
-    } catch (err) {
-        return next(err)
-    }
-}
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
 
-module.exports = get_ratings
+module.exports = get_ratings;

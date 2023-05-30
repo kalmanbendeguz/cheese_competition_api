@@ -1,13 +1,11 @@
-const save_modified_cheese = function() {
+const save_modified_cheese = function () {
+  return async function (req, res, next) {
+    console.log("save_modified_cheese");
 
-    return async function(req, res, next) {
-        console.log('save_modified_cheese')
+    await res.locals.cheese.save();
 
-        await res.locals.cheese.save()
+    return next();
+  };
+};
 
-        return next()
-
-    }
-}
-
-module.exports = save_modified_cheese
+module.exports = save_modified_cheese;

@@ -24,8 +24,18 @@ const data_validator = Joi.object({
         ignore_extreme_values: Joi.any().optional(),
     }).required(),
     body: Joi.object({
-        name: Joi.string().trim().min(1).max(1000).prefs({ convert: false }).optional(),
-        place: Joi.string().trim().min(1).max(1000).prefs({ convert: false }).optional(),
+        name: Joi.string()
+            .trim()
+            .min(1)
+            .max(1000)
+            .prefs({ convert: false })
+            .optional(),
+        place: Joi.string()
+            .trim()
+            .min(1)
+            .max(1000)
+            .prefs({ convert: false })
+            .optional(),
         // creation_date: Joi.date().required() // this is forbidden
         entry_opened: Joi.boolean().optional(),
         // last_entry_open_date // forbidden
@@ -37,12 +47,16 @@ const data_validator = Joi.object({
         // archival_date // forbidden
         payment_needed: Joi.boolean().optional(),
         association_members_need_to_pay: Joi.boolean().optional(),
-        entry_fee_amount: Joi.string().trim().min(1).prefs({ convert: false }).optional(),
+        entry_fee_amount: Joi.string()
+            .trim()
+            .min(1)
+            .prefs({ convert: false })
+            .optional(),
         entry_fee_currency: Joi.string().valid('HUF', 'EUR', 'USD').optional(),
         // product_category_tree: Joi.any().optional(), // ezt nem szabad módosítani.
         certificate_template: File_Validator.optional(), // maybe this will come in a different format in the request. todo check!
         ignore_extreme_values: Joi.boolean().optional(),
-    }).required()
+    }).required(),
 }).required()
 
 module.exports = data_validator

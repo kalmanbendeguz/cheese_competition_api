@@ -1,88 +1,73 @@
 // ONLY SERVER
 module.exports = async (query, user) => {
-
     // 1. validate query
     const find_competition_validator = require('../../validators/requests/api/competition/find')
-    try { await find_competition_validator.validateAsync(query) }
-    catch (err) { return { code: 400, data: err.details } }
+    try {
+        await find_competition_validator.validateAsync(query)
+    } catch (err) {
+        return { code: 400, data: err.details }
+    }
 
     // 2. authorize {query.filter, user}
     const authorizer = require('../../authorizers/competition')
     const authorizer_result = authorizer(query, 'find', user)
-    const violation = authorizer_result.find(result => !result.authorized)
-    if (violation) { return { code: 403, data: violation.message } }
-    
+    const violation = authorizer_result.find((result) => !result.authorized)
+    if (violation) {
+        return { code: 403, data: violation.message }
+    }
+
     // 2. authorize {query.projection, user}
     // 3. prepare_get
     // 4. get
     // 5. validate_documents
     // 6. send
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     const User_Model = require('../../models/User')
     const Active_Password_Reset_Model = require('../../models/Active_Password_Reset')
 
-    
     const create_active_password_reset_validator = require('../../validators/requests/api/active_password_reset/create')
-    try { await create_active_password_reset_validator.validateAsync(body) }
-    catch (err) { return { code: 400, data: err.details } }
+    try {
+        await create_active_password_reset_validator.validateAsync(body)
+    } catch (err) {
+        return { code: 400, data: err.details }
+    }
 
     // 2. arrayize
     body = Array.isArray(body) ? body : [body]
 
     // 3. authorize {body, user}
     const authorizer = require('../../authorizers/active_password_reset')
-    const authorizer_results = body.map(active_password_reset => authorizer(active_password_reset, 'create', user))
-    const violation = authorizer_results.find(result => !result.authorized)
-    if (violation) { return { code: 403, data: violation.message } }
+    const authorizer_results = body.map((active_password_reset) =>
+        authorizer(active_password_reset, 'create', user)
+    )
+    const violation = authorizer_results.find((result) => !result.authorized)
+    if (violation) {
+        return { code: 403, data: violation.message }
+    }
 
     // 4. check_dependencies
-    // there can be multiple documents for the same user. this is by design: if he accidentally sends 2 emails, both links 
+    // there can be multiple documents for the same user. this is by design: if he accidentally sends 2 emails, both links
     // should work. the unused document will be deleted after the expiry time, anyways.
     // if regular user: no dependency checks, bc he is already authenticated, so we know that he exists and not a temporary user.
     // if SERVER or UNAUTHENTICATED: are all the users exists and are not temporary users?
     //if (['SERVER', 'UNAUTHENTICATED'].includes(user.role)) {
-    const unique_user_ids = [...new Set(body.map(active_password_reset => active_password_reset.user_id.toString()))]
-    if ((await User_Model.countDocuments({
-        _id: { $in: unique_user_ids },
-        registration_temporary: false
-    })) !== unique_user_ids.length) return {
-        code: 403,
-        data: 'one_or_more_provided_users_are_not_existing_or_have_temporary_registrations'
-    }
+    const unique_user_ids = [
+        ...new Set(
+            body.map((active_password_reset) =>
+                active_password_reset.user_id.toString()
+            )
+        ),
+    ]
+    if (
+        (await User_Model.countDocuments({
+            _id: { $in: unique_user_ids },
+            registration_temporary: false,
+        })) !== unique_user_ids.length
+    )
+        return {
+            code: 403,
+            data: 'one_or_more_provided_users_are_not_existing_or_have_temporary_registrations',
+        }
     //}
 
     // 5. prepare
@@ -102,42 +87,59 @@ module.exports = async (query, user) => {
             restore_id = randomstring.generate({
                 length: 32,
                 charset: 'alphanumeric',
-                capitalization: 'lowercase'
+                capitalization: 'lowercase',
             })
 
-            existing_active_password_reset = await Active_Password_Reset_Model.exists({ 'restore_id': restore_id })
-                || body.some(active_password_reset => active_password_reset.restore_id === restore_id)
-
+            existing_active_password_reset =
+                (await Active_Password_Reset_Model.exists({
+                    restore_id: restore_id,
+                })) ||
+                body.some(
+                    (active_password_reset) =>
+                        active_password_reset.restore_id === restore_id
+                )
         } while (existing_active_password_reset)
         active_password_reset.restore_id = restore_id
     }
 
-    const _active_password_resets = body.map(active_password_reset => ({
+    const _active_password_resets = body.map((active_password_reset) => ({
         user_id: active_password_reset.user_id,
         restore_id: active_password_reset.restore_id,
         // expiring_started is autogenerated
     }))
 
     // 6. create
-    const active_password_resets = _active_password_resets.map(active_password_reset => new Active_Password_Reset_Model(active_password_reset))
+    const active_password_resets = _active_password_resets.map(
+        (active_password_reset) =>
+            new Active_Password_Reset_Model(active_password_reset)
+    )
 
     // 7. validate_documents
     const active_password_reset_validator = require('../../validators/schemas/Active_Password_Reset')
     try {
-        const validator_promises = active_password_resets.map(active_password_reset => active_password_reset_validator.validateAsync(active_password_reset))
+        const validator_promises = active_password_resets.map(
+            (active_password_reset) =>
+                active_password_reset_validator.validateAsync(
+                    active_password_reset
+                )
+        )
         await Promise.all(validator_promises)
-    } catch (err) { return { code: 400, data: err.details } }
+    } catch (err) {
+        return { code: 400, data: err.details }
+    }
 
     // 8. update_dependencies
     // nothing needs to be updated
 
     // 9. save
-    const saver_promises = active_password_resets.map(active_password_reset => active_password_reset.save())
+    const saver_promises = active_password_resets.map((active_password_reset) =>
+        active_password_reset.save()
+    )
     await Promise.all(saver_promises)
 
     // 10. reply
     return {
         code: 201,
-        data: undefined // TODO, check if it works if i leave it out, etc.
+        data: undefined, // TODO, check if it works if i leave it out, etc.
     }
 }

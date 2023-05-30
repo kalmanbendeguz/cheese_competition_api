@@ -1,19 +1,20 @@
 const get_receipt_settings = async function (req, res, next) {
-    try {
-        console.log('most tettem bele')
+  try {
+    console.log("most tettem bele");
 
-        const paid_competition = await req.app.models.key_value.findOne({ key: 'paid_competition' })
-        //console.log(paid_competition)
-        
-        if (paid_competition.value === true) return next()
+    const paid_competition = await req.app.models.key_value.findOne({
+      key: "paid_competition",
+    });
+    //console.log(paid_competition)
 
-        req.session.locals = res.locals
+    if (paid_competition.value === true) return next();
 
-        return res.redirect('/save_entry_certificate')
-    } catch (err) {
-        return next(err)
-    }
+    req.session.locals = res.locals;
 
-}
+    return res.redirect("/save_entry_certificate");
+  } catch (err) {
+    return next(err);
+  }
+};
 
-module.exports = get_receipt_settings
+module.exports = get_receipt_settings;

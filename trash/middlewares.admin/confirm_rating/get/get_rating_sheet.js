@@ -1,18 +1,16 @@
-const get_rating_sheet = function() {
+const get_rating_sheet = function () {
+  const rating_map = require("../../../static/rating_sheets/rating_map");
 
-    const rating_map = require('../../../static/rating_sheets/rating_map')
+  return function (req, res, next) {
+    console.log("get_rating_sheet");
 
-    return function(req, res, next) {
-        console.log('get_rating_sheet')
+    const rating_sheet_identifier = rating_map[res.locals.category_string];
+    const rating_sheet = require(`../../../static/rating_sheets/${rating_sheet_identifier}`);
 
-        const rating_sheet_identifier = rating_map[res.locals.category_string]
-        const rating_sheet = require(`../../../static/rating_sheets/${rating_sheet_identifier}`)
+    res.locals.rating_sheet = JSON.parse(JSON.stringify(rating_sheet));
 
-        res.locals.rating_sheet = JSON.parse(JSON.stringify(rating_sheet))
-        
-        
-        return next()
-    }
-}
+    return next();
+  };
+};
 
-module.exports = get_rating_sheet
+module.exports = get_rating_sheet;

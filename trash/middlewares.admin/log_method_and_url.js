@@ -1,13 +1,10 @@
-const log_method_and_url = function() {
+const log_method_and_url = function () {
+  return function (req, res, next) {
+    if (req.url.startsWith("/assets")) return next();
 
-    return function(req, res, next) {
-        
-        if(req.url.startsWith('/assets')) return next()
+    console.log(`${req.method} ${req.url}`);
+    return next();
+  };
+};
 
-        console.log(`${req.method} ${req.url}`)
-        return next()
-    }
-
-}
-
-module.exports = log_method_and_url
+module.exports = log_method_and_url;

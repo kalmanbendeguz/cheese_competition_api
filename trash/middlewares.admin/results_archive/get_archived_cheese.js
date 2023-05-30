@@ -1,15 +1,13 @@
-const get_archived_cheeses = function() {
+const get_archived_cheeses = function () {
+  const Archived_Cheese_Model = require("../../models/Archived_Cheese");
 
-    const Archived_Cheese_Model = require('../../models/Archived_Cheese')
+  return async function (req, res, next) {
+    //console.log('get_archived_cheeses')
 
-    return async function(req, res, next) {
-        //console.log('get_archived_cheeses')
-        
-        res.locals.cheeses = await Archived_Cheese_Model.find()
+    res.locals.cheeses = await Archived_Cheese_Model.find();
 
-        return next()
+    return next();
+  };
+};
 
-    }
-}
-
-module.exports = get_archived_cheeses
+module.exports = get_archived_cheeses;

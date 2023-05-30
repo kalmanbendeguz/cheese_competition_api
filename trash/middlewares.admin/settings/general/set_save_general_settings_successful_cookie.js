@@ -1,12 +1,11 @@
-const set_save_general_settings_successful_cookie = function() {
+const set_save_general_settings_successful_cookie = function () {
+  return function (req, res, next) {
+    console.log("set_save_general_settings_successful_cookie");
 
-    return function(req, res, next) {
-        console.log('set_save_general_settings_successful_cookie')
+    req.app.push_cookie_array(req, res, "successes", "Sikeres mentés.");
 
-        req.app.push_cookie_array(req, res, 'successes', 'Sikeres mentés.')
-        
-        return next()
-    }
-}
+    return next();
+  };
+};
 
-module.exports = set_save_general_settings_successful_cookie
+module.exports = set_save_general_settings_successful_cookie;

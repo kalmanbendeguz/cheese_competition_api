@@ -10,7 +10,7 @@ const router = express.Router()
 /////////////////////////
 //router.post('/', async (req, res, _) => {
 //    const result = await create(req.body, req.user)
-//    return res.status(result.code).json(result.data) 
+//    return res.status(result.code).json(result.data)
 //})
 ////////////////
 

@@ -1,16 +1,15 @@
-const validate_secret_id = function() {
+const validate_secret_id = function () {
+  return function (req, res, next) {
+    console.log("validate_secret_id");
 
-    return function(req, res, next) {
-        console.log('validate_secret_id')
-
-        if(req.query.secret_id.trim() === "") {
-            (res.locals.messages ||= []).push('Kérlek adj meg egy azonosítót.')
-            res.locals.back_target = '/'
-            return res.render('authenticated_message')
-        }
-        
-        return next()
+    if (req.query.secret_id.trim() === "") {
+      (res.locals.messages ||= []).push("Kérlek adj meg egy azonosítót.");
+      res.locals.back_target = "/";
+      return res.render("authenticated_message");
     }
-}
 
-module.exports = validate_secret_id
+    return next();
+  };
+};
+
+module.exports = validate_secret_id;

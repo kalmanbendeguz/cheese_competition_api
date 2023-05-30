@@ -1,1 +1,59 @@
-#picture_input_blocks{justify-content:center;align-items:center;display:grid;grid-template-columns:repeat(auto-fill,minmax(7cm,14cm));column-gap:20px;row-gap:20px;margin-bottom:1em}.picture_input_block{height:7cm;object-fit:cover;object-position:center;position:relative;justify-content:center}img{width:100%;height:100%;object-fit:contain}.picture_input_label{height:75%;width:75%;position:absolute;top:50%;left:50%;transform:translateY(-50%) translateX(-50%);z-index:1;display:flex;justify-content:center;align-items:center;font-size:1.25rem}.progress_bar{position:absolute;top:50%;left:50%;transform:translateY(-50%) translateX(-50%);display:flex;justify-content:center;align-items:center}.remove_picture_button{height:15%;width:30%;position:absolute;top:85%;left:50%;transform:translateY(-50%) translateX(-50%);z-index:1;display:flex;justify-content:center;align-items:center}#max_picture_count_reached{margin-top:.5em;justify-content:center}
+#picture_input_blocks {
+  justify-content: center;
+  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7cm, 14cm));
+  column-gap: 20px;
+  row-gap: 20px;
+  margin-bottom: 1em;
+}
+.picture_input_block {
+  height: 7cm;
+  object-fit: cover;
+  object-position: center;
+  position: relative;
+  justify-content: center;
+}
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.picture_input_label {
+  height: 75%;
+  width: 75%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+}
+.progress_bar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.remove_picture_button {
+  height: 15%;
+  width: 30%;
+  position: absolute;
+  top: 85%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#max_picture_count_reached {
+  margin-top: 0.5em;
+  justify-content: center;
+}

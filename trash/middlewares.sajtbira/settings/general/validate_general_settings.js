@@ -1,13 +1,13 @@
 const validate_general_settings = function (req, res, next) {
-    try {
-        //console.log('validate_general_settings')
+  try {
+    //console.log('validate_general_settings')
 
-        // TODO
+    // TODO
 
-        return next()
-    } catch (err) {
-        return next(err)
-    }
-}
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
 
-module.exports = validate_general_settings
+module.exports = validate_general_settings;

@@ -8,7 +8,7 @@ const remove = require('../../../controllers/allowed_role/remove')
 
 router.post('/', async (req, res, _) => {
     const result = await create(req.body, req.user)
-    return res.status(result.code).json(result.data) 
+    return res.status(result.code).json(result.data)
 })
 
 // WILL ONLY BE USED INTERNALLY

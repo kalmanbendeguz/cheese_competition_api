@@ -28,4 +28,3 @@ router.delete('/', async (req, res, _) => {
 })
 
 module.exports = router
-

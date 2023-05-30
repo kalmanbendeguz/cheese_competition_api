@@ -1,26 +1,29 @@
-const { Schema } = require('mongoose')
+const { Schema } = require("mongoose");
 
-const File_Schema = new Schema({
+const File_Schema = new Schema(
+  {
     file_name: {
-        type: String,
+      type: String,
     },
     encoding: {
-        type: String,
+      type: String,
     },
     mimetype: {
-        type: String,
+      type: String,
     },
     buffer: {
-        type: Buffer,
+      type: Buffer,
     },
     size: {
-        type: Number,
-    }
-}, {
+      type: Number,
+    },
+  },
+  {
     minimize: false,
     strict: true,
     strictQuery: false,
-    validateBeforeSave: true
-})
+    validateBeforeSave: true,
+  }
+);
 
-module.exports = Picture_File_Schema
+module.exports = Picture_File_Schema;

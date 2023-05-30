@@ -1,15 +1,16 @@
-const get_ratings = function() {
+const get_ratings = function () {
+  return async function (req, res, next) {
+    console.log("get_ratings");
 
-    return async function(req, res, next) {
-        console.log('get_ratings')
-        
-        const Rating_Model = require('../../../config/db').mongoose.connection.db.collection('ratings')
-        
-        res.locals.ratings = await Rating_Model.find().toArray()
-        
-        return next()
+    const Rating_Model =
+      require("../../../config/db").mongoose.connection.db.collection(
+        "ratings"
+      );
 
-    }
-}
+    res.locals.ratings = await Rating_Model.find().toArray();
 
-module.exports = get_ratings
+    return next();
+  };
+};
+
+module.exports = get_ratings;

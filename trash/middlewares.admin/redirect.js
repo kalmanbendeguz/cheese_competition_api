@@ -1,10 +1,9 @@
-const redirect = function(target) {
+const redirect = function (target) {
+  return function (req, res, next) {
+    console.log("redirect");
 
-    return function(req, res, next) {
-        console.log('redirect')
+    return res.redirect(target);
+  };
+};
 
-        return res.redirect(target)
-    }
-}
-
-module.exports = redirect
+module.exports = redirect;

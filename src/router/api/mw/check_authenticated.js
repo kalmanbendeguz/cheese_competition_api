@@ -8,8 +8,7 @@ module.exports = (req, res, next) => {
     req.user = {
         id: 'sdfsdfgfd',
         username: 'dsgdfgdfgd',
-        role: ['competitor']
+        role: ['competitor'],
     }
     return next()
-
 }

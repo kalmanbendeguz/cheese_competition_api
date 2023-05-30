@@ -1,23 +1,23 @@
 module.exports = async function (req, res, next) {
-    try {
-        console.log('mw:prepare_get(product/one/get/mw/prepare_get)')
+  try {
+    console.log("mw:prepare_get(product/one/get/mw/prepare_get)");
 
-        // GOAL: PRODUCE FILTER AND PROJECTION OBJECTS COMPLETELY. NO ERRORS OR DENIALS SHOULD HAPPEN HERE
-        // BUT CONDITIONAL LOGIC CAN TAKE PLACE
+    // GOAL: PRODUCE FILTER AND PROJECTION OBJECTS COMPLETELY. NO ERRORS OR DENIALS SHOULD HAPPEN HERE
+    // BUT CONDITIONAL LOGIC CAN TAKE PLACE
 
-        // id
-        // manufacturer_id
-        // public_id
-        // secret_id
+    // id
+    // manufacturer_id
+    // public_id
+    // secret_id
 
-        // only organizers use this endpoint
-        res.locals.filter = {
-            ...(req.query._id && { _id: req.query._id }),
-            ...(req.query.email && { email: req.query.email }),
-        }
+    // only organizers use this endpoint
+    res.locals.filter = {
+      ...(req.query._id && { _id: req.query._id }),
+      ...(req.query.email && { email: req.query.email }),
+    };
 
-        return next()
-    } catch (err) {
-        return next(err)
-    }
-}
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};

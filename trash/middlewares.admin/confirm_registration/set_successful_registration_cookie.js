@@ -1,12 +1,16 @@
-const set_successful_registration_cookie = function() {
+const set_successful_registration_cookie = function () {
+  return function (req, res, next) {
+    console.log("set_successful_registration_cookie");
 
-    return function(req, res, next) {
-        console.log('set_successful_registration_cookie')
+    req.app.push_cookie_array(
+      req,
+      res,
+      "successes",
+      `Sikeres regisztráció-megerősítés. Most már beléphetsz.`
+    );
 
-        req.app.push_cookie_array(req, res, 'successes', `Sikeres regisztráció-megerősítés. Most már beléphetsz.`)
-        
-        return next()
-    }
-}
+    return next();
+  };
+};
 
-module.exports = set_successful_registration_cookie
+module.exports = set_successful_registration_cookie;

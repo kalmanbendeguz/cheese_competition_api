@@ -1,15 +1,13 @@
-const check_authenticated = function() {
+const check_authenticated = function () {
+  return function (req, res, next) {
+    console.log("check_authenticated");
 
-    return function(req, res, next) {
-        console.log('check_authenticated')
+    if (!req.isAuthenticated()) return res.redirect("/login");
 
-        if (!req.isAuthenticated()) return res.redirect('/login')
-        
-        res.locals.user = req.user
+    res.locals.user = req.user;
 
-        return next()
+    return next();
+  };
+};
 
-    }
-}
-
-module.exports = check_authenticated
+module.exports = check_authenticated;

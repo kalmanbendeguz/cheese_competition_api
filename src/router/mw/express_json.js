@@ -6,5 +6,5 @@ module.exports = express.json({
     reviver: null,
     strict: true,
     type: 'application/json',
-    verify: undefined
+    verify: undefined,
 })

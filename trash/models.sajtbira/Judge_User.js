@@ -1,13 +1,16 @@
-const db = require('../config/db').mongoose
-const { Schema } = require('mongoose')
+const db = require("../config/db").mongoose;
+const { Schema } = require("mongoose");
 
-const Judge_User_Schema = new Schema({ 
+const Judge_User_Schema = new Schema(
+  {
     email: String,
     hashed_password: String,
     full_name: String,
-    table_leader: Boolean
-}, { timestamps: true })
+    table_leader: Boolean,
+  },
+  { timestamps: true }
+);
 
-const Judge_User = db.model('Judge_User', Judge_User_Schema)
+const Judge_User = db.model("Judge_User", Judge_User_Schema);
 
-module.exports = Judge_User
+module.exports = Judge_User;

@@ -1,6 +1,6 @@
-import XLSX from 'xlsx';
-      
-console.log('download_tb');
+import XLSX from "xlsx";
+
+console.log("download_tb");
 
 // Acquire Data (reference to the HTML table)
 var table_elt = document.getElementById("view_results_table");
@@ -10,11 +10,11 @@ var workbook = XLSX.utils.table_to_book(table_elt);
 
 // Process Data (add a new row)
 var ws = workbook.Sheets["Sheet1"];
-XLSX.utils.sheet_add_aoa(ws, [["Created "+new Date().toISOString()]], {origin:-1});
+XLSX.utils.sheet_add_aoa(ws, [["Created " + new Date().toISOString()]], {
+  origin: -1,
+});
 
-XLSX.writeFileXLSX(workbook, {type: 'buffer', bookType: 'xlsx'});  
-
-
+XLSX.writeFileXLSX(workbook, { type: "buffer", bookType: "xlsx" });
 
 /*
 var tableToExcel = (function () {
@@ -161,4 +161,4 @@ function downloadCSVFile(csv_data) {
     // Automatically click the link to trigger download
     temp_link.click();
     document.body.removeChild(temp_link);
-} */ 
+} */

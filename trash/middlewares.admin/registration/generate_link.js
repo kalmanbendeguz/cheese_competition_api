@@ -1,14 +1,13 @@
-const generate_link = function() {
- 
-    const randomstring = require('randomstring')
+const generate_link = function () {
+  const randomstring = require("randomstring");
 
-    return function(req, res, next) {
-        console.log('generate_link')
+  return function (req, res, next) {
+    console.log("generate_link");
 
-        res.locals.confirm_link_identifier = randomstring.generate(32)
-        
-        return next()
-    }
-}
+    res.locals.confirm_link_identifier = randomstring.generate(32);
 
-module.exports = generate_link
+    return next();
+  };
+};
+
+module.exports = generate_link;

@@ -1,16 +1,17 @@
-const save_registered_user = function() {
- 
-    const Admin_User_Model = require('../../models/Admin_User')
+const save_registered_user = function () {
+  const Admin_User_Model = require("../../models/Admin_User");
 
-    return async function(req, res, next) {
-        console.log('save_registered_user')
+  return async function (req, res, next) {
+    console.log("save_registered_user");
 
-        const user = new Admin_User_Model(res.locals.temporary_registration.user.toObject())
+    const user = new Admin_User_Model(
+      res.locals.temporary_registration.user.toObject()
+    );
 
-        await user.save()
-        
-        return next()
-    }
-}
+    await user.save();
 
-module.exports = save_registered_user
+    return next();
+  };
+};
+
+module.exports = save_registered_user;

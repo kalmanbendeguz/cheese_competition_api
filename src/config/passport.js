@@ -23,7 +23,7 @@ const verify = async (jwt_payload, done) => {
     if (!user) return done(null, false)
 
     //const is_valid = await bcrypt.compare(password, user.hashed_password)
-//
+    //
     //if (is_valid) {
     //    return done(null, user)
     //} else {
@@ -32,12 +32,12 @@ const verify = async (jwt_payload, done) => {
 
     User_Model.findOne({ id: jwt_payload.sub }, function (err, user) {
         if (err) {
-            return done(err, false);
+            return done(err, false)
         }
         if (user) {
-            return done(null, user);
+            return done(null, user)
         } else {
-            return done(null, false);
+            return done(null, false)
             // or you could create a new account
         }
     })
@@ -65,7 +65,6 @@ const strategy = new JwtStrategy(options, verify)
 //}
 //
 
-
 //const strategy = new LocalStrategy(custom_fields, verify_callback)
 
 passport.use(strategy)
@@ -79,9 +78,7 @@ passport.deserializeUser(async (user_id, done) => {
         .then((user) => {
             done(null, user)
         })
-        .catch(err => done(err))
+        .catch((err) => done(err))
 })
 
 module.exports = passport
-
-

@@ -1,24 +1,27 @@
-const send_cheese_taken_email = function() {
- 
-    require('dotenv').config()
-    let dictionary = require('../../static/dictionary')
-    const send_email = require('../../services/send_email')
-    const Key_Value_Model = require('../../models/Key_Value')
+const send_cheese_taken_email = function () {
+  require("dotenv").config();
+  let dictionary = require("../../static/dictionary");
+  const send_email = require("../../services/send_email");
+  const Key_Value_Model = require("../../models/Key_Value");
 
-    return async function(req, res, next) {
-        console.log('send_cheese_taken_email')
+  return async function (req, res, next) {
+    console.log("send_cheese_taken_email");
 
-        
-        const competition_name = (await Key_Value_Model.findOne({key: 'competition_name'})).value
-        const competition_location = (await Key_Value_Model.findOne({key: 'competition_location'})).value
-        const now = new Date()
-        const year = now.getFullYear()
-        const month = now.getMonth() + 1 >= 10 ? now.getMonth() + 1 : `0${now.getMonth() + 1}`
-        const day = now.getDate() >=10 ? now.getDate() : `0${now.getDate()}`
+    const competition_name = (
+      await Key_Value_Model.findOne({ key: "competition_name" })
+    ).value;
+    const competition_location = (
+      await Key_Value_Model.findOne({ key: "competition_location" })
+    ).value;
+    const now = new Date();
+    const year = now.getFullYear();
+    const month =
+      now.getMonth() + 1 >= 10 ? now.getMonth() + 1 : `0${now.getMonth() + 1}`;
+    const day = now.getDate() >= 10 ? now.getDate() : `0${now.getDate()}`;
 
-        const recipient = res.locals.receipt_user.email
-        const title = `Sajtmustra átvételi elismervény: ${res.locals.cheese.public_id}`
-        const html = `
+    const recipient = res.locals.receipt_user.email;
+    const title = `Sajtmustra átvételi elismervény: ${res.locals.cheese.public_id}`;
+    const html = `
         <h4>${competition_name}</h4>
         <b>Átvételi elismervény</b><br><br>
         Tisztelt ${res.locals.receipt_user.full_name}!<br>
@@ -29,12 +32,12 @@ const send_cheese_taken_email = function() {
         <br>
         Üdvözlettel: Magyar Sajtkészítők Egyesülete<br>
         ${competition_location}, ${year}.${month}.${day}.
-        `
+        `;
 
-        await send_email(recipient, title, html)
+    await send_email(recipient, title, html);
 
-        return next()
-    }
-}
+    return next();
+  };
+};
 
-module.exports = send_cheese_taken_email
+module.exports = send_cheese_taken_email;

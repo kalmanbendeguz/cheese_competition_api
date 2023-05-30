@@ -1,7 +1,8 @@
-const db = require('../config/db').mongoose
-const { Schema } = require('mongoose')
+const db = require("../config/db").mongoose;
+const { Schema } = require("mongoose");
 
-const User_Schema = new Schema({ 
+const User_Schema = new Schema(
+  {
     email: String,
     hashed_password: String,
     salt: String,
@@ -16,11 +17,13 @@ const User_Schema = new Schema({
     billing_house_number: String,
     billing_address_details: String,
     association_member: {
-        type: Boolean,
-        default: false
-    }
-}, { timestamps: true })
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
 
-const User = db.model('User', User_Schema)
+const User = db.model("User", User_Schema);
 
-module.exports = User
+module.exports = User;

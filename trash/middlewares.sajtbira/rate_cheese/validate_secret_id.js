@@ -1,13 +1,13 @@
 const validate_secret_id = function (req, res, next) {
-    try {
-        //console.log('validate_secret_id')
+  try {
+    //console.log('validate_secret_id')
 
-        // TODO
+    // TODO
 
-        return next()
-    } catch (err) {
-        return next(err)
-    }
-}
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
 
-module.exports = validate_secret_id
+module.exports = validate_secret_id;

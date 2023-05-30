@@ -6,35 +6,46 @@ const express = require('express')
 //const validate = require('./mw/validate')
 const authorize = require('./mw/authorize')
 
-const { mongoose: { Types: { ObjectId } } } = require('mongoose')
+const {
+    mongoose: {
+        Types: { ObjectId },
+    },
+} = require('mongoose')
 
 const router = express.Router({
     caseSensitive: true,
     mergeParams: true,
-    strict: false
+    strict: false,
 })
 
-router.use('/',
+router.use(
+    '/',
     //passport_initialize, // NEEDBACK test
     //passport_authenticate, // NEEDBACK test
     //check_authenticated, // NEEDBACK test
     //validate,
-    (req, __, n) => { req.user = { role: 'SERVER' }; n() },
+    (req, __, n) => {
+        req.user = { role: 'SERVER' }
+        n()
+    },
     //(req, __, n) => { req.user = { role: 'competitor', _id: new ObjectId('643c07ff8dc54817a62e692a') }; n() },
     //(req, __, n) => { req.user = { role: 'judge', _id: new ObjectId('643c07ff8dc54817a62e692a') }; n() },
     //(req, __, n) => { req.user = { role: 'organizer', _id: new ObjectId('643c07ff8dc54817a62e692a') }; n() },
     //(req, __, n) => { req.user = { role: 'receiver', _id: new ObjectId('643c07ff8dc54817a62e692a') }; n() },
-    (req, __, n) => { if (!('user' in req)) req.user = { role: 'UNAUTHENTICATED' }; n() },
     (req, __, n) => {
-       //console.dir('originalUrl|' + req.originalUrl);
-       //console.dir('route|' + req.route);
-       //console.dir('baseUrl|' + req.baseUrl);
-       //console.dir('path|' + req.path);
-       //console.dir('method|' + req.method);
-       //console.log(`body: [${JSON.stringify(req.body)}]`);
+        if (!('user' in req)) req.user = { role: 'UNAUTHENTICATED' }
         n()
     },
-    authorize,
+    (req, __, n) => {
+        //console.dir('originalUrl|' + req.originalUrl);
+        //console.dir('route|' + req.route);
+        //console.dir('baseUrl|' + req.baseUrl);
+        //console.dir('path|' + req.path);
+        //console.dir('method|' + req.method);
+        //console.log(`body: [${JSON.stringify(req.body)}]`);
+        n()
+    },
+    authorize
 )
 
 // /a routers

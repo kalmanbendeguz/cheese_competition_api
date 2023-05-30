@@ -1,15 +1,15 @@
 const check_send_feedback_authenticated = function (req, res, next) {
-    try {
-        //console.log('check_send_feedback_authenticated')
+  try {
+    //console.log('check_send_feedback_authenticated')
 
-        if (!req.isAuthenticated?.() ?? true) return next()
+    if (!req.isAuthenticated?.() ?? true) return next();
 
-        res.locals.user = req.user
+    res.locals.user = req.user;
 
-        return next()
-    } catch (err) {
-        return next(err)
-    }
-}
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
 
-module.exports = check_send_feedback_authenticated
+module.exports = check_send_feedback_authenticated;

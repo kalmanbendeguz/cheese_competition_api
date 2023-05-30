@@ -1,12 +1,11 @@
-const remove_active_password_reset = function() {
+const remove_active_password_reset = function () {
+  return async function (req, res, next) {
+    console.log("remove_active_password_reset");
 
-    return async function(req, res, next) {
-        console.log('remove_active_password_reset')
+    await res.locals.active_password_reset.remove();
 
-        await res.locals.active_password_reset.remove()
+    return next();
+  };
+};
 
-        return next()
-    }
-}
-
-module.exports = remove_active_password_reset
+module.exports = remove_active_password_reset;

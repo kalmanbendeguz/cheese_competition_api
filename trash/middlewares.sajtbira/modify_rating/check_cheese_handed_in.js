@@ -1,20 +1,23 @@
 const check_cheese_handed_in = async function (req, res, next) {
-    try {
-        //console.log('check_cheese_handed_in')
-        
-        const hand_in = await req.app.models.hand_in.findOne({
-            public_id: res.locals.cheese.public_id
-        })
+  try {
+    //console.log('check_cheese_handed_in')
 
-        if (hand_in) return next()
+    const hand_in = await req.app.models.hand_in.findOne({
+      public_id: res.locals.cheese.public_id,
+    });
 
-        req.app.set_session_context(req.session, 'errors', req.app.locals.dict[res.locals.lang].cheese_not_handed_in_yet)
+    if (hand_in) return next();
 
-        return res.redirect('/message_authenticated')
-    } catch (err) {
-        return next(err)
-    }
-}
+    req.app.set_session_context(
+      req.session,
+      "errors",
+      req.app.locals.dict[res.locals.lang].cheese_not_handed_in_yet
+    );
 
+    return res.redirect("/message_authenticated");
+  } catch (err) {
+    return next(err);
+  }
+};
 
-module.exports = check_cheese_handed_in
+module.exports = check_cheese_handed_in;

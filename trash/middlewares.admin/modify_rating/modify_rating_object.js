@@ -1,31 +1,38 @@
-const modify_rating_object = function() {
+const modify_rating_object = function () {
+  //const Rating_Model = require('..//models/Rating')
 
-    //const Rating_Model = require('..//models/Rating')
+  return function (req, res, next) {
+    console.log("modify_rating_object");
+    //const Rating_Model = require('../../config/db').mongoose.connection.db.collection('ratings')
 
-    return function(req, res, next) {
-        console.log('modify_rating_object')
-        //const Rating_Model = require('../../config/db').mongoose.connection.db.collection('ratings')
-        
-        const anonymous_rating = typeof req.body.anonymous_rating !== 'undefined' ? true : false
+    const anonymous_rating =
+      typeof req.body.anonymous_rating !== "undefined" ? true : false;
 
-        res.locals.rating_sheet.forEach((aspect,i) => {
-            aspect.score = req.body[`score_${aspect.title}`]
-            aspect.comment = req.body[`comment_${aspect.title}`]
-            aspect.blocks.forEach((block,j) => {
-                block.forEach((property) => {
-                    if(!(`property_checkbox-${aspect.title}-${j+1}-${property}` in req.body)){
-                        res.locals.rating_sheet[i].blocks[j] = res.locals.rating_sheet[i].blocks[j].filter(e => e !== property)
-                    }
-                })
-            })
-        })
+    res.locals.rating_sheet.forEach((aspect, i) => {
+      aspect.score = req.body[`score_${aspect.title}`];
+      aspect.comment = req.body[`comment_${aspect.title}`];
+      aspect.blocks.forEach((block, j) => {
+        block.forEach((property) => {
+          if (
+            !(
+              `property_checkbox-${aspect.title}-${j + 1}-${property}` in
+              req.body
+            )
+          ) {
+            res.locals.rating_sheet[i].blocks[j] = res.locals.rating_sheet[
+              i
+            ].blocks[j].filter((e) => e !== property);
+          }
+        });
+      });
+    });
 
-        res.locals.rating.anonymous = anonymous_rating
-        res.locals.rating.aspects = res.locals.rating_sheet
-        res.locals.rating.overall_impression = req.body.overall_impression
+    res.locals.rating.anonymous = anonymous_rating;
+    res.locals.rating.aspects = res.locals.rating_sheet;
+    res.locals.rating.overall_impression = req.body.overall_impression;
 
-        return next()
-    }
-}
+    return next();
+  };
+};
 
-module.exports = modify_rating_object
+module.exports = modify_rating_object;

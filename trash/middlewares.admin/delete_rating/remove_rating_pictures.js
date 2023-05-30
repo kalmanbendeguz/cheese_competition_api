@@ -1,16 +1,15 @@
-const remove_rating_pictures = function() {
+const remove_rating_pictures = function () {
+  return async function (req, res, next) {
+    console.log("remove_rating_pictures");
 
-    return async function(req, res, next) {
-        console.log('remove_rating_pictures')
+    const Rating_Picture_Model = require("../../models/Rating_Picture");
 
-        const Rating_Picture_Model = require('../../models/Rating_Picture')
+    await Rating_Picture_Model.findOneAndDelete({
+      rating_id: res.locals.rating_id,
+    });
 
-        await Rating_Picture_Model.findOneAndDelete({
-            rating_id: res.locals.rating_id
-        })
+    return next();
+  };
+};
 
-        return next()
-    }
-}
-
-module.exports = remove_rating_pictures
+module.exports = remove_rating_pictures;

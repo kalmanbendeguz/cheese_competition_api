@@ -1,13 +1,13 @@
 const validate_view_rating = function (req, res, next) {
-    try {
-        //console.log('validate_view_rating')
+  try {
+    //console.log('validate_view_rating')
 
-        // TODO
+    // TODO
 
-        return next()
-    } catch (err) {
-        return next(err)
-    }
-}
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
 
-module.exports = validate_view_rating
+module.exports = validate_view_rating;

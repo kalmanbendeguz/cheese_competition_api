@@ -1,18 +1,25 @@
 const get_cheese_post = async function (req, res, next) {
-    try {
-        //console.log('get_cheese')
+  try {
+    //console.log('get_cheese')
 
-        res.locals.cheese =
-            (await req.app.models.unpaid_cheese.findOne({ 'product.public_id': req.body.public_id }))?.product
-        
-        if(res.locals.cheese) return next()
+    res.locals.cheese = (
+      await req.app.models.unpaid_cheese.findOne({
+        "product.public_id": req.body.public_id,
+      })
+    )?.product;
 
-        req.app.set_session_context(req.session, 'errors', req.app.locals.dict[res.locals.lang].no_cheese_with_this_id_exists)
+    if (res.locals.cheese) return next();
 
-        return res.redirect('/message_authenticated')
-    } catch (err) {
-        return next(err)
-    }
-}
+    req.app.set_session_context(
+      req.session,
+      "errors",
+      req.app.locals.dict[res.locals.lang].no_cheese_with_this_id_exists
+    );
 
-module.exports = get_cheese_post
+    return res.redirect("/message_authenticated");
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports = get_cheese_post;

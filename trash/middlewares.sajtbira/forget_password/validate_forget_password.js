@@ -1,13 +1,13 @@
 const validate_forget_password = function (req, res, next) {
-    try {
-        //console.log('validate_forget_password')
+  try {
+    //console.log('validate_forget_password')
 
-        // TODO
+    // TODO
 
-        return next()
-    } catch (err) {
-        return next(err)
-    }
-}
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
 
-module.exports = validate_forget_password
+module.exports = validate_forget_password;

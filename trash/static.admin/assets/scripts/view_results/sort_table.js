@@ -1,101 +1,148 @@
-function sortTable(n,id, order_type) {
-    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.getElementById(id);
-    switching = true;
-    //Set the sorting direction to ascending:
-    dir = "asc"; 
-    /*Make a loop that will continue until
+function sortTable(n, id, order_type) {
+  var table,
+    rows,
+    switching,
+    i,
+    x,
+    y,
+    shouldSwitch,
+    dir,
+    switchcount = 0;
+  table = document.getElementById(id);
+  switching = true;
+  //Set the sorting direction to ascending:
+  dir = "asc";
+  /*Make a loop that will continue until
     no switching has been done:*/
-    while (switching) {
-      //start by saying: no switching is done:
-      switching = false;
-      rows = table.getElementsByTagName("TR");
-      /*Loop through all table rows (except the
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.getElementsByTagName("TR");
+    /*Loop through all table rows (except the
       first, which contains table headers):*/
-      for (i = 1; i < (rows.length - 1); i++) {
-        //start by saying there should be no switching:
-        shouldSwitch = false;
-        /*Get the two elements you want to compare,
+    for (i = 1; i < rows.length - 1; i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
         one from current row and one from the next:*/
-        x = rows[i].getElementsByTagName("TD")[n];
-        y = rows[i + 1].getElementsByTagName("TD")[n];
-        /*check if the two rows should switch place,
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      /*check if the two rows should switch place,
         based on the direction, asc or desc:*/
-        if(order_type == "numeric") {
-            if (dir == "asc") {
-              if (parseFloat(x.innerHTML.toLowerCase().trim()) > parseFloat(y.innerHTML.toLowerCase().trim()) || (!isNaN(parseFloat(x.innerHTML.toLowerCase().trim())) && isNaN(parseFloat(y.innerHTML.toLowerCase().trim())))) {
-                //if so, mark as a switch and break the loop:
-                shouldSwitch= true;
-                break;
-              }
-            } else if (dir == "desc") {
-              if (parseFloat(x.innerHTML.toLowerCase().trim()) < parseFloat(y.innerHTML.toLowerCase().trim()) || (isNaN(parseFloat(x.innerHTML.toLowerCase().trim())) && !isNaN(parseFloat(y.innerHTML.toLowerCase().trim())))) {
-                //if so, mark as a switch and break the loop:
-                shouldSwitch= true;
-                break;
-              }
-            }
-        } else if(order_type == "lexicographic") {
-            if (dir == "asc") {
-              if (x.innerHTML.toLowerCase().trim() > y.innerHTML.toLowerCase().trim()) {
-                //if so, mark as a switch and break the loop:
-                shouldSwitch= true;
-                break;
-              }
-            } else if (dir == "desc") {
-              if (x.innerHTML.toLowerCase().trim() < y.innerHTML.toLowerCase().trim()) {
-                //if so, mark as a switch and break the loop:
-                shouldSwitch= true;
-                break;
-              }
-            }
+      if (order_type == "numeric") {
+        if (dir == "asc") {
+          if (
+            parseFloat(x.innerHTML.toLowerCase().trim()) >
+              parseFloat(y.innerHTML.toLowerCase().trim()) ||
+            (!isNaN(parseFloat(x.innerHTML.toLowerCase().trim())) &&
+              isNaN(parseFloat(y.innerHTML.toLowerCase().trim())))
+          ) {
+            //if so, mark as a switch and break the loop:
+            shouldSwitch = true;
+            break;
+          }
+        } else if (dir == "desc") {
+          if (
+            parseFloat(x.innerHTML.toLowerCase().trim()) <
+              parseFloat(y.innerHTML.toLowerCase().trim()) ||
+            (isNaN(parseFloat(x.innerHTML.toLowerCase().trim())) &&
+              !isNaN(parseFloat(y.innerHTML.toLowerCase().trim())))
+          ) {
+            //if so, mark as a switch and break the loop:
+            shouldSwitch = true;
+            break;
+          }
         }
-      }
-      if (shouldSwitch) {
-        /*If a switch has been marked, make the switch
-        and mark that a switch has been done:*/
-        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-        switching = true;
-        //Each time a switch is done, increase this count by 1:
-        switchcount ++;      
-      } else {
-        /*If no switching has been done AND the direction is "asc",
-        set the direction to "desc" and run the while loop again.*/
-        if (switchcount == 0 && dir == "asc") {
-          dir = "desc";
-          switching = true;
+      } else if (order_type == "lexicographic") {
+        if (dir == "asc") {
+          if (
+            x.innerHTML.toLowerCase().trim() > y.innerHTML.toLowerCase().trim()
+          ) {
+            //if so, mark as a switch and break the loop:
+            shouldSwitch = true;
+            break;
+          }
+        } else if (dir == "desc") {
+          if (
+            x.innerHTML.toLowerCase().trim() < y.innerHTML.toLowerCase().trim()
+          ) {
+            //if so, mark as a switch and break the loop:
+            shouldSwitch = true;
+            break;
+          }
         }
       }
     }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+        and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      //Each time a switch is done, increase this count by 1:
+      switchcount++;
+    } else {
+      /*If no switching has been done AND the direction is "asc",
+        set the direction to "desc" and run the while loop again.*/
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
   }
+}
 
-const lexicographic_listener = (e) => sortTable(Array.from(e.target.parentNode.children).indexOf(e.target), 'view_results_table', 'lexicographic')
-const numeric_listener = (e) => sortTable(Array.from(e.target.parentNode.children).indexOf(e.target), 'view_results_table', 'numeric')
+const lexicographic_listener = (e) =>
+  sortTable(
+    Array.from(e.target.parentNode.children).indexOf(e.target),
+    "view_results_table",
+    "lexicographic"
+  );
+const numeric_listener = (e) =>
+  sortTable(
+    Array.from(e.target.parentNode.children).indexOf(e.target),
+    "view_results_table",
+    "numeric"
+  );
 
-const table_public_id_header = document.querySelector('#table_public_id_header')
-table_public_id_header.addEventListener('click', lexicographic_listener)
+const table_public_id_header = document.querySelector(
+  "#table_public_id_header"
+);
+table_public_id_header.addEventListener("click", lexicographic_listener);
 
-const table_secret_id_header = document.querySelector('#table_secret_id_header')
-table_secret_id_header.addEventListener('click', lexicographic_listener)
+const table_secret_id_header = document.querySelector(
+  "#table_secret_id_header"
+);
+table_secret_id_header.addEventListener("click", lexicographic_listener);
 
-const table_factory_name_header = document.querySelector('#table_factory_name_header')
-table_factory_name_header.addEventListener('click', lexicographic_listener)
+const table_factory_name_header = document.querySelector(
+  "#table_factory_name_header"
+);
+table_factory_name_header.addEventListener("click", lexicographic_listener);
 
-const table_product_name_header = document.querySelector('#table_product_name_header')
-table_product_name_header.addEventListener('click', lexicographic_listener)
+const table_product_name_header = document.querySelector(
+  "#table_product_name_header"
+);
+table_product_name_header.addEventListener("click", lexicographic_listener);
 
-const table_category_header = document.querySelector('#table_category_header')
-table_category_header.addEventListener('click', lexicographic_listener)
+const table_category_header = document.querySelector("#table_category_header");
+table_category_header.addEventListener("click", lexicographic_listener);
 
-const table_average_score_header = document.querySelector('#table_average_score_header')
-table_average_score_header.addEventListener('click', numeric_listener)
+const table_average_score_header = document.querySelector(
+  "#table_average_score_header"
+);
+table_average_score_header.addEventListener("click", numeric_listener);
 
-const table_number_of_ratings_header = document.querySelector('#table_number_of_ratings_header')
-table_number_of_ratings_header.addEventListener('click', numeric_listener)
+const table_number_of_ratings_header = document.querySelector(
+  "#table_number_of_ratings_header"
+);
+table_number_of_ratings_header.addEventListener("click", numeric_listener);
 
-const table_goldsilverbronze_header = document.querySelector('#table_goldsilverbronze_header')
-table_goldsilverbronze_header.addEventListener('click', numeric_listener)
+const table_goldsilverbronze_header = document.querySelector(
+  "#table_goldsilverbronze_header"
+);
+table_goldsilverbronze_header.addEventListener("click", numeric_listener);
 
-const table_fresh_or_matured_header = document.querySelector('#table_fresh_or_matured_header')
-table_fresh_or_matured_header.addEventListener('click', numeric_listener)
-
+const table_fresh_or_matured_header = document.querySelector(
+  "#table_fresh_or_matured_header"
+);
+table_fresh_or_matured_header.addEventListener("click", numeric_listener);

@@ -1,7 +1,7 @@
-const db = require('../config/db').mongoose
+const db = require("../config/db").mongoose;
 
-const Cheese_Schema = require('./Cheese').schema
+const Cheese_Schema = require("./Cheese").schema;
 
-const Archived_Cheese = db.model('Archived_Cheese', Cheese_Schema)
+const Archived_Cheese = db.model("Archived_Cheese", Cheese_Schema);
 
-module.exports = Archived_Cheese
+module.exports = Archived_Cheese;

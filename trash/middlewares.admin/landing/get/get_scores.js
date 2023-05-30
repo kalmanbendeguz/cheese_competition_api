@@ -1,24 +1,27 @@
-const get_scores = function() {
+const get_scores = function () {
+  return async function (req, res, next) {
+    console.log("get_scores");
 
-    return async function(req, res, next) {
-        console.log('get_scores')
-        
-        const Rating_Model = require('../../../config/db').mongoose.connection.db.collection('ratings')
-        
-        for (let cheese of res.locals.cheeses){
-            const ratings_of_cheese = await Rating_Model.find({secret_id: cheese.secret_id}).toArray()
-            let sum_of_scores = 0
-            ratings_of_cheese.forEach(rating => {
-                rating.aspects.forEach(aspect => {
-                    sum_of_scores += parseInt(aspect.score)
-                })
-            })
-            cheese.score = sum_of_scores
-        }
-        
-        return next()
+    const Rating_Model =
+      require("../../../config/db").mongoose.connection.db.collection(
+        "ratings"
+      );
 
+    for (let cheese of res.locals.cheeses) {
+      const ratings_of_cheese = await Rating_Model.find({
+        secret_id: cheese.secret_id,
+      }).toArray();
+      let sum_of_scores = 0;
+      ratings_of_cheese.forEach((rating) => {
+        rating.aspects.forEach((aspect) => {
+          sum_of_scores += parseInt(aspect.score);
+        });
+      });
+      cheese.score = sum_of_scores;
     }
-}
 
-module.exports = get_scores
+    return next();
+  };
+};
+
+module.exports = get_scores;

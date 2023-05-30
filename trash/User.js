@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require("../models/User");
 
 const createUser = async (req, res) => {
   try {
@@ -24,7 +24,7 @@ const getUserById = async (req, res) => {
   try {
     const user = await User.findById(id);
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
     res.status(200).json(user);
   } catch (error) {
@@ -33,11 +33,11 @@ const getUserById = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { id } = req.params
+  const { id } = req.params;
   try {
-    const user = await User.findByIdAndUpdate(id, req.body, { new: true })
+    const user = await User.findByIdAndUpdate(id, req.body, { new: true });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' })
+      return res.status(404).json({ error: "User not found" });
     }
     res.status(200).json(user);
   } catch (error) {
@@ -50,7 +50,7 @@ const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(id);
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
     res.status(204).json();
   } catch (error) {

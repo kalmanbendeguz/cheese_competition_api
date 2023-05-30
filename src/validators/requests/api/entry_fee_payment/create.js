@@ -1,9 +1,10 @@
 const Joi = require('joi')
 
 const object_schema = Joi.object({
-    product_ids: Joi.array().items(
-        Joi.string().trim().min(1).prefs({ convert: false }).required(),
-    ).min(1).required(),
+    product_ids: Joi.array()
+        .items(Joi.string().trim().min(1).prefs({ convert: false }).required())
+        .min(1)
+        .required(),
     // pending // initialized to true
     // barion_payment_id // its forbidden at creation
     // barion_transaction_id // its forbidden at creation
@@ -15,8 +16,4 @@ const object_schema = Joi.object({
 
 const array_schema = Joi.array().items(object_schema).min(1).required()
 
-module.exports = Joi.alternatives().try(
-    object_schema,
-    array_schema
-)
-
+module.exports = Joi.alternatives().try(object_schema, array_schema)

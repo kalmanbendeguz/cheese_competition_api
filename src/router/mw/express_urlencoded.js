@@ -6,5 +6,5 @@ module.exports = express.urlencoded({
     limit: '100kb',
     parameterLimit: 1000,
     type: 'application/x-www-form-urlencoded',
-    verify: undefined
+    verify: undefined,
 })

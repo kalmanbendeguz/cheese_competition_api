@@ -1,138 +1,120 @@
 [
-{
-"title":"kulso",
-"score":15,
-"blocks":[
-[
-"idegen_penesz",
-"szennyezett",
-"erosen_foltos",
-"repedezett",
-"erosen_nyalkas",
-"gondozatlan"
-],
-[
-"kisse_foltos",
-"keves_beragodas",
-"kisse_nyalkas",
-"erosebben_ruzsos_4_1_4",
-"peneszerezettseg_gyenge_4_1_4"
-],
-[
-"kerge_vilagos_szinu",
-"tiszta_egyenletes",
-"enyhen_zsiros_tapintasu",
-"fenyes",
-"kereg_nelkuli_4_1_4",
-"hezagokban_penesz_lathato_4_1_4"
-]
-]
-},
-{
-"title":"belso_szin_es_allomany",
-"score":15,
-"blocks":[
-[
-"erosen_kettos_szinezodesu",
-"morzsalodo",
-"foltos",
-"pepes",
-"nem_jol_vaghato",
-"szennyezett"
-],
-[
-"kisse_pepes",
-"daras_morzsalodo",
-"nem_eleg_kemeny",
-"kisse_szaraz_fojtos",
-"szajban_kevesbe_elomlo",
-"nehany_repedes_lathato"
-],
-[
-"szalmasarga_szinu",
-"jol_szeletelheto",
-"rugalmas",
-"szajban_elomlo",
-"jol_szeletelheto"
-]
-]
-},
-{
-"title":"illat",
-"score":15,
-"blocks":[
-[
-"buzos",
-"emelyito",
-"fanyar",
-"ammonias",
-"szaghibas",
-"istallo_szagu"
-],
-[
-"nem_eleg_jellegzetes",
-"enyhen_savanyu",
-"enyhen_tisztatalan",
-"enyhen_elesztos",
-"kisse_szuros_szagu"
-],
-[
-"jellegzetesen_tiszta",
-"jellegzetesen_aromas",
-"kellemesen_savanykas",
-"telt",
-"kellemesen_pikans"
-]
-]
-},
-{
-"title":"lyukazottsag",
-"score":15,
-"blocks":[
-[
-"repedezett",
-"puffadt",
-"nagyon_sok_lyuk",
-"savofeszkes"
-],
-[
-"egyenlotlen_lyukazottsag",
-"kisebb_savozarvanyok",
-"kisse_repedezett",
-"peneszreteg_nem_egyenletes_4_1_4"
-],
-[
-"egyenletes_elosztasu_lyukazottsag",
-"vagy_zart_tesztaju",
-"jellegenek_megfelelo",
-"peneszerezettseg_egyenletes_4_1_4"
-]
-]
-},
-{
-"title":"iz",
-"score":40,
-"blocks":[
-[
-"eretlen",
-"keseru",
-"emelyito",
-"tul_sos",
-"tisztatalan"
-],
-[
-"enyhen_savanyu",
-"kisse_ures_de_tiszta_izu",
-"kisse_sotlan_v_sos",
-"enyhen_kesernyes"
-],
-[
-"jellegzetesen_tiszta",
-"aromas_zamatos",
-"enyhen_savanykas",
-"kellemesen_sos",
-"kellemesen_pikans"
-]
-]
-}
+  {
+    "title": "kulso",
+    "score": 15,
+    "blocks": [
+      [
+        "idegen_penesz",
+        "szennyezett",
+        "erosen_foltos",
+        "repedezett",
+        "erosen_nyalkas",
+        "gondozatlan"
+      ],
+      [
+        "kisse_foltos",
+        "keves_beragodas",
+        "kisse_nyalkas",
+        "erosebben_ruzsos_4_1_4",
+        "peneszerezettseg_gyenge_4_1_4"
+      ],
+      [
+        "kerge_vilagos_szinu",
+        "tiszta_egyenletes",
+        "enyhen_zsiros_tapintasu",
+        "fenyes",
+        "kereg_nelkuli_4_1_4",
+        "hezagokban_penesz_lathato_4_1_4"
+      ]
+    ]
+  },
+  {
+    "title": "belso_szin_es_allomany",
+    "score": 15,
+    "blocks": [
+      [
+        "erosen_kettos_szinezodesu",
+        "morzsalodo",
+        "foltos",
+        "pepes",
+        "nem_jol_vaghato",
+        "szennyezett"
+      ],
+      [
+        "kisse_pepes",
+        "daras_morzsalodo",
+        "nem_eleg_kemeny",
+        "kisse_szaraz_fojtos",
+        "szajban_kevesbe_elomlo",
+        "nehany_repedes_lathato"
+      ],
+      [
+        "szalmasarga_szinu",
+        "jol_szeletelheto",
+        "rugalmas",
+        "szajban_elomlo",
+        "jol_szeletelheto"
+      ]
+    ]
+  },
+  {
+    "title": "illat",
+    "score": 15,
+    "blocks": [
+      ["buzos", "emelyito", "fanyar", "ammonias", "szaghibas", "istallo_szagu"],
+      [
+        "nem_eleg_jellegzetes",
+        "enyhen_savanyu",
+        "enyhen_tisztatalan",
+        "enyhen_elesztos",
+        "kisse_szuros_szagu"
+      ],
+      [
+        "jellegzetesen_tiszta",
+        "jellegzetesen_aromas",
+        "kellemesen_savanykas",
+        "telt",
+        "kellemesen_pikans"
+      ]
+    ]
+  },
+  {
+    "title": "lyukazottsag",
+    "score": 15,
+    "blocks": [
+      ["repedezett", "puffadt", "nagyon_sok_lyuk", "savofeszkes"],
+      [
+        "egyenlotlen_lyukazottsag",
+        "kisebb_savozarvanyok",
+        "kisse_repedezett",
+        "peneszreteg_nem_egyenletes_4_1_4"
+      ],
+      [
+        "egyenletes_elosztasu_lyukazottsag",
+        "vagy_zart_tesztaju",
+        "jellegenek_megfelelo",
+        "peneszerezettseg_egyenletes_4_1_4"
+      ]
+    ]
+  },
+  {
+    "title": "iz",
+    "score": 40,
+    "blocks": [
+      ["eretlen", "keseru", "emelyito", "tul_sos", "tisztatalan"],
+      [
+        "enyhen_savanyu",
+        "kisse_ures_de_tiszta_izu",
+        "kisse_sotlan_v_sos",
+        "enyhen_kesernyes"
+      ],
+      [
+        "jellegzetesen_tiszta",
+        "aromas_zamatos",
+        "enyhen_savanykas",
+        "kellemesen_sos",
+        "kellemesen_pikans"
+      ]
+    ]
+  }
 ]

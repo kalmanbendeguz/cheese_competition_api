@@ -1,6 +1,6 @@
-const multer = require('multer')
-const upload = multer({ storage: multer.memoryStorage() })
-        
-const multer_decode = upload.any()
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
 
-module.exports = multer_decode
+const multer_decode = upload.any();
+
+module.exports = multer_decode;

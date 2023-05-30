@@ -1,12 +1,16 @@
-const set_save_password_settings_successful_cookie = function() {
+const set_save_password_settings_successful_cookie = function () {
+  return function (req, res, next) {
+    console.log("set_save_password_settings_successful_cookie");
 
-    return function(req, res, next) {
-        console.log('set_save_password_settings_successful_cookie')
+    req.app.push_cookie_array(
+      req,
+      res,
+      "successes",
+      "Sikeres jelszóváltoztatás."
+    );
 
-        req.app.push_cookie_array(req, res, 'successes', 'Sikeres jelszóváltoztatás.')
-        
-        return next()
-    }
-}
+    return next();
+  };
+};
 
-module.exports = set_save_password_settings_successful_cookie
+module.exports = set_save_password_settings_successful_cookie;
