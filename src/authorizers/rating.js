@@ -4,11 +4,13 @@ module.exports = (data, verb, user) => {
         _id: {
             create: {}, // generated // POST BODY
             find: {
-                //user can use this field in GET QUERY
-                //authorize query for find
+                judge: 'optional',
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             project: {
+                judge: 'optional',
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
@@ -30,11 +32,13 @@ module.exports = (data, verb, user) => {
                 SERVER: 'required',
             }, // generated // POST BODY
             find: {
-                //user can use this field in GET QUERY
-                //authorize query for find
+                // judge: 'optional', forbidden
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             project: {
+                //judge: 'optional', forbidden
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
@@ -56,11 +60,13 @@ module.exports = (data, verb, user) => {
                 SERVER: 'required',
             }, // generated // POST BODY
             find: {
-                //user can use this field in GET QUERY
-                //authorize query for find
+                // judge: 'optional', forbidden
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             project: {
+                judge: 'optional',
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
@@ -82,11 +88,13 @@ module.exports = (data, verb, user) => {
                 SERVER: 'optional',
             }, // generated // POST BODY
             find: {
-                //user can use this field in GET QUERY
-                //authorize query for find
+                judge: 'optional',
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             project: {
+                judge: 'optional',
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
@@ -108,11 +116,13 @@ module.exports = (data, verb, user) => {
                 SERVER: 'required',
             }, // generated // POST BODY
             find: {
-                //user can use this field in GET QUERY
-                //authorize query for find
+                judge: 'optional',
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             project: {
+                judge: 'optional',
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
@@ -134,11 +144,13 @@ module.exports = (data, verb, user) => {
                 SERVER: 'required',
             }, // generated // POST BODY
             find: {
-                //user can use this field in GET QUERY
-                //authorize query for find
+                judge: 'optional',
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             project: {
+                judge: 'optional',
+                organizer: 'optional',
                 SERVER: 'optional',
             },
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize

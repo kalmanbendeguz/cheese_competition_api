@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 //const create = require('../../../controllers/rating/create')
-//const find = require('../../../controllers/rating/find')
+const find = require('../../../controllers/rating/find')
 //const update = require('../../../controllers/rating/update')
 const remove = require('../../../controllers/rating/remove')
 
@@ -12,11 +12,11 @@ const remove = require('../../../controllers/rating/remove')
 //    return res.status(result.code).json(result.data)
 //})
 
-//router.get('/', async (req, res, _) => {
-//    const result = await find(req.query, req.user)
-//    return res.status(result.code).json(result.data)
-//})
-//
+router.get('/', async (req, res, _) => {
+    const result = await find(req.query, req.user)
+    return res.status(result.code).json(result.data)
+})
+
 //router.put('/', async (req, res, _) => {
 //    const result = await update({ query: req.query, body: req.body }, req.user)
 //    return res.status(result.code).json(result.data)
