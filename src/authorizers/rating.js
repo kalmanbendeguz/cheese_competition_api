@@ -1,8 +1,9 @@
-// Judge, organizer, Server
+// JUDGE, ORGANIZER, SERVER
 module.exports = (data, verb, user) => {
+
     const rules = {
         _id: {
-            create: {}, // generated // POST BODY
+            create: {},
             find: {
                 judge: 'optional',
                 organizer: 'optional',
@@ -13,16 +14,13 @@ module.exports = (data, verb, user) => {
                 organizer: 'optional',
                 SERVER: 'optional',
             },
-            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
-            // only the PUT BODY
             updatable: {
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
-            update: {}, // user can use this field in PUT BODY
-            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
-            // for this: DELETE QUERY.
+            update: {},
             remove: {
-                // user can use this field in DELETE QUERY
                 organizer: 'optional',
                 SERVER: 'optional',
             },
@@ -30,27 +28,21 @@ module.exports = (data, verb, user) => {
         product_id: {
             create: {
                 SERVER: 'required',
-            }, // generated // POST BODY
+            },
             find: {
-                // judge: 'optional', forbidden
                 organizer: 'optional',
                 SERVER: 'optional',
             },
             project: {
-                //judge: 'optional', forbidden
                 organizer: 'optional',
                 SERVER: 'optional',
             },
-            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
-            // only the PUT BODY
             updatable: {
-                SERVER: 'optional',
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
-            update: {}, // user can use this field in PUT BODY
-            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
-            // for this: DELETE QUERY.
+            update: {},
             remove: {
-                // user can use this field in DELETE QUERY
                 organizer: 'optional',
                 SERVER: 'optional',
             },
@@ -58,9 +50,8 @@ module.exports = (data, verb, user) => {
         judge_id: {
             create: {
                 SERVER: 'required',
-            }, // generated // POST BODY
+            },
             find: {
-                // judge: 'optional', forbidden
                 organizer: 'optional',
                 SERVER: 'optional',
             },
@@ -69,16 +60,13 @@ module.exports = (data, verb, user) => {
                 organizer: 'optional',
                 SERVER: 'optional',
             },
-            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
-            // only the PUT BODY
             updatable: {
-                SERVER: 'optional',
+                judge: { rule: 'bound', value: user._id.toString() },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
-            update: {}, // user can use this field in PUT BODY
-            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
-            // for this: DELETE QUERY.
+            update: {},
             remove: {
-                // user can use this field in DELETE QUERY
                 organizer: 'optional',
                 SERVER: 'optional',
             },
@@ -86,7 +74,7 @@ module.exports = (data, verb, user) => {
         anonymous: {
             create: {
                 SERVER: 'optional',
-            }, // generated // POST BODY
+            },
             find: {
                 judge: 'optional',
                 organizer: 'optional',
@@ -97,16 +85,17 @@ module.exports = (data, verb, user) => {
                 organizer: 'optional',
                 SERVER: 'optional',
             },
-            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
-            // only the PUT BODY
             updatable: {
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
-            update: {}, // user can use this field in PUT BODY
-            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
-            // for this: DELETE QUERY.
+            update: {
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
+            },
             remove: {
-                // user can use this field in DELETE QUERY
                 organizer: 'optional',
                 SERVER: 'optional',
             },
@@ -114,7 +103,7 @@ module.exports = (data, verb, user) => {
         aspects: {
             create: {
                 SERVER: 'required',
-            }, // generated // POST BODY
+            },
             find: {
                 judge: 'optional',
                 organizer: 'optional',
@@ -125,16 +114,17 @@ module.exports = (data, verb, user) => {
                 organizer: 'optional',
                 SERVER: 'optional',
             },
-            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
-            // only the PUT BODY
             updatable: {
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
-            update: {}, // user can use this field in PUT BODY
-            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
-            // for this: DELETE QUERY.
+            update: {
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
+            },
             remove: {
-                // user can use this field in DELETE QUERY
                 organizer: 'optional',
                 SERVER: 'optional',
             },
@@ -142,7 +132,7 @@ module.exports = (data, verb, user) => {
         overall_impression: {
             create: {
                 SERVER: 'required',
-            }, // generated // POST BODY
+            },
             find: {
                 judge: 'optional',
                 organizer: 'optional',
@@ -153,14 +143,16 @@ module.exports = (data, verb, user) => {
                 organizer: 'optional',
                 SERVER: 'optional',
             },
-            // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
-            // only the PUT BODY
             updatable: {
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
-            update: {}, // user can use this field in PUT BODY
-            // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
-            // for this: DELETE QUERY.
+            update: {
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
+            },
             remove: {
                 organizer: 'optional',
                 SERVER: 'optional',
@@ -168,29 +160,23 @@ module.exports = (data, verb, user) => {
         },
     }
 
-    for (let key in data) {
-        if (!(key in rules))
-            return {
-                authorized: false,
-                message: `rule_is_not_implemented_for_field__${key}__`,
-            }
+    for (const key in data) {
+        if (!(key in rules)) throw `rule_is_not_implemented_for_field_'${key}'`
     }
 
-    for (let key in rules) {
-        if (rules[key][verb][user.role] === 'required') {
-            if (key in data) continue
-            else
-                return {
-                    authorized: false,
-                    message: `field__${key}__for_role__${user.role}__is_required_for_action__${verb}__`,
-                }
-        } else if (rules[key][verb][user.role] === 'optional') continue
-        else if (key in data)
-            return {
-                authorized: false,
-                message: `field__${key}__for_role__${user.role}__is_forbidden_for_action__${verb}__`,
-            }
+    for (const key in rules) {
+        const rule = rules[key][verb][user.role]
+        const policy = rule?.rule ?? 'forbidden'
+
+        if (policy === 'optional') {
+        } else if (policy === 'bound') {
+            data[key] = rule.value
+        } else if (policy === 'required' && !(key in data)) {
+            throw `field_'${key}'_for_role_'${user.role}'_is_required_for_action_'${verb}'`
+        } else if (policy === 'forbidden' && (key in data)) {
+            throw `field_'${key}'_for_role_'${user.role}'_is_forbidden_for_action_'${verb}'`
+        } else throw `unknown_rule_'${rule}'_for_field_'${key}'_for_action_'${verb}'_for_role_'${user.role}'`
     }
 
-    return { authorized: true, message: null }
+    return data
 }

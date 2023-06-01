@@ -1,5 +1,5 @@
 module.exports = (data, verb, user) => {
-    // COMPETITOR, ORGANIZER, SERVER
+    // COMPETITOR, ORGANIZER, RECEIVER, SERVER
     const rules = {
         _id: {
             create: {}, // generated // POST BODY
@@ -14,8 +14,8 @@ module.exports = (data, verb, user) => {
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
             updatable: {
-                SERVER: 'optional',
                 organizer: 'optional',
+                SERVER: 'optional',
             },
             update: {}, // user can use this field in PUT BODY
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
@@ -42,14 +42,13 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
-            update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: 'optional and everything is allowed',
-                judge: 'forbidden',
-                organizer: 'optional and everything is allowed',
-                receiver: 'forbidden',
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
             },
+            update: {},
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: {
@@ -75,14 +74,12 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
-            update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: 'optional and everything is allowed',
-                judge: 'forbidden',
-                organizer: 'optional and everything is allowed',
-                receiver: 'forbidden',
+            updatable: {
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
             },
+            update: {},
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: {
@@ -105,12 +102,13 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
-            update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
             },
+            update: {},
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: {
@@ -133,12 +131,11 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
-            update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+            updatable: {
+                organizer: 'optional',
+                SERVER: 'optional',
             },
+            update: {},
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
             remove: {
@@ -163,11 +160,16 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                competitor: 'optional',
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -193,11 +195,13 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                organizer: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -223,11 +227,16 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                competitor: 'optional',
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -254,11 +263,16 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                competitor: 'optional',
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -285,11 +299,16 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                competitor: 'optional',
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -316,11 +335,16 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                competitor: 'optional',
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -347,11 +371,16 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                competitor: 'optional',
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -378,11 +407,16 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                competitor: 'optional',
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -409,11 +443,16 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                competitor: 'optional',
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -439,11 +478,13 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                organizer: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -468,11 +509,15 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -498,11 +543,15 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                organizer: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
@@ -528,11 +577,16 @@ module.exports = (data, verb, user) => {
             project: {},
             // will be used in 'update' controller function = find + update. find implicitly authorizes for find. so we need to authorize
             // only the PUT BODY
+            updatable: {
+                competitor: 'optional',
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
+            },
             update: {
-                // user can use this field in PUT BODY
-                // authorize query for find, and authorize body for update
-                competitor: true,
-                organizer: user._id === data.competitor_id,
+                organizer: 'optional',
+                receiver: 'optional',
+                SERVER: 'optional',
             },
             // will be used in 'remove' controller function = find + remove. find implicitly authorizes for find. but we also need to authorize
             // for this: DELETE QUERY.
