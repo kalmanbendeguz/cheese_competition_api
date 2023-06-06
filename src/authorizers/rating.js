@@ -27,7 +27,7 @@ module.exports = (data, verb, user) => {
         },
         product_id: {
             create: {
-                SERVER: 'required',
+                SERVER: { rule: 'required' },
             },
             find: {
                 organizer: 'optional',
@@ -49,7 +49,7 @@ module.exports = (data, verb, user) => {
         },
         judge_id: {
             create: {
-                SERVER: 'required',
+                SERVER: { rule: 'required' },
             },
             find: {
                 organizer: 'optional',
@@ -73,7 +73,7 @@ module.exports = (data, verb, user) => {
         },
         anonymous: {
             create: {
-                SERVER: 'optional',
+                SERVER: { rule: 'optional' },
             },
             find: {
                 judge: 'optional',
@@ -102,7 +102,7 @@ module.exports = (data, verb, user) => {
         },
         aspects: {
             create: {
-                SERVER: 'required',
+                SERVER: { rule: 'required' },
             },
             find: {
                 judge: 'optional',
@@ -131,7 +131,7 @@ module.exports = (data, verb, user) => {
         },
         overall_impression: {
             create: {
-                SERVER: 'required',
+                SERVER: { rule: 'required' },
             },
             find: {
                 judge: 'optional',
@@ -170,6 +170,9 @@ module.exports = (data, verb, user) => {
 
         if (policy === 'optional') {
         } else if (policy === 'bound') {
+            if (key in data) {
+                throw `field_'${key}'_for_role_'${user.role}'_is_bound_for_action_'${verb}'`
+            }
             data[key] = rule.value
         } else if (policy === 'required' && !(key in data)) {
             throw `field_'${key}'_for_role_'${user.role}'_is_required_for_action_'${verb}'`

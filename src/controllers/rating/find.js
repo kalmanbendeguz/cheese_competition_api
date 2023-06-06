@@ -1,8 +1,7 @@
 // JUDGE, ORGANIZER, SERVER
-module.exports = async (query, user) => {
-    const Rating_Model = require('../../models/Rating')
+module.exports = async (query, user, parent_session) => {
 
-    // 1. validate query
+    // 1. Validate query
     const find_rating_validator = require('../../validators/requests/api/rating/find')
     try {
         await find_rating_validator.validateAsync(query)
@@ -10,39 +9,45 @@ module.exports = async (query, user) => {
         return { code: 400, data: err.details }
     }
 
-    // 2. authorize {query.filter, user}
+    // 2. Authorize find
     const authorizer = require('../../authorizers/rating')
-    const filter_authorizer_result = authorizer(query.filter, 'find', user)
-    if (!filter_authorizer_result.authorized) {
-        return { code: 403, data: filter_authorizer_result.message }
+    try {
+        query.filter = authorizer(query.filter, 'find', user)
+    } catch (reason) {
+        return {
+            code: 403,
+            data: reason
+        }
     }
 
-    // 3. authorize {query.projection, user}
-    const projection_authorizer_result = authorizer(
-        query.projection,
-        'project',
-        user
-    )
-    if (!projection_authorizer_result.authorized) {
-        return { code: 403, data: projection_authorizer_result.message }
+    // 3. Authorize project
+    try {
+        query.projection = authorizer(query.projection, 'project', user)
+    } catch (reason) {
+        return {
+            code: 403,
+            data: reason
+        }
     }
 
-    // 3. prepare
+    // 4. Start session and transaction if they don't exist
+    const Rating_Model = require('../../models/Rating')
+    const session = parent_session ?? await Rating_Model.db.startSession()
+    if (!session.inTransaction()) session.startTransaction()
+
+
+    // 5. Find
     const filter = query.filter
-    if (user.role === 'judge') {
-        filter.judge_id = user._id
-    }
     const projection = query.projection // if you pass an unknown value, it will ignore it
     const options = query.options // limit: validated, skip: validated, sort: what if you pass an unknown key?
 
-    // 4. find
     const ratings = await Rating_Model.find(
         filter,
         projection, // is undefined okay? or should i convert to null
-        options // is undefined okay? or should i convert to null
+        { ...options, session: session } // is undefined okay? or should i convert to null
     )
 
-    // 5. validate documents
+    // 6. Validate documents
     const rating_validator = require('../../validators/schemas/Rating')
     try {
         const validator_promises = ratings.map(
@@ -53,10 +58,20 @@ module.exports = async (query, user) => {
         )
         await Promise.all(validator_promises)
     } catch (err) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
         return { code: 500, data: err.details }
     }
 
-    // 6. send
+    // 7. Commit transaction and end session
+    if (!parent_session) {
+        if (session.inTransaction()) await session.commitTransaction()
+        await session.endSession()
+    }
+
+    // 6. Send
     return {
         code: 200,
         data: ratings,

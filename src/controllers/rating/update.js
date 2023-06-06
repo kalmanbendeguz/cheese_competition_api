@@ -1,7 +1,7 @@
 // JUDGE, ORGANIZER, SERVER
-module.exports = async (data, user, ignored_dependencies) => {
-
-    // 1. Validate data: document integrity should be verified here.
+module.exports = async (data, user, parent_session) => {
+    
+    // 1. Validate data
     const update_rating_validator = require('../../validators/requests/api/rating/update')
     try {
         await update_rating_validator.validateAsync(data)
@@ -19,6 +19,7 @@ module.exports = async (data, user, ignored_dependencies) => {
             data: reason
         }
     }
+    const filter = data.query
 
     // 3. Authorize update
     try {
@@ -29,19 +30,33 @@ module.exports = async (data, user, ignored_dependencies) => {
             data: reason
         }
     }
+    const update = data.body
 
-    // 4. Find
-    const filter = data.query
+    // 4. Start session and transaction if they don't exist
     const Rating_Model = require('../../models/Rating')
-    const ratings = (await Rating_Model.find(filter)).map(rating => ({ old: structuredClone(rating), new: rating }))
-    if (ratings.length === 0) return {
-        code: 404,
-        data: 'no_documents_found_to_update',
+    const session = parent_session ?? await Rating_Model.db.startSession()
+    if (!session.inTransaction()) session.startTransaction()
+
+    // 5. Find
+    const ratings = (await Rating_Model.find(
+        filter,
+        null,
+        { session: session }
+    )).map(rating => ({ old: structuredClone(rating), new: rating }))
+    if (ratings.length === 0) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.commitTransaction()
+            await session.endSession()
+        }
+        return {
+            code: 200, // this will be 200. bc this is not an error.
+            data: 'no_documents_found_to_update',
+        }
     }
 
-    // 5. Update locally
-    const update = data.body
-    const remove = []
+    // 6. Update locally
+    // If something needs to be removed from the document, we need to declare it here.
+    const remove = [] // Remove that is globally true for all documents
     for (const rating of ratings) {
         const current_update = structuredClone(update)
         const current_remove = structuredClone(remove)
@@ -52,7 +67,7 @@ module.exports = async (data, user, ignored_dependencies) => {
         }
     }
 
-    // 6. Validate new documents
+    // 7. Validate new documents
     const rating_validator = require('../../validators/schemas/Rating')
     try {
         const validator_promises = ratings.map((rating) =>
@@ -60,34 +75,42 @@ module.exports = async (data, user, ignored_dependencies) => {
         )
         await Promise.all(validator_promises)
     } catch (err) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
         return { code: 500, data: err.details }
     }
 
-    // 7. Check collection integrity
-    // Mostly uniqueness and compound uniqueness.
-    // Nothing to do here now.
-
-    // 8. Check dependencies: Ask all dependencies if this update is possible.
-    const default_dependencies = ['product', 'user']
-    const dependencies = default_dependencies.filter(dependency => !ignored_dependencies.includes(dependency))
-    // Dependency approver imports
+    // 8. Check dependencies: Ask all dependencies if this creation is possible.
+    const dependencies = ['product', 'user']
     const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/rating`))
 
     const dependency_approver_promises = []
     for (const dependency_approver of dependency_approvers) {
-        for (const rating of ratings) {
-            dependency_approver_promises.push(dependency_approver(rating.old, rating.new, user))
-        }
+        dependency_approver_promises.push(dependency_approver(ratings, user, session))
     }
     const dependency_approver_results = await Promise.all(dependency_approver_promises)
 
     const unapproved = dependency_approver_results.find(dependency_approver_result => !dependency_approver_result.approved)
-    if (unapproved) return {
-        code: 403,
-        data: unapproved.reason
+    if (unapproved) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
+        return {
+            code: 403,
+            data: unapproved.reason
+        }
     }
 
-    // 9. Update dependents
+    // 9. Check local constraints and collection integrity
+    // Nothing needs to be checked.
+
+    // 10. Save updated documents
+    await Rating_Model.bulkSave(ratings.map(rating => rating.new), { session: session })
+
+    // 11. Update dependents
     // Import dependent mutation controllers
     // create
     // No 'create' dependent controller needs to be imported
@@ -97,13 +120,15 @@ module.exports = async (data, user, ignored_dependencies) => {
     // No 'remove' dependent controller needs to be imported
     // Nothing to do here.
 
-    // 10. Save updated documents
-    const new_ratings = ratings.map(rating => rating.new)
-    await Rating_Model.bulkSave(new_ratings)
+    // 12. Commit transaction and end session
+    if (!parent_session) {
+        if (session.inTransaction()) await session.commitTransaction()
+        await session.endSession()
+    }
 
-    // 11. Reply
+    // 13. Reply
     return {
         code: 200,
         data: undefined,
-    }
+    }    
 }

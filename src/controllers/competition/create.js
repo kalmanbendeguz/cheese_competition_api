@@ -1,5 +1,5 @@
 // SERVER, ORGANIZER
-module.exports = async (body, user) => {
+module.exports = async (body, user, parent_session) => {
     const Competition_Model = require('../../models/Competition')
 
     // 1. validate body

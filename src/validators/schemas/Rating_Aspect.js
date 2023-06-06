@@ -1,6 +1,6 @@
 const Joi = require('joi')
 
-module.exports = Joi.object({
+const rating_aspect_validator = Joi.object({
     // further validation will happen after we know the rating sheet.
     title: Joi.string()
         .required()
@@ -26,3 +26,5 @@ module.exports = Joi.object({
         .max(250)
         .prefs({ convert: false }),
 }).unknown(true)
+
+module.exports = rating_aspect_validator
