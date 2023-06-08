@@ -1,8 +1,7 @@
-// SERVER, ORGANIZER
+// ORGANIZER, SERVER
 module.exports = async (body, user, parent_session) => {
-    const Competition_Model = require('../../models/Competition')
 
-    // 1. validate body
+    // 1. Validate body
     const create_competition_validator = require('../../validators/requests/api/competition/create')
     try {
         await create_competition_validator.validateAsync(body)
@@ -10,24 +9,26 @@ module.exports = async (body, user, parent_session) => {
         return { code: 400, data: err.details }
     }
 
-    // 2. arrayize
+    // 2. Arrayize
     body = Array.isArray(body) ? body : [body]
 
-    // 3. authorize {body, user}
+    // 3. Authorize create
     const authorizer = require('../../authorizers/competition')
-    const authorizer_results = body.map((competition) =>
-        authorizer(competition, 'create', user)
-    )
-    const violation = authorizer_results.find((result) => !result.authorized)
-    if (violation) {
-        return { code: 403, data: violation.message }
+    try {
+        body = body.map((competition) => authorizer(competition, 'create', user))
+    } catch (reason) {
+        return {
+            code: 403,
+            data: reason
+        }
     }
 
-    // 4. check_dependencies : will the database be consistent if i create this document?
-    // because competition has no dependencies, i should only check uniqueness,
-    // but there is no unique field. so nothing needs to be done.
+    // 4. Start session and transaction if they don't exist
+    const Competition_Model = require('../../models/Competition')
+    const session = parent_session ?? await Competition_Model.db.startSession()
+    if (!session.inTransaction()) session.startTransaction()
 
-    // 5. prepare
+    // 5. Create locally
     const fs_promises = require('fs').promises
     const default_product_category_tree = require('../../static/product_category_tree.json')
     const default_certificate_template_buffer = await fs_promises.readFile(
@@ -63,13 +64,9 @@ module.exports = async (body, user, parent_session) => {
         }),
         // ignore_extreme_values will be false if undefined
     }))
+    const competitions = _competitions.map((competition) => new Competition_Model(competition))
 
-    // 6. create
-    const competitions = _competitions.map(
-        (competition) => new Competition_Model(competition)
-    )
-
-    // 7. validate_documents
+    // 6. Validate created documents
     const competition_validator = require('../../validators/schemas/Competition')
     try {
         const validator_promises = competitions.map((competition) =>
@@ -77,19 +74,67 @@ module.exports = async (body, user, parent_session) => {
         )
         await Promise.all(validator_promises)
     } catch (err) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
         return { code: 400, data: err.details }
     }
 
-    // 8. update_dependents
-    // only dependent: Product. but at creation nothing needs to be updated.
+    // 7. Check dependencies: Ask all dependencies if this creation is possible.
+    const dependencies = []
+    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/competition`))
 
-    // 9. save
-    const saver_promises = competitions.map((competition) => competition.save())
-    await Promise.all(saver_promises)
+    const dependency_approver_promises = []
+    for (const dependency_approver of dependency_approvers) {
+        dependency_approver_promises.push(dependency_approver(competitions.map(competition => ({ old: null, new: competition })), user, session))
+    }
+    const dependency_approver_results = await Promise.all(dependency_approver_promises)
 
-    // 10. reply
+    const unapproved = dependency_approver_results.find(dependency_approver_result => !dependency_approver_result.approved)
+    if (unapproved) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
+        return {
+            code: 403,
+            data: unapproved.reason
+        }
+    }
+
+    // 8. Check local constraints and collection integrity
+    // We can not have a better validation for certificate template, since none of its contents is strictly required.
+    // No need to check for any uniqueness.
+    for (const competition of competitions) {
+        // product_category_tree needs to be a subtree of the default tree.
+        if (!is_subtree(competition.product_category_tree, default_product_category_tree)) {
+            if (!parent_session) {
+                if (session.inTransaction()) await session.abortTransaction()
+                await session.endSession()
+            }
+            return {
+                code: 403,
+                data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
+            }
+        }
+    }
+
+    // 9. Save created documents
+    await Competition_Model.bulkSave(competitions, { session: session })
+
+    // 10. Update dependents
+    // Nothing needs to be updated.
+
+    // 11. Commit transaction and end session.
+    if (!parent_session) {
+        if (session.inTransaction()) await session.commitTransaction()
+        await session.endSession()
+    }
+
+    // 12. Reply
     return {
         code: 201,
-        data: undefined, // TODO, check if it works if i leave it out, etc.
+        data: undefined, // TODO: check if it works if i leave it out, etc.
     }
 }

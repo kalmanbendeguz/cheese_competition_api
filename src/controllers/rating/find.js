@@ -71,7 +71,7 @@ module.exports = async (query, user, parent_session) => {
         await session.endSession()
     }
 
-    // 6. Send
+    // 8. Send
     return {
         code: 200,
         data: ratings,
