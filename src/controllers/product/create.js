@@ -1,25 +1,7 @@
-// Function to find elements in the tree
-function find_in_tree(tree, predicate) {
-    if (predicate(tree)) {
-        return tree
-    } else {
-        for (const child of tree.children) {
-            const result = find_in_tree(child, predicate)
-            if (result) {
-                return result
-            }
-        }
-    }
-    return null
-}
+// COMPETITOR, SERVER
+module.exports = async (body, user, parent_session) => {
 
-// Competitor, Server
-module.exports = async (body, user) => {
-    const User_Model = require('../../models/User')
-    const Competition_Model = require('../../models/Competition')
-    const Product_Model = require('../../models/Product')
-
-    // 1. validate body
+    // 1. Validate body
     const create_product_validator = require('../../validators/requests/api/product/create')
     try {
         await create_product_validator.validateAsync(body)
@@ -27,94 +9,27 @@ module.exports = async (body, user) => {
         return { code: 400, data: err.details }
     }
 
-    // 2. arrayize
+    // 2. Arrayize
     body = Array.isArray(body) ? body : [body]
 
-    // 3. authorize {body, user}
+    // 3. Authorize create
     const authorizer = require('../../authorizers/product')
-    const authorizer_results = body.map((product) =>
-        authorizer(product, 'create', user)
-    )
-    const violation = authorizer_results.find((result) => !result.authorized)
-    if (violation) {
-        return { code: 403, data: violation.message }
-    }
-
-    // 4. check_dependencies
-    // dependencies:(Product), User, Competition,
-    // comp: exist? is entry opened?
-    const unique_competition_ids = [
-        ...new Set(body.map((product) => product.competition_id.toString())),
-    ]
-    if (
-        (await Competition_Model.countDocuments({
-            _id: { $in: unique_competition_ids },
-            entry_opened: true,
-        })) !== unique_competition_ids.length
-    )
+    try {
+        body = body.map((product) => authorizer(product, 'create', user))
+    } catch (reason) {
         return {
             code: 403,
-            data: 'one_or_more_provided_competitions_are_not_existing_or_not_opened',
-        }
-
-    // user: exist? is he competitor? isnt the reg. temporary?
-    const unique_competitor_ids =
-        user.role === 'competitor'
-            ? [user._id.toString()]
-            : [
-                  ...new Set(
-                      body.map((product) => product.competition_id.toString())
-                  ),
-              ]
-    if (
-        (await User_Model.countDocuments({
-            _id: { $in: unique_competitor_ids },
-            roles: { $in: ['competitor'] },
-            registration_temporary: false,
-        })) !== unique_competitor_ids.length
-    )
-        return {
-            code: 403,
-            data: 'one_or_more_provided_competitor_ids_are_not_existing_or_not_competitors_or_registration_is_temporary',
-        }
-    // is the product category valid?
-    const competitions = await Competition_Model.find(
-        { _id: { $in: unique_competition_ids } },
-        [
-            '_id',
-            'product_category_tree',
-            'payment_needed',
-            'association_members_need_to_pay',
-        ],
-        { lean: true }
-    )
-    for (const product of body) {
-        const current_product_category_tree = competitions.find(
-            (competition) => competition._id === product.competition_id
-        ).product_category_tree
-        const found_category = find_in_tree(
-            current_product_category_tree,
-            (node) =>
-                node.id === product.product_category_id &&
-                node.children.length === 0 // csak legalsó szintű kategóriát lehet választani.
-        )
-        if (!found_category)
-            return {
-                code: 400,
-                data: 'provided_category_is_invalid',
-            }
-    }
-
-    // 5. prepare
-    // competition_ids are required and checked
-    // competitor_ids are required if server, set here if competitor
-    if (user.role === 'competitor') {
-        for (const product of body) {
-            product.competitor_id = user._id
+            data: reason
         }
     }
 
-    // public_ids and secret_ids
+    // 4. Start session and transaction if they don't exist
+    const Product_Model = require('../../models/Product')
+    const session = parent_session ?? await Product_Model.db.startSession()
+    if (!session.inTransaction()) session.startTransaction()
+
+    // 5. Create locally
+    // Generate public_ids and secret_ids
     const randomstring = require('randomstring')
     const forbidden_id_parts = require('../../static/forbidden_id_parts')
 
@@ -135,8 +50,8 @@ module.exports = async (body, user) => {
             })
             public_id = `${letters}${numbers}`
             existing_product =
-                (await Product_Model.exists({ public_id: public_id })) ||
-                (await Product_Model.exists({ secret_id: public_id })) ||
+                (await Product_Model.exists({ public_id: public_id }, { session: session })) ||
+                (await Product_Model.exists({ secret_id: public_id }, { session: session })) ||
                 body.some((product) => product.public_id === public_id) ||
                 body.some((product) => product.secret_id === public_id)
 
@@ -157,8 +72,8 @@ module.exports = async (body, user) => {
             })
             secret_id = `${letters}${numbers}`
             existing_product =
-                (await Product_Model.exists({ public_id: secret_id })) ||
-                (await Product_Model.exists({ secret_id: secret_id })) ||
+                (await Product_Model.exists({ public_id: secret_id }, { session: session })) ||
+                (await Product_Model.exists({ secret_id: secret_id }, { session: session })) ||
                 body.some((product) => product.secret_id === secret_id) ||
                 body.some((product) => product.public_id === secret_id)
 
@@ -167,28 +82,31 @@ module.exports = async (body, user) => {
         product.secret_id = secret_id
     }
 
-    // product_name, anonimized_product_name, factory_name, maturation_time_type, maturation_time_quantity,
-    // maturation_time_unit, milk_type, product_category_id, product_description, and
-    // anonimized_product_description are required or optional
+    // This is an interesting part. Because we can find out the approval state based on the competition and the user, this means
+    // that we shouldn't even store it, because it is redundant. And using this anti-pattern (asking the 
+    // competition and user controllers) is a very good indicator of the fact that we have redundant data.
+    // But for now, this won't be changed.
+    const find_competition = require('../competition/find')
+    const find_user = require('../user/find')
+    const competitions_of_products = (await find_competition(
+        { _id: { $in: body.map(product => product.competition_id.toString()) } },
+        { role: 'SERVER' },
+        session
+    ))?.data ?? []
+    const users_of_products = (await find_user(
+        { _id: { $in: body.map(product => product.competitor_id.toString()) } },
+        { role: 'SERVER' },
+        session
+    ))?.data ?? []
 
-    // approved and approval type:
-    // for each product: if competition.payment_needed, then check for ass members.
-    //                   else approve -> bypass.
-
-    const users = await User_Model.find(
-        { _id: { $in: unique_user_ids } },
-        ['_id', 'association_member'],
-        { lean: true }
-    )
-    for (let product of body) {
-        const competition = competitions.find(
-            (competition) => competition._id === product.competition_id
-        )
-        const user = users.find((user) => user._id === product.competitor_id)
-        if (competition.payment_needed) {
+    for (const product of body) {
+        const competition_of_product = competitions_of_products.find(competition => competition._id.toString() === product.competition_id.toString())
+        const user_of_product = users_of_products.find(user => user._id.toString() === product.competitor_id.toString())
+        if (!competition_of_product || !user_of_product) continue;
+        if (competition_of_product.payment_needed) {
             if (
-                !competition.association_members_need_to_pay &&
-                user.association_member
+                !competition_of_product.association_members_need_to_pay &&
+                user_of_product.association_member
             ) {
                 product.approved = true
                 product.approval_type = 'association_member'
@@ -200,38 +118,37 @@ module.exports = async (body, user) => {
     }
 
     const _products = body.map((product) => ({
-        competition_id: product.competition_id,
-        competitor_id: product.competitor_id,
-        public_id: product.public_id,
-        secret_id: product.secret_id,
-        product_name: product.product_name,
-        ...(product.anonimized_product_name && {
-            anonimized_product_name: product.anonimized_product_name,
+        competition_id: product.competition_id, // required
+        competitor_id: product.competitor_id, // required
+        public_id: product.public_id, // GENERATED
+        secret_id: product.secret_id, // GENERATED
+        product_name: product.product_name, // required
+        ...(product.anonimized_product_name && { // optional
+            anonimized_product_name: product.anonimized_product_name, // optional
         }),
-        factory_name: product.factory_name,
-        maturation_time_type: product.maturation_time_type,
-        ...(product.maturation_time_type === 'matured' && {
-            maturation_time_quantity: product.maturation_time_quantity,
+        factory_name: product.factory_name, // required
+        maturation_time_type: product.maturation_time_type, // required
+        ...(product.maturation_time_type === 'matured' && { // required
+            maturation_time_quantity: product.maturation_time_quantity, // required
         }),
-        ...(product.maturation_time_type === 'matured' && {
-            maturation_time_unit: product.maturation_time_unit,
+        ...(product.maturation_time_type === 'matured' && { // required
+            maturation_time_unit: product.maturation_time_unit, // required
         }),
-        milk_type: product.milk_type,
-        product_category_id: product.product_category_id,
-        product_description: product.product_description,
-        ...(product.anonimized_product_description && {
-            anonimized_product_description:
-                product.anonimized_product_description,
+        milk_type: product.milk_type, // required
+        product_category_id: product.product_category_id, // required
+        product_description: product.product_description, // required
+        ...(product.anonimized_product_description && { // optional
+            anonimized_product_description: // optional
+                product.anonimized_product_description, // optional
         }),
-        ...(product.approved && { approved: product.approved }), // default: false
-        ...(product.approved && { approval_type: product.approval_type }),
-        ...(product.handed_in && { handed_in: product.handed_in }), // default: false
+        ...(product.approved && { approved: product.approved }), // GENERATED
+        ...(product.approved && { approval_type: product.approval_type }), // GENERATED
+        ...(product.handed_in && { handed_in: product.handed_in }), // optional
     }))
 
-    // 6. create
     const products = _products.map((product) => new Product_Model(product))
 
-    // 7. validate_documents
+    // 6. Validate created documents
     const product_validator = require('../../validators/schemas/Product')
     try {
         const validator_promises = products.map((product) =>
@@ -239,19 +156,55 @@ module.exports = async (body, user) => {
         )
         await Promise.all(validator_promises)
     } catch (err) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
         return { code: 400, data: err.details }
     }
 
-    // 8. update_dependents
-    // nothing needs to be updated
+    // 7. Check dependencies: Ask all dependencies if this creation is possible.
+    const dependencies = ['user', 'competition']
+    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/product`))
 
-    // 9. save
-    const saver_promises = products.map((product) => product.save())
-    await Promise.all(saver_promises)
+    const dependency_approver_promises = []
+    for (const dependency_approver of dependency_approvers) {
+        dependency_approver_promises.push(dependency_approver(products.map(product => ({ old: null, new: product })), user, session))
+    }
+    const dependency_approver_results = await Promise.all(dependency_approver_promises)
 
-    // 10. reply
+    const unapproved = dependency_approver_results.find(dependency_approver_result => !dependency_approver_result.approved)
+    if (unapproved) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
+        return {
+            code: 403,
+            data: unapproved.reason
+        }
+    }
+
+    // 8. Check local constraints and collection integrity
+    // public_id and secret_id should be unique, but it is checked at creation.
+    // milk_type should be valid, but it is for a later concern
+    // product_category_id should be valid, but it is asked at competition/approve_dependent_mutation/product
+
+    // 9. Save created documents
+    await Product_Model.bulkSave(products, { session: session })
+
+    // 10. Update dependents
+    // Nothing needs to be updated.
+
+    // 11. Commit transaction and end session.
+    if (!parent_session) {
+        if (session.inTransaction()) await session.commitTransaction()
+        await session.endSession()
+    }
+
+    // 12. Reply
     return {
         code: 201,
-        data: undefined, // TODO, check if it works if i leave it out, etc.
+        data: undefined, // TODO: check if it works if i leave it out, etc.
     }
 }

@@ -3,11 +3,11 @@ const router = express.Router()
 
 const create = require('../../../controllers/product/create')
 //const find = require('../../../controllers/product/find')
-const update = require('../../../controllers/product/update')
-const remove = require('../../../controllers/product/remove')
+//const update = require('../../../controllers/product/update')
+//const remove = require('../../../controllers/product/remove')
 
 router.post('/', async (req, res, _) => {
-    const result = await create(req.body, req.user)
+    const result = await create(req.body, req.user, null)
     return res.status(result.code).json(result.data)
 })
 
