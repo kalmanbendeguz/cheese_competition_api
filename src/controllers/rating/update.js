@@ -130,5 +130,5 @@ module.exports = async (data, user, parent_session) => {
     return {
         code: 200,
         data: undefined,
-    }    
+    }
 }

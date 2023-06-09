@@ -16,14 +16,14 @@ router.post('/', async (req, res, _) => {
 //    return res.status(result.code).json(result.data)
 //})
 
-router.put('/', async (req, res, _) => {
-    const result = await update({ query: req.query, body: req.body }, req.user)
-    return res.status(result.code).json(result.data)
-})
-
-router.delete('/', async (req, res, _) => {
-    const result = await remove(req.query, req.user)
-    return res.status(result.code).json(result.data)
-})
+// router.put('/', async (req, res, _) => {
+//     const result = await update({ query: req.query, body: req.body }, req.user)
+//     return res.status(result.code).json(result.data)
+// })
+// 
+// router.delete('/', async (req, res, _) => {
+//     const result = await remove(req.query, req.user)
+//     return res.status(result.code).json(result.data)
+// })
 
 module.exports = router

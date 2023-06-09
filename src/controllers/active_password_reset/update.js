@@ -1,6 +1,7 @@
 // ONLY SERVER
-module.exports = async (data, user) => {
-    // 1. validate data
+module.exports = async (data, user, parent_session) => {
+
+    // 1. Validate data
     const update_active_password_reset_validator = require('../../validators/requests/api/active_password_reset/update')
     try {
         await update_active_password_reset_validator.validateAsync(data)
@@ -8,114 +9,124 @@ module.exports = async (data, user) => {
         return { code: 400, data: err.details }
     }
 
-    // 2. authorize updatable
+    // 2. Authorize updatable
     const authorizer = require('../../authorizers/active_password_reset')
-    const updatable_authorizer_result = authorizer(
-        data.query,
-        'updatable',
-        user
-    )
-    if (!updatable_authorizer_result.authorized) {
-        return { code: 403, data: updatable_authorizer_result.message }
+    try {
+        data.query = authorizer(data.query, 'updatable', user)
+    } catch (reason) {
+        return {
+            code: 403,
+            data: reason
+        }
     }
-
-    // 3. authorize update
-    const update_authorizer_result = authorizer(data.body, 'update', user)
-    if (!update_authorizer_result.authorized) {
-        return { code: 403, data: update_authorizer_result.message }
-    }
-
-    // 3. prepare find
     const filter = data.query
 
-    // 4. find
-    const Active_Password_Reset_Model = require('../../models/Active_Password_Reset')
-    const active_password_resets = await Active_Password_Reset_Model.find(
-        filter
-        //projection, // is undefined okay? or should i convert to null
-        //options // is undefined okay? or should i convert to null
-    )
-    if (active_password_resets.length === 0)
+    // 3. Authorize update
+    try {
+        data.body = authorizer(data.body, 'update', user)
+    } catch (reason) {
         return {
-            code: 404,
+            code: 403,
+            data: reason
+        }
+    }
+    const update = data.body
+
+    // 4. Start session and transaction if they don't exist
+    const Active_Password_Reset_Model = require('../../models/Active_Password_Reset')
+    const session = parent_session ?? await Active_Password_Reset_Model.db.startSession()
+    if (!session.inTransaction()) session.startTransaction()
+
+    // 5. Find
+    const active_password_resets = (await Active_Password_Reset_Model.find(
+        filter,
+        null,
+        { session: session }
+    )).map(active_password_reset => ({ old: structuredClone(active_password_reset), new: active_password_reset }))
+    if (active_password_resets.length === 0) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.commitTransaction()
+            await session.endSession()
+        }
+        return {
+            code: 200, // this will be 200. bc this is not an error.
             data: 'no_documents_found_to_update',
         }
-
-    // 5. check dependencies
-    // if array.length is 0, 1, or more.
-    if (active_password_resets.length === 0) {
-        // check nothing; code wont even reach this ever
-    }
-    if (active_password_resets.length >= 1) {
-        if (
-            'restore_id' in data.body &&
-            data.body.restore_id !== filter.restore_id &&
-            (await Active_Password_Reset_Model.exists({
-                restore_id: data.body.restore_id,
-            }))
-        )
-            return {
-                code: 409,
-                data: 'can_not_change_restore_id_to_an_existing_restore_id',
-            }
-        const User_Model = require('../../models/User')
-        if (
-            'user_id' in data.body &&
-            !(await User_Model.exists({
-                _id: data.body.user_id,
-                registration_temporary: false,
-            }))
-        )
-            return {
-                code: 403,
-                data: 'provided_user_id_does_not_exist_or_user_not_activated',
-            }
-    }
-    if (active_password_resets.length >= 2) {
-        if ('restore_id' in filter)
-            return {
-                code: 409,
-                data: 'multiple_active_password_resets_can_not_have_the_same_restore_id',
-            }
     }
 
-    // 6. prepare_update
-    const update = data.body
-    const remove = []
-
-    // 7. update
+    // 6. Update locally
+    // If something needs to be removed from the document, we need to declare it here.
+    const remove = [] // Remove that is globally true for all documents
     for (const active_password_reset of active_password_resets) {
-        active_password_reset.set(update)
+        const current_update = structuredClone(update)
+        const current_remove = structuredClone(remove)
 
-        for (const key of remove) {
-            active_password_reset[key] = undefined
+        active_password_reset.new.set(current_update)
+        for (const key of current_remove) {
+            active_password_reset.new[key] = undefined
         }
     }
 
-    // 8. validate documents
+    // 7. Validate new documents
     const active_password_reset_validator = require('../../validators/schemas/Active_Password_Reset')
     try {
-        const validator_promises = active_password_resets.map(
-            (active_password_reset) =>
-                active_password_reset_validator.validateAsync(
-                    active_password_reset
-                )
+        const validator_promises = active_password_resets.map((active_password_reset) =>
+            active_password_reset_validator.validateAsync(active_password_reset.new)
         )
         await Promise.all(validator_promises)
     } catch (err) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
         return { code: 500, data: err.details }
     }
 
-    // 9. update dependencies
-    // nothing to do here
+    // 8. Check dependencies: Ask all dependencies if this creation is possible.
+    const dependencies = ['user']
+    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/active_password_reset`))
 
-    // 10. save
-    const saver_promises = active_password_resets.map((active_password_reset) =>
-        active_password_reset.save()
-    )
-    await Promise.all(saver_promises)
+    const dependency_approver_promises = []
+    for (const dependency_approver of dependency_approvers) {
+        dependency_approver_promises.push(dependency_approver(active_password_resets, user, session))
+    }
+    const dependency_approver_results = await Promise.all(dependency_approver_promises)
 
-    // 11. reply
+    const unapproved = dependency_approver_results.find(dependency_approver_result => !dependency_approver_result.approved)
+    if (unapproved) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
+        return {
+            code: 403,
+            data: unapproved.reason
+        }
+    }
+
+    // 9. Check local constraints and collection integrity
+    // Nothing needs to be checked, since nothing is updatable.
+
+    // 10. Save updated documents
+    await Active_Password_Reset_Model.bulkSave(active_password_resets.map(active_password_reset => active_password_reset.new), { session: session })
+
+    // 11. Update dependents
+    // Import dependent mutation controllers
+    // create
+    // No 'create' dependent controller needs to be imported
+    // update
+    // No 'update' dependent controller needs to be imported
+    // remove
+    // No 'remove' dependent controller needs to be imported
+    // Nothing to do here.
+
+    // 12. Commit transaction and end session
+    if (!parent_session) {
+        if (session.inTransaction()) await session.commitTransaction()
+        await session.endSession()
+    }
+
+    // 13. Reply
     return {
         code: 200,
         data: undefined,

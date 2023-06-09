@@ -1,6 +1,7 @@
 // ONLY SERVER
-module.exports = async (query, user) => {
-    // 1. validate query
+module.exports = async (query, user, parent_session) => {
+
+    // 1. Validate query
     const find_active_password_reset_validator = require('../../validators/requests/api/active_password_reset/find')
     try {
         await find_active_password_reset_validator.validateAsync(query)
@@ -8,38 +9,44 @@ module.exports = async (query, user) => {
         return { code: 400, data: err.details }
     }
 
-    // 2. authorize {query.filter, user}
+    // 2. Authorize find
     const authorizer = require('../../authorizers/active_password_reset')
-    const filter_authorizer_result = authorizer(query.filter, 'find', user)
-    if (!filter_authorizer_result.authorized) {
-        return { code: 403, data: filter_authorizer_result.message }
+    try {
+        query.filter = authorizer(query.filter, 'find', user)
+    } catch (reason) {
+        return {
+            code: 403,
+            data: reason
+        }
     }
 
-    // 3. authorize {query.projection, user}
-    const projection_authorizer_result = authorizer(
-        query.projection,
-        'project',
-        user
-    )
-    if (!projection_authorizer_result.authorized) {
-        return { code: 403, data: projection_authorizer_result.message }
+    // 3. Authorize project
+    try {
+        query.projection = authorizer(query.projection, 'project', user)
+    } catch (reason) {
+        return {
+            code: 403,
+            data: reason
+        }
     }
 
-    // 3. prepare
+    // 4. Start session and transaction if they don't exist
+    const Active_Password_Reset_Model = require('../../models/Active_Password_Reset')
+    const session = parent_session ?? await Active_Password_Reset_Model.db.startSession()
+    if (!session.inTransaction()) session.startTransaction()
+
+    // 5. Find
     const filter = query.filter
     const projection = query.projection // if you pass an unknown value, it will ignore it
     const options = query.options // limit: validated, skip: validated, sort: what if you pass an unknown key?
 
-    // 4. find
-    const Active_Password_Reset_Model = require('../../models/Active_Password_Reset')
-
     const active_password_resets = await Active_Password_Reset_Model.find(
         filter,
         projection, // is undefined okay? or should i convert to null
-        options // is undefined okay? or should i convert to null
+        { ...options, session: session } // is undefined okay? or should i convert to null
     )
 
-    // 5. validate documents
+    // 6. Validate documents
     const active_password_reset_validator = require('../../validators/schemas/Active_Password_Reset')
     try {
         const validator_promises = active_password_resets.map(
@@ -50,10 +57,20 @@ module.exports = async (query, user) => {
         )
         await Promise.all(validator_promises)
     } catch (err) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
         return { code: 500, data: err.details }
     }
 
-    // 6. send
+    // 7. Commit transaction and end session
+    if (!parent_session) {
+        if (session.inTransaction()) await session.commitTransaction()
+        await session.endSession()
+    }
+
+    // 8. Send
     return {
         code: 200,
         data: active_password_resets,
