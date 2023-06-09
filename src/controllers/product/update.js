@@ -1,22 +1,7 @@
 // COMPETITOR, ORGANIZER, RECEIVER, SERVER
-module.exports = async (data, user) => {
-    // own model
-    const Product_Model = require('../../models/Product')
-    // dependency finds
-    const find_user = require('../user/find')
-    const find_competition = require('../competition/find')
-    // dependent mutations
-    // create
-    const create_rating = require('../rating/create')
-    const create_entry_fee_payment = require('../entry_fee_payment/create')
-    // update
-    const update_rating = require('../rating/update')
-    const update_entry_fee_payment = require('../entry_fee_payment/update')
-    // remove
-    const remove_rating = require('../rating/remove')
-    const remove_entry_fee_payment = require('../entry_fee_payment/remove')
+module.exports = async (data, user, parent_session) => {
 
-    // 1. validate data
+    // 1. Validate data
     const update_product_validator = require('../../validators/requests/api/product/update')
     try {
         await update_product_validator.validateAsync(data)
@@ -24,22 +9,129 @@ module.exports = async (data, user) => {
         return { code: 400, data: err.details }
     }
 
-    // 2. authorize updatable
+    // 2. Authorize updatable
     const authorizer = require('../../authorizers/product')
-    const updatable_authorizer_result = authorizer(
-        data.query,
-        'updatable',
-        user
-    )
-    if (!updatable_authorizer_result.authorized) {
-        return { code: 403, data: updatable_authorizer_result.message }
+    try {
+        data.query = authorizer(data.query, 'updatable', user)
+    } catch (reason) {
+        return {
+            code: 403,
+            data: reason
+        }
+    }
+    const filter = data.query
+
+    // 3. Authorize update
+    try {
+        data.body = authorizer(data.body, 'update', user)
+    } catch (reason) {
+        return {
+            code: 403,
+            data: reason
+        }
+    }
+    const update = data.body
+
+    // 4. Start session and transaction if they don't exist
+    const Product_Model = require('../../models/Product')
+    const session = parent_session ?? await Product_Model.db.startSession()
+    if (!session.inTransaction()) session.startTransaction()
+
+    // 5. Find
+    const products = (await Product_Model.find(
+        filter,
+        null,
+        { session: session }
+    )).map(product => ({ old: structuredClone(product), new: product }))
+    if (products.length === 0) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.commitTransaction()
+            await session.endSession()
+        }
+        return {
+            code: 200, // this will be 200. bc this is not an error.
+            data: 'no_documents_found_to_update',
+        }
     }
 
-    // 3. authorize update
-    const update_authorizer_result = authorizer(data.body, 'update', user)
-    if (!update_authorizer_result.authorized) {
-        return { code: 403, data: update_authorizer_result.message }
+    // 6. Update locally
+    // If something needs to be removed from the document, we need to declare it here.
+    const remove = [] // Remove that is globally true for all documents
+    for (const product of products) {
+        const current_update = structuredClone(update)
+        let current_remove = structuredClone(remove)
+
+        // competition_id, competitor_id, public_id and secret_id cannot be changed
+        // product_name, anonimized_product_name, factory_name is OK
+        if (
+            'maturation_time_type' in current_update &&
+            product.old.maturation_time_type === 'matured' &&
+            current_update.maturation_time_type === 'fresh'
+        ) {
+            current_remove = current_remove.concat([
+                'maturation_time_quantity',
+                'maturation_time_unit',
+            ])
+        }
+        // milk_type, product_category_id, product_description, anonimized_product_description is OK
+        if (
+            'approved' in current_update &&
+            product.old.approved &&
+            !current_update.approved
+        ) {
+            current_remove = current_remove.concat([
+                'approval_type',
+            ])
+        }
+        // handed_in is OK
+
+        product.new.set(current_update)
+        for (const key of current_remove) {
+            product.new[key] = undefined
+        }
     }
+
+    // 7. Validate new documents
+    const product_validator = require('../../validators/schemas/Product')
+    try {
+        const validator_promises = products.map((product) =>
+            product_validator.validateAsync(product.new)
+        )
+        await Promise.all(validator_promises)
+    } catch (err) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
+        return { code: 500, data: err.details }
+    }
+
+    // 8. Check dependencies: Ask all dependencies if this creation is possible.
+    const dependencies = ['user', 'competition']
+    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/product`))
+
+    const dependency_approver_promises = []
+    for (const dependency_approver of dependency_approvers) {
+        dependency_approver_promises.push(dependency_approver(products, user, session))
+    }
+    const dependency_approver_results = await Promise.all(dependency_approver_promises)
+
+    const unapproved = dependency_approver_results.find(dependency_approver_result => !dependency_approver_result.approved)
+    if (unapproved) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
+        return {
+            code: 403,
+            data: unapproved.reason
+        }
+    }
+
+
+    
+
+
 
     // 3. prepare find
     // C, O, R, S
@@ -150,3 +242,19 @@ module.exports = async (data, user) => {
         data: undefined,
     }
 }
+
+//// own model
+    //const Product_Model = require('../../models/Product')
+    //// dependency finds
+    //const find_user = require('../user/find')
+    //const find_competition = require('../competition/find')
+    //// dependent mutations
+    //// create
+    //const create_rating = require('../rating/create')
+    //const create_entry_fee_payment = require('../entry_fee_payment/create')
+    //// update
+    //const update_rating = require('../rating/update')
+    //const update_entry_fee_payment = require('../entry_fee_payment/update')
+    //// remove
+    //const remove_rating = require('../rating/remove')
+    //const remove_entry_fee_payment = require('../entry_fee_payment/remove')
