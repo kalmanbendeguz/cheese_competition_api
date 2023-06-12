@@ -3,7 +3,7 @@ const router = express.Router()
 
 //const create = require('../../../controllers/user/create')
 const find = require('../../../controllers/user/find')
-//const update = require('../../../controllers/user/update')
+const update = require('../../../controllers/user/update')
 //const remove = require('../../../controllers/user/remove')
 
 // WILL ONLY BE USED INTERNALLY
@@ -17,13 +17,10 @@ router.get('/', async (req, res, _) => {
     return res.status(result.code).json(result.data)
 })
 
-// WILL ONLY BE USED INTERNALLY
-/////////////////////////
-//router.put('/', async (req, res, _) => {
-//    const result = await update({ query: req.query, body: req.body }, req.user)
-//    return res.status(result.code).json(result.data)
-//})
-////////////////
+router.put('/', async (req, res, _) => {
+    const result = await update({ query: req.query, body: req.body }, req.user, null)
+    return res.status(result.code).json(result.data)
+})
 
 // WILL ONLY BE USED INTERNALLY
 /////////////////////////
