@@ -1,11 +1,7 @@
 // ONLY SERVER
-module.exports = async (body, user) => {
-    // import models: subject resource and all queried resources
-    const User_Model = require('../../models/User')
-    const Allowed_Role_Model = require('../../models/Allowed_Role')
-    //import controllers: all mutated resources outside subject resource
+module.exports = async (body, user, parent_session) => {
 
-    // 1. validate body
+    // 1. Validate body
     const create_user_validator = require('../../validators/requests/api/user/create')
     try {
         await create_user_validator.validateAsync(body)
@@ -13,62 +9,28 @@ module.exports = async (body, user) => {
         return { code: 400, data: err.details }
     }
 
-    // 2. arrayize
+    // 2. Arrayize
     body = Array.isArray(body) ? body : [body]
 
-    // 3. authorize {body, user}
+    // 3. Authorize create
     const authorizer = require('../../authorizers/user')
-    const authorizer_results = body.map((u) => authorizer(u, 'create', user))
-    const violation = authorizer_results.find((result) => !result.authorized)
-    if (violation) {
-        return { code: 403, data: violation.message }
+    try {
+        body = body.map((u) => authorizer(u, 'create', user))
+    } catch (reason) {
+        return {
+            code: 403,
+            data: reason
+        }
     }
 
-    // 4. check_dependencies
-    // will the database be consistent if i create this document?
-    for (const u of body) {
-        //username should be unique
-        if (await User_Model.exists({ username: u.username }))
-            return {
-                code: 409,
-                data: 'username_already_exists',
-            }
-        //email should be unique
-        if (await User_Model.exists({ email: u.email }))
-            return {
-                code: 409,
-                data: 'email_already_exists',
-            }
-        //all wanted roles should be allowed
-        const wanted_roles = u.roles.filter((role) => role !== 'competitor')
-        if (
-            await Allowed_Role_Model.exists({
-                email: u.email,
-                allowed_roles: { $all: wanted_roles },
-            })
-        )
-            return {
-                code: 403,
-                data: 'at_least_one_of_the_wanted_roles_is_not_allowed_for_this_email',
-            }
-    }
+    // 4. Start session and transaction if they don't exist
+    const User_Model = require('../../models/User')
+    const session = parent_session ?? await User_Model.db.startSession()
+    if (!session.inTransaction()) session.startTransaction()
 
-    // 5. prepare: produce the documents that will be saved.
+    // 5. Create locally
     const randomstring = require('randomstring')
     for (const u of body) {
-        // email: ok
-        // username: ok
-        // hashed_password: ok
-        // roles: ok
-        // full_name: ok
-        // contact_phone_number: ok
-        // billing_information: ok
-        if (u.roles.includes('competitor')) {
-            u.association_member = false
-        }
-        u.registration_temporary = true
-
-        let existing_temporary_user
         let confirm_registration_id
         do {
             confirm_registration_id = randomstring.generate({
@@ -76,31 +38,33 @@ module.exports = async (body, user) => {
                 charset: 'alphanumeric',
                 capitalization: 'lowercase',
             })
-
-            existing_temporary_user =
-                (await User_Model.exists({
-                    confirm_registration_id: confirm_registration_id,
-                })) ||
-                body.some(
-                    (u) => u.confirm_registration_id === confirm_registration_id
-                )
-        } while (existing_temporary_user)
+        } while (
+            (await User_Model.exists({
+                confirm_registration_id: confirm_registration_id,
+            }, { session: session })) ||
+            body.some(
+                (u) =>
+                    u.confirm_registration_id === confirm_registration_id
+            ))
         u.confirm_registration_id = confirm_registration_id
-
-        if (u.roles.includes('judge')) {
-            u.table_leader = []
-        }
-        if (u.roles.includes('judge')) {
-            u.arrived = []
-        }
     }
-
-    const _users = body
-
-    // 6. create
+    const _users = body.map((u) => ({
+        email: u.email, // ok
+        username: u.username, // ok
+        hashed_password: u.hashed_password, // ok
+        roles: [],
+        //full_name: u.full_name, // we dont need this
+        //contact_phone_number: u.contact_phone_number,
+        //billing_information: u.billing_information, // we dont need this
+        // association_member: u.association_member, // we dont need this
+        registration_temporary: true, //u.registration_temporary,
+        confirm_registration_id: u.confirm_registration_id,
+        //table_leader: [], //u.table_leader, // we dont need this
+        // arrived: [], //u.arrived, // we dont need this
+    }))
     const users = _users.map((u) => new User_Model(u))
 
-    // 7. validate_documents
+    // 6. Validate created documents
     const user_validator = require('../../validators/schemas/User')
     try {
         const validator_promises = users.map((u) =>
@@ -108,19 +72,88 @@ module.exports = async (body, user) => {
         )
         await Promise.all(validator_promises)
     } catch (err) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
         return { code: 400, data: err.details }
     }
 
-    // 8. update_dependents
-    // nothing needs to be updated :)
+    // 7. Check dependencies: Ask all dependencies if this creation is possible.
+    const dependencies = ['allowed_role', 'competition']
+    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/user`))
 
-    // 9. save
-    const saver_promises = users.map((u) => u.save())
-    await Promise.all(saver_promises)
+    const dependency_approver_promises = []
+    for (const dependency_approver of dependency_approvers) {
+        dependency_approver_promises.push(dependency_approver(users.map(u => ({ old: null, new: u })), user, session))
+    }
+    const dependency_approver_results = await Promise.all(dependency_approver_promises)
 
-    // 10. reply
+    const unapproved = dependency_approver_results.find(dependency_approver_result => !dependency_approver_result.approved)
+    if (unapproved) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
+        return {
+            code: 403,
+            data: unapproved.reason
+        }
+    }
+
+    // 8. Check collection integrity
+    // We need uniqueness of email, username and confirm_registration_id
+    for (const u of users) {
+        if (await User_Model.exists({ email: u.email }, { session: session })
+        ) {
+            if (!parent_session) {
+                if (session.inTransaction()) await session.abortTransaction()
+                await session.endSession()
+            }
+            return {
+                code: 409,
+                data: 'email_already_exists',
+            }
+        }
+        if (await User_Model.exists({ username: u.username }, { session: session })
+        ) {
+            if (!parent_session) {
+                if (session.inTransaction()) await session.abortTransaction()
+                await session.endSession()
+            }
+            return {
+                code: 409,
+                data: 'username_already_exists',
+            }
+        }
+        if (await User_Model.exists({ confirm_registration_id: u.confirm_registration_id }, { session: session })
+        ) {
+            if (!parent_session) {
+                if (session.inTransaction()) await session.abortTransaction()
+                await session.endSession()
+            }
+            return {
+                code: 409,
+                data: 'confirm_registration_id_already_exists',
+            }
+        }
+    }
+
+    // 9. Save created documents
+    await User_Model.bulkSave(users, { session: session })
+
+    // 10. Update dependents
+    // Nothing needs to be updated
+
+    // 11. Commit transaction and end session.
+    if (!parent_session) {
+        if (session.inTransaction()) await session.commitTransaction()
+        await session.endSession()
+    }
+
+    // 12. Reply
     return {
         code: 201,
-        data: undefined, // TODO, check if it works if i leave it out, etc.
+        data: undefined, // TODO: check if it works if i leave it out, etc.
     }
 }
