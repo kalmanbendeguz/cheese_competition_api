@@ -40,3 +40,6 @@ for (const product of body) {
             data: 'provided_category_is_invalid',
         }
 }* /
+
+// product_category_id ONLY can be changed if the competition was NEVER opened.
+// = last_competition_open_date = UNDEFINED !!!

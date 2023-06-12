@@ -103,22 +103,23 @@ module.exports = async (body, user, parent_session) => {
         }
     }
 
-    // 8. Check local constraints and collection integrity
+    // 8. Check collection integrity
     // We can not have a better validation for certificate template, since none of its contents is strictly required.
     // No need to check for any uniqueness.
-    for (const competition of competitions) {
-        // product_category_tree needs to be a subtree of the default tree.
-        if (!is_subtree(competition.product_category_tree, default_product_category_tree)) {
-            if (!parent_session) {
-                if (session.inTransaction()) await session.abortTransaction()
-                await session.endSession()
-            }
-            return {
-                code: 403,
-                data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
-            }
-        }
-    }
+    // TODO: this should be at validation
+    //for (const competition of competitions) {
+    //    // product_category_tree needs to be a subtree of the default tree.
+    //    if (!is_subtree(competition.product_category_tree, default_product_category_tree)) {
+    //        if (!parent_session) {
+    //            if (session.inTransaction()) await session.abortTransaction()
+    //            await session.endSession()
+    //        }
+    //        return {
+    //            code: 403,
+    //            data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
+    //        }
+    //    }
+    //}
 
     // 9. Save created documents
     await Competition_Model.bulkSave(competitions, { session: session })

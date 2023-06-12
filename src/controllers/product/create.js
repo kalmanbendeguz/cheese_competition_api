@@ -185,7 +185,7 @@ module.exports = async (body, user, parent_session) => {
         }
     }
 
-    // 8. Check local constraints and collection integrity
+    // 8. Check collection integrity
     // public_id and secret_id should be unique, but it is checked at creation.
     // milk_type should be valid, but it is for a later concern
     // product_category_id should be valid, but it is asked at competition/approve_dependent_mutation/product

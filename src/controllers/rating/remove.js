@@ -79,7 +79,7 @@ module.exports = async (query, user, parent_session) => {
         }
     }
 
-    // 7. Check local constraints and collection integrity
+    // 7. Check collection integrity
     // Nothing needs to be checked.
 
     // 8. Remove documents

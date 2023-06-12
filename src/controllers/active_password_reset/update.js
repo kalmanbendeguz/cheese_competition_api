@@ -104,7 +104,7 @@ module.exports = async (data, user, parent_session) => {
         }
     }
 
-    // 9. Check local constraints and collection integrity
+    // 9. Check collection integrity
     // Nothing needs to be checked, since nothing is updatable.
 
     // 10. Save updated documents

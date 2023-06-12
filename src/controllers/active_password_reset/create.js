@@ -100,7 +100,7 @@ module.exports = async (body, user, parent_session) => {
         }
     }
 
-    // 8. Check local constraints and collection integrity
+    // 8. Check collection integrity
     // restore_ids should be unique
     const restore_ids = active_password_resets.map(active_password_reset => active_password_reset.restore_id.toString())
     if (await Active_Password_Reset_Model.exists({

@@ -75,7 +75,7 @@ module.exports = async (body, user, parent_session) => {
         }
     }
 
-    // 8. Check local constraints and collection integrity
+    // 8. Check collection integrity
     // We need compound uniqueness of {product_id, judge_id}
     for (const rating of ratings) {
         if (
