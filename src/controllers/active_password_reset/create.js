@@ -39,7 +39,6 @@ module.exports = async (body, user, parent_session) => {
                 charset: 'alphanumeric',
                 capitalization: 'lowercase',
             })
-
         } while (
             (await Active_Password_Reset_Model.exists({
                 restore_id: restore_id,
