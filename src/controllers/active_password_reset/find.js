@@ -47,22 +47,22 @@ module.exports = async (query, user, parent_session) => {
     )
 
     // 6. Validate documents
-    const active_password_reset_validator = require('../../validators/schemas/Active_Password_Reset')
-    try {
-        const validator_promises = active_password_resets.map(
-            (active_password_reset) =>
-                active_password_reset_validator.validateAsync(
-                    active_password_reset
-                )
-        )
-        await Promise.all(validator_promises)
-    } catch (err) {
-        if (!parent_session) {
-            if (session.inTransaction()) await session.abortTransaction()
-            await session.endSession()
-        }
-        return { code: 500, data: err.details }
-    }
+   // const active_password_reset_validator = require('../../validators/schemas/Active_Password_Reset')
+   // try {
+   //     const validator_promises = active_password_resets.map(
+   //         (active_password_reset) =>
+   //             active_password_reset_validator.validateAsync(
+   //                 active_password_reset
+   //             )
+   //     )
+   //     await Promise.all(validator_promises)
+   // } catch (err) {
+   //     if (!parent_session) {
+   //         if (session.inTransaction()) await session.abortTransaction()
+   //         await session.endSession()
+   //     }
+   //     return { code: 500, data: err.details }
+   // }
 
     // 7. Commit transaction and end session
     if (!parent_session) {

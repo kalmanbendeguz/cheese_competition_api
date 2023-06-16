@@ -8,9 +8,10 @@ module.exports = (req, res, next) => {
     if (!(req.method in rules[req.path]))
         return res.status(403).json(`no__${req.method}__authorization_rule_found_for_endpoint__${req.baseUrl}${req.path}__`)
 
-    const role = req.user?.role ?? 'UNAUTHENTICATED'
-    if (!rules[req.path][req.method].includes(role))
-        return res.status(403).json(`role__${role}__is_not_authorized_to__${req.method}__${req.baseUrl}${req.path}__`)
+    req.user ??= { role: 'UNAUTHENTICATED' } // TODO CHANGE !!!! to UNAUTH NEEDBACK
+
+    if (!rules[req.path][req.method].includes(req.user.role))
+        return res.status(403).json(`role__${req.user.role}__is_not_authorized_to__${req.method}__${req.baseUrl}${req.path}__`)
 
     return next()
 }

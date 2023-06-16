@@ -47,6 +47,12 @@ const rules = {
         PUT: ['competitor', 'judge', 'organizer', 'receiver', 'SERVER'],
         DELETE: ['SERVER'],
     },
+    '/login': {
+        POST: ['UNAUTHENTICATED'],
+        //GET: ['competitor', 'judge', 'organizer', 'receiver', 'SERVER'],
+        //PUT: ['competitor', 'judge', 'organizer', 'receiver', 'SERVER'],
+        //DELETE: ['SERVER'],
+    },
 }
 
 module.exports = rules

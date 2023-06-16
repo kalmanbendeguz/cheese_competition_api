@@ -17,6 +17,9 @@ const Entry_Fee_Payment_Schema = new Schema(
                 },
             ],
         },
+        barion_payment_id: {
+            type: String,
+        },
         pending: {
             type: Boolean,
             default: true,
@@ -25,9 +28,6 @@ const Entry_Fee_Payment_Schema = new Schema(
             type: Date,
             default: Date.now,
             expires: 15 * 60,
-        },
-        barion_payment_id: {
-            type: String,
         },
         barion_transaction_id: {
             type: String,

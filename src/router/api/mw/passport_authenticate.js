@@ -1,5 +1,5 @@
 const passport = require('../../../config/passport')
 
-const passport_session = passport.session()
+const passport_authenticate = passport.authenticate('session')
 
-module.exports = passport_session
+module.exports = passport_authenticate

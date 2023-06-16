@@ -47,22 +47,22 @@ module.exports = async (query, user, parent_session) => {
     )
 
     // 6. Validate documents
-    const competition_validator = require('../../validators/schemas/Competition')
-    try {
-        const validator_promises = competitions.map(
-            (competition) =>
-                competition_validator.validateAsync(
-                    competition
-                )
-        )
-        await Promise.all(validator_promises)
-    } catch (err) {
-        if (!parent_session) {
-            if (session.inTransaction()) await session.abortTransaction()
-            await session.endSession()
-        }
-        return { code: 500, data: err.details }
-    }
+    //const competition_validator = require('../../validators/schemas/Competition')
+    //try {
+    //    const validator_promises = competitions.map(
+    //        (competition) =>
+    //            competition_validator.validateAsync(
+    //                competition
+    //            )
+    //    )
+    //    await Promise.all(validator_promises)
+    //} catch (err) {
+    //    if (!parent_session) {
+    //        if (session.inTransaction()) await session.abortTransaction()
+    //        await session.endSession()
+    //    }
+    //    return { code: 500, data: err.details }
+    //}
 
     // 7. Commit transaction and end session
     if (!parent_session) {

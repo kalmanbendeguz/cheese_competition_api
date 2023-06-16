@@ -5,14 +5,14 @@ module.exports = (data, verb, user) => {
         _id: {
             create: {},
             find: {
-                judge: 'optional',
-                organizer: 'optional',
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             project: {
-                judge: 'optional',
-                organizer: 'optional',
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             updatable: {
                 judge: { rule: 'optional' },
@@ -21,8 +21,8 @@ module.exports = (data, verb, user) => {
             },
             update: {},
             remove: {
-                organizer: 'optional',
-                SERVER: 'optional',
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
         },
         product_id: {
@@ -30,12 +30,12 @@ module.exports = (data, verb, user) => {
                 SERVER: { rule: 'required' },
             },
             find: {
-                organizer: 'optional',
-                SERVER: 'optional',
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             project: {
-                organizer: 'optional',
-                SERVER: 'optional',
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             updatable: {
                 organizer: { rule: 'optional' },
@@ -43,8 +43,8 @@ module.exports = (data, verb, user) => {
             },
             update: {},
             remove: {
-                organizer: 'optional',
-                SERVER: 'optional',
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
         },
         judge_id: {
@@ -52,13 +52,13 @@ module.exports = (data, verb, user) => {
                 SERVER: { rule: 'required' },
             },
             find: {
-                organizer: 'optional',
-                SERVER: 'optional',
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             project: {
-                judge: 'optional',
-                organizer: 'optional',
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             updatable: {
                 judge: { rule: 'bound', value: user._id.toString() },
@@ -67,8 +67,8 @@ module.exports = (data, verb, user) => {
             },
             update: {},
             remove: {
-                organizer: 'optional',
-                SERVER: 'optional',
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
         },
         anonymous: {
@@ -76,14 +76,14 @@ module.exports = (data, verb, user) => {
                 SERVER: { rule: 'optional' },
             },
             find: {
-                judge: 'optional',
-                organizer: 'optional',
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             project: {
-                judge: 'optional',
-                organizer: 'optional',
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             updatable: {
                 judge: { rule: 'optional' },
@@ -96,8 +96,8 @@ module.exports = (data, verb, user) => {
                 SERVER: { rule: 'optional' },
             },
             remove: {
-                organizer: 'optional',
-                SERVER: 'optional',
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
         },
         aspects: {
@@ -105,14 +105,14 @@ module.exports = (data, verb, user) => {
                 SERVER: { rule: 'required' },
             },
             find: {
-                judge: 'optional',
-                organizer: 'optional',
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             project: {
-                judge: 'optional',
-                organizer: 'optional',
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             updatable: {
                 judge: { rule: 'optional' },
@@ -125,8 +125,8 @@ module.exports = (data, verb, user) => {
                 SERVER: { rule: 'optional' },
             },
             remove: {
-                organizer: 'optional',
-                SERVER: 'optional',
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
         },
         overall_impression: {
@@ -134,14 +134,14 @@ module.exports = (data, verb, user) => {
                 SERVER: { rule: 'required' },
             },
             find: {
-                judge: 'optional',
-                organizer: 'optional',
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             project: {
-                judge: 'optional',
-                organizer: 'optional',
-                SERVER: 'optional',
+                judge: { rule: 'optional' },
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
             updatable: {
                 judge: { rule: 'optional' },
@@ -154,8 +154,8 @@ module.exports = (data, verb, user) => {
                 SERVER: { rule: 'optional' },
             },
             remove: {
-                organizer: 'optional',
-                SERVER: 'optional',
+                organizer: { rule: 'optional' },
+                SERVER: { rule: 'optional' },
             },
         },
     }
@@ -178,7 +178,9 @@ module.exports = (data, verb, user) => {
             throw `field_'${key}'_for_role_'${user.role}'_is_required_for_action_'${verb}'`
         } else if (policy === 'forbidden' && (key in data)) {
             throw `field_'${key}'_for_role_'${user.role}'_is_forbidden_for_action_'${verb}'`
-        } else throw `unknown_rule_'${rule}'_for_field_'${key}'_for_action_'${verb}'_for_role_'${user.role}'`
+        } else if (key in data) {
+            throw `unknown_rule_'${rule}'_for_field_'${key}'_for_action_'${verb}'_for_role_'${user.role}'`
+        }
     }
 
     return data

@@ -40,18 +40,18 @@ module.exports = async (query, user) => {
     )
 
     // 5. validate documents
-    const active_password_reset_validator = require('../../validators/schemas/Active_Password_Reset')
-    try {
-        const validator_promises = active_password_resets.map(
-            (active_password_reset) =>
-                active_password_reset_validator.validateAsync(
-                    active_password_reset
-                )
-        )
-        await Promise.all(validator_promises)
-    } catch (err) {
-        return { code: 500, data: err.details }
-    }
+    //const active_password_reset_validator = require('../../validators/schemas/Active_Password_Reset')
+    //try {
+    //    const validator_promises = active_password_resets.map(
+    //        (active_password_reset) =>
+    //            active_password_reset_validator.validateAsync(
+    //                active_password_reset
+    //            )
+    //    )
+    //    await Promise.all(validator_promises)
+    //} catch (err) {
+    //    return { code: 500, data: err.details }
+    //}
 
     // 6. send
     return {

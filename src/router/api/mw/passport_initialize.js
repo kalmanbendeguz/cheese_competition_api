@@ -1,6 +1,8 @@
 const passport = require('../../../config/passport')
 
-module.exports = passport.initialize({
+const passport_initialize = passport.initialize({
     userProperty: 'user',
     compat: true,
 })
+
+module.exports = passport_initialize

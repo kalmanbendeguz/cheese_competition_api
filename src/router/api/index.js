@@ -44,4 +44,10 @@ router.use('/rating_picture', rating_picture)
 const user = require('./user')
 router.use('/user', user)
 
+const login = require('./login')
+router.use('/login', login)
+
+const registration = require('./registration')
+router.use('/registration', registration)
+
 module.exports = router
