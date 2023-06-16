@@ -23,11 +23,9 @@ router.put('/', async (req, res, _) => {
 })
 
 // WILL ONLY BE USED INTERNALLY
-/////////////////////////
-//router.delete('/', async (req, res, _) => {
-//    const result = await remove(req.query, req.user)
-//    return res.status(result.code).json(result.data)
-//})
-////////////////
+// router.delete('/', async (req, res, _) => {
+//     const result = await remove(req.query, req.user)
+//     return res.status(result.code).json(result.data)
+// })
 
 module.exports = router

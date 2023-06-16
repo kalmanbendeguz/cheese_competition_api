@@ -1,82 +1,37 @@
 const passport = require('passport')
-const JwtStrategy = require('passport-jwt').Strategy
-const ExtractJwt = require('passport-jwt').ExtractJwt
+const LocalStrategy = require('passport-local').Strategy
 const User_Model = require('../models/User')
 
-const options = {
-    secretOrKey: 'sdgdfgdfg',
-    // secretOrKeyProvider: ,
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    // issuer: ,
-    // audience: ,
-    algorithms: ['RS256'],
-    // ignoreExpiration: ,
-    // passReqToCallback: ,
-    // jsonWebTokenOptions: ,
+const custom_fields = {
+    usernameField: 'username',
+    passwordField: 'password',
 }
 
-const verify = async (jwt_payload, done) => {
-    if (typeof jwt_payload.sub === 'undefined') return done(null, false) // vagy nem null(mert sztem ez hibának számít), de a false az biztos
-
-    const user = await User_Model.findById(jwt_payload.sub)
-
+const verify_callback_with_request = async (req, username, password, done) => {
+    const user = await User_Model.findOne({ username: username })
     if (!user) return done(null, false)
-
-    //const is_valid = await bcrypt.compare(password, user.hashed_password)
-    //
-    //if (is_valid) {
-    //    return done(null, user)
-    //} else {
-    //    return done(null, false)
-    //}
-
-    User_Model.findOne({ id: jwt_payload.sub }, function (err, user) {
-        if (err) {
-            return done(err, false)
-        }
-        if (user) {
-            return done(null, user)
-        } else {
-            return done(null, false)
-            // or you could create a new account
-        }
-    })
+    const password_correct = await bcrypt.compare(password, user.hashed_password)
+    const has_role = user.roles.includes(req.body.desired_role) // TODO (no todo, just to find: send this desired role field at login)
+    if (password_correct && has_role) {
+        return done(null, { ...user, role: req.body.desired_role })
+    } else {
+        return done(null, false)
+    }
 }
 
-//const verify_callback = async (email, password, done) => {
-//    const user = await User_Model.findOne({ email: email })
-//    if (!user) return done(null, false)
-//    const is_valid = await bcrypt.compare(password, user.hashed_password)
-//    if (is_valid) {
-//        return done(null, user)
-//    } else {
-//        return done(null, false)
-//    }
-//}
-
-const strategy = new JwtStrategy(options, verify)
-
-//const User_Model = require('../models/User')
-//const bcrypt = require('bcrypt')
-
-//const custom_fields = {
-//    usernameField: 'email',
-//    passwordField: 'password'
-//}
-//
-
-//const strategy = new LocalStrategy(custom_fields, verify_callback)
+const strategy = new LocalStrategy(custom_fields, verify_callback_with_request)
 
 passport.use(strategy)
 
-passport.serializeUser((user, done) => {
-    done(null, user.id)
+passport.serializeUser((user, done) => { // question: is this user the output of the verify callback? if yes, it has the 'role' property. if not, then should take it from the request ( this method has an overload where i can pass the request object)
+    //done(null, { _id: user._id, role: req.body.desired_role }) // something like this if the other way does not work
+    done(null, { _id: user._id, role: user.role })
 })
 
-passport.deserializeUser(async (user_id, done) => {
-    User_Model.findById(user_id)
+passport.deserializeUser(async (user_in_session, done) => {
+    User_Model.findById(user_in_session._id)
         .then((user) => {
-            done(null, user)
+            done(null, { ...user, role: user_in_session.role })
         })
         .catch((err) => done(err))
 })

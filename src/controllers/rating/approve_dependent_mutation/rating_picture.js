@@ -1,25 +1,32 @@
-// JUDGE, ORGANIZER, SERVER
-// RATING APPROVES RATING_PICTURE
 module.exports = async (rating_pictures, user, session) => {
-
-    //for (const rating_picture of rating_pictures) {
-    //    const action =
-    //        rating_picture.old === null && rating_picture.new !== null ? 'create'
-    //            : rating_picture.old !== null && rating_picture.new === null ? 'remove'
-    //                : rating_picture.old !== null && rating_picture.new !== null && !deep_equal(rating_picture.old, rating_picture.new) ? 'update'
-    //                    : rating_picture.old !== null && rating_picture.new !== null && deep_equal(rating_picture.old, rating_picture.new) ? 'invisible_update'
-    //                        : 'unknown_action'
-    //    // create the "difference" object
-    //    // we need to find the 'owner' rating document
-    //    // according to the inner state of rating, every rating_picture mutation can be done
-//
-    //}
-
     return {
         approved: true,
         reason: null
     }
 }
+
+//// JUDGE, ORGANIZER, SERVER
+//// RATING APPROVES RATING_PICTURE
+//module.exports = async (rating_pictures, user, session) => {
+//
+//    //for (const rating_picture of rating_pictures) {
+//    //    const action =
+//    //        rating_picture.old === null && rating_picture.new !== null ? 'create'
+//    //            : rating_picture.old !== null && rating_picture.new === null ? 'remove'
+//    //                : rating_picture.old !== null && rating_picture.new !== null && !deep_equal(rating_picture.old, rating_picture.new) ? 'update'
+//    //                    : rating_picture.old !== null && rating_picture.new !== null && deep_equal(rating_picture.old, rating_picture.new) ? 'invisible_update'
+//    //                        : 'unknown_action'
+//    //    // create the "difference" object
+//    //    // we need to find the 'owner' rating document
+//    //    // according to the inner state of rating, every rating_picture mutation can be done
+////
+//    //}
+//
+//    return {
+//        approved: true,
+//        reason: null
+//    }
+//}
 
     // only can update or remove a rating_picture if the competition is opened.
 
@@ -64,7 +71,7 @@ module.exports = async (rating_pictures, user, session) => {
     //} else return { approved: false, reason: 'unknown_action' }
 //
 //
-    //// we should find the associated document: 
+    //// we should find the associated document:
     //const ownerdoc = Product_Model.find(_id: old_or_new_state.product_id);
 //
     //// if you want to change rating, you can do it only if competition is opened.

@@ -1,6 +1,6 @@
 // COMPETITOR, ORGANIZER, RECEIVER, SERVER
 module.exports = async (data, user, parent_session) => {
-
+    
     // 1. Validate data
     const update_product_validator = require('../../validators/requests/api/product/update')
     try {
@@ -20,7 +20,7 @@ module.exports = async (data, user, parent_session) => {
         }
     }
     const filter = data.query
-
+    
     // 3. Authorize update
     try {
         data.body = authorizer(data.body, 'update', user)
@@ -31,7 +31,7 @@ module.exports = async (data, user, parent_session) => {
         }
     }
     const update = data.body
-
+    
     // 4. Start session and transaction if they don't exist
     const Product_Model = require('../../models/Product')
     const session = parent_session ?? await Product_Model.db.startSession()

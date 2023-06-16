@@ -26,14 +26,14 @@ const query_validator = Joi.object({
         Joi.string().trim().min(1).required().prefs({ convert: false }),
     ).unique().min(1).optional(),
     options: Joi.object({
-        tailable
-        limit
-        skip
-        allowDiskUse
-        batchSize
-        readPreference
-        hint
-        comment
+        //tailable
+        //limit
+        //skip
+        //allowDiskUse
+        //batchSize
+        //readPreference
+        //hint
+        //comment
     }).optional(),
 }).required()
 

@@ -10,7 +10,10 @@ const router = express.Router({
 })
 
 // Application-level middlewares
-router.use(express_urlencoded, express_json)
+router.use(
+    express_urlencoded,
+    express_json
+)
 
 // API router
 const api = require('./api')

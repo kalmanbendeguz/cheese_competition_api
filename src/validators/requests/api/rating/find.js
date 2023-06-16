@@ -8,7 +8,7 @@ const query_validator = Joi.object({
         anonymous: Joi.any().optional(),
         aspects: Joi.any().optional(),
         overall_impression: Joi.any().optional(),
-    }).required(),
+    }).optional(),
     projection: Joi.object()
         .pattern(Joi.string(), Joi.valid(1).required())
         .min(1)

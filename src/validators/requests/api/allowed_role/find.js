@@ -6,7 +6,7 @@ const query_validator = Joi.object({
         user_id: Joi.any().optional(),
         restore_id: Joi.any().optional(),
         expiring_started: Joi.any().optional(),
-    }).required(),
+    }).optional(),
     projection: Joi.object()
         .pattern(Joi.string(), Joi.valid(1).required())
         .min(1)

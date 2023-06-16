@@ -230,6 +230,16 @@ module.exports = async (data, user, parent_session) => {
         }
         // If we remove a 'table_leader', all rating_pictures should be removed from that competition.
         // THIS IS A TODO. EZT ÁT KELL GONDOLNI
+        /**
+         * remove_rating_picture(
+         * {
+         *      rating_id: olyan rating, ahol rating.judge_id = judge_id és rating.product.competition_id = removed_comp_id
+         * },
+         * user,
+         * session
+         * )
+         * 
+         */
 
         // If we remove an 'arrived', all of the judge's ratings should be removed from that competition.
         // THIS IS A TODO. EZT IS ÁT KELL GONDOLNI

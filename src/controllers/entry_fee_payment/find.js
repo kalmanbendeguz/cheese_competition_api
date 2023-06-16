@@ -10,7 +10,7 @@ module.exports = async (query, user) => {
 
     // 2. authorize {query.filter, user}
     const authorizer = require('../../authorizers/active_password_reset')
-    const filter_authorizer_result = authorizer(query.filter, 'find', user)
+    const filter_authorizer_result = authorizer(query.filter ?? {}, 'find', user)
     if (!filter_authorizer_result.authorized) {
         return { code: 403, data: filter_authorizer_result.message }
     }

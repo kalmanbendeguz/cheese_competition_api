@@ -12,7 +12,7 @@ module.exports = async (query, user, parent_session) => {
     // 2. Authorize find
     const authorizer = require('../../authorizers/active_password_reset')
     try {
-        query.filter = authorizer(query.filter, 'find', user)
+        query.filter = authorizer(query.filter ?? {}, 'find', user)
     } catch (reason) {
         return {
             code: 403,
