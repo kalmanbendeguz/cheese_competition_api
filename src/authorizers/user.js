@@ -97,7 +97,7 @@ module.exports = (data, verb, user) => {
         },
         roles: {
             create: {
-                SERVER: { rule: 'required' },
+                SERVER: { rule: 'forbidden' },
             }, // generated // POST BODY
             find: {
                 //user can use this field in GET QUERY
@@ -324,14 +324,21 @@ module.exports = (data, verb, user) => {
         } else if (policy === 'bound') {
             if (key in data) {
                 throw `field_'${key}'_for_role_'${user.role}'_is_bound_for_action_'${verb}'`
+            } else {
+                data[key] = rule.value
             }
-            data[key] = rule.value
-        } else if (policy === 'required' && !(key in data)) {
-            throw `field_'${key}'_for_role_'${user.role}'_is_required_for_action_'${verb}'`
-        } else if (policy === 'forbidden' && (key in data)) {
-            throw `field_'${key}'_for_role_'${user.role}'_is_forbidden_for_action_'${verb}'`
+        } else if (policy === 'required') {
+            if (key in data) {} 
+            else {
+                throw `field_'${key}'_for_role_'${user.role}'_is_required_for_action_'${verb}'`
+            }
+        } else if (policy === 'forbidden') {
+            if (key in data) {
+                throw `field_'${key}'_for_role_'${user.role}'_is_forbidden_for_action_'${verb}'`
+            } 
+            else {}
         } else if (key in data) {
-            throw `unknown_rule_'${rule}'_for_field_'${key}'_for_action_'${verb}'_for_role_'${user.role}'`
+            throw `unknown_policy_'${policy}'_for_field_'${key}'_for_action_'${verb}'_for_role_'${user.role}'`
         }
     }
 

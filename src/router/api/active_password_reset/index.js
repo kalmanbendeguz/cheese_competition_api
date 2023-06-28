@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-// const create = require('../../../controllers/active_password_reset/create')
-// const find = require('../../../controllers/active_password_reset/find')
-// const update = require('../../../controllers/active_password_reset/update')
-// const remove = require('../../../controllers/active_password_reset/remove')
+// const create = require('../../../controllers/entities/active_password_reset/create')
+// const find = require('../../../controllers/entities/active_password_reset/find')
+// const update = require('../../../controllers/entities/active_password_reset/update')
+// const remove = require('../../../controllers/entities/active_password_reset/remove')
 
 // WILL ONLY BE USED INTERNALLY
 // router.post('/', async (req, res, _) => {

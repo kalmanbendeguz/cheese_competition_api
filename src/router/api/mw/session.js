@@ -20,7 +20,7 @@ const session_store = MongoStore.create({
 const session = express_session({
     secret: process.env._COOKIE_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: false, // NEEDBACK FALSE ????
     store: session_store,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24, // milliseconds

@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-// const create = require('../../../controllers/rating/create')
-const find = require('../../../controllers/rating/find')
-const update = require('../../../controllers/rating/update')
-const remove = require('../../../controllers/rating/remove')
+// const create = require('../../../controllers/entities/rating/create')
+const find = require('../../../controllers/entities/rating/find')
+const update = require('../../../controllers/entities/rating/update')
+const remove = require('../../../controllers/entities/rating/remove')
 
 // WILL ONLY BE USED INTERNALLY
 // router.post('/', async (req, res, _) => {

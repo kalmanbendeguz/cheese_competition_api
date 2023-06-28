@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-//const create = require('../../../controllers/entry_fee_payment/create')
-const find = require('../../../controllers/entry_fee_payment/find')
-//const update = require('../../../controllers/entry_fee_payment/update')
-//const remove = require('../../../controllers/entry_fee_payment/remove')
+//const create = require('../../../controllers/entities/entry_fee_payment/create')
+const find = require('../../../controllers/entities/entry_fee_payment/find')
+//const update = require('../../../controllers/entities/entry_fee_payment/update')
+//const remove = require('../../../controllers/entities/entry_fee_payment/remove')
 
 // WILL ONLY BE USED INTERNALLY
 // router.post('/', async (req, res, _) => {

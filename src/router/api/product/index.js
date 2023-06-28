@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-const create = require('../../../controllers/product/create')
-const find = require('../../../controllers/product/find')
-const update = require('../../../controllers/product/update')
-const remove = require('../../../controllers/product/remove')
+const create = require('../../../controllers/entities/product/create')
+const find = require('../../../controllers/entities/product/find')
+const update = require('../../../controllers/entities/product/update')
+const remove = require('../../../controllers/entities/product/remove')
 
 router.post('/', async (req, res, _) => {
     const result = await create(req.body, req.user, null)

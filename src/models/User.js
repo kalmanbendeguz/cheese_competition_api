@@ -37,7 +37,7 @@ const User_Schema = new Schema(
         },
         association_member: {
             type: Boolean,
-            default: false,
+            //default: false,
         },
         registration_temporary: {
             type: Boolean,
@@ -53,6 +53,7 @@ const User_Schema = new Schema(
                     ref: Competition_Model,
                 },
             ],
+            default: undefined
         },
         arrived: {
             type: [
@@ -61,6 +62,7 @@ const User_Schema = new Schema(
                     ref: Competition_Model,
                 },
             ],
+            default: undefined
         },
     },
     {

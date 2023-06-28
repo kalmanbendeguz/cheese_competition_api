@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-const create = require('../../../controllers/competition/create')
-const find = require('../../../controllers/competition/find')
-const update = require('../../../controllers/competition/update')
-const remove = require('../../../controllers/competition/remove')
+const create = require('../../../controllers/entities/competition/create')
+const find = require('../../../controllers/entities/competition/find')
+const update = require('../../../controllers/entities/competition/update')
+const remove = require('../../../controllers/entities/competition/remove')
 
 router.post('/', async (req, res, _) => {
     const result = await create(req.body, req.user, null)

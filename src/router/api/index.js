@@ -16,6 +16,7 @@ router.use('/',
     session,
     passport_initialize,
     passport_authenticate,
+    (req,res,next) => {console.log('requser');console.log(req.query); next()},
     validate,
     authorize
 )
@@ -49,5 +50,8 @@ router.use('/login', login)
 
 const registration = require('./registration')
 router.use('/registration', registration)
+
+const am_i_logged_in = require('./am_i_logged_in') // NEEDBACK
+router.use('/am_i_logged_in', am_i_logged_in)
 
 module.exports = router

@@ -1,5 +1,6 @@
 const Joi = require('joi')
 const Billing_Information_Validator = require('./Billing_Information')
+const { mongoose: { Types: { ObjectId }, }, } = require('mongoose')
 
 module.exports = Joi.object({
     email: Joi.string().email().required(),
@@ -16,16 +17,16 @@ module.exports = Joi.object({
             Joi.string().valid('competitor', 'judge', 'organizer', 'receiver')
         )
         .unique()
-        .min(1)
+        .min(0)
         .required(),
     full_name: Joi.when('roles', {
-        is: Joi.array().length(1).items(Joi.string().valid('organizer')),
-        then: Joi.forbidden(),
-        otherwise: Joi.string()
+        is: Joi.array().min(1).items(Joi.string().valid('competitor', 'judge')),
+        then: Joi.string()
             .trim()
             .min(1)
             .required()
             .prefs({ convert: false }),
+        otherwise: Joi.forbidden(),
     }),
     contact_phone_number: Joi.when('roles', {
         is: Joi.array().items(Joi.string().invalid('competitor')),

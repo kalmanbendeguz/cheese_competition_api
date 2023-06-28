@@ -107,7 +107,7 @@ module.exports = (data, verb, user) => {
         } else if (policy === 'forbidden' && (key in data)) {
             throw `field_'${key}'_for_role_'${user.role}'_is_forbidden_for_action_'${verb}'`
         } else if (key in data) {
-            throw `unknown_rule_'${rule}'_for_field_'${key}'_for_action_'${verb}'_for_role_'${user.role}'`
+            throw `unknown_policy_'${policy}'_for_field_'${key}'_for_action_'${verb}'_for_role_'${user.role}'`
         }
     }
 

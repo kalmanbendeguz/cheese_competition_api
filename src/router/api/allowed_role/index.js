@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-const create = require('../../../controllers/allowed_role/create')
-const find = require('../../../controllers/allowed_role/find')
-const update = require('../../../controllers/allowed_role/update')
-const remove = require('../../../controllers/allowed_role/remove')
+const create = require('../../../controllers/entities/allowed_role/create')
+const find = require('../../../controllers/entities/allowed_role/find')
+const update = require('../../../controllers/entities/allowed_role/update')
+const remove = require('../../../controllers/entities/allowed_role/remove')
 
 router.post('/', async (req, res, _) => {
     const result = await create(req.body, req.user, null)

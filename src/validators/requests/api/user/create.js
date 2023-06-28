@@ -11,13 +11,13 @@ const object_schema = Joi.object({
         .required(), //IC: if not unique
     email: Joi.string().email().required(), // IC: if not unique
     hashed_password: Joi.string().min(1).required(), // IC: never
-    roles: Joi.array()
-        .items(
-            Joi.string().valid('competitor', 'judge', 'organizer', 'receiver')
-        )
-        .unique()
-        .min(1)
-        .required(),
+    //roles: Joi.array()
+    //    .items(
+    //        Joi.string().valid('competitor', 'judge', 'organizer', 'receiver')
+    //    )
+    //    .unique()
+    //    .min(1)
+    //    .required(),
     full_name: Joi.when('roles', {
         is: Joi.array().length(1).items(Joi.string().valid('organizer')),
         then: Joi.forbidden(),

@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-const create = require('../../../controllers/rating_picture/create')
-const find = require('../../../controllers/rating_picture/find')
-const update = require('../../../controllers/rating_picture/update')
-const remove = require('../../../controllers/rating_picture/remove')
+const create = require('../../../controllers/entities/rating_picture/create')
+const find = require('../../../controllers/entities/rating_picture/find')
+const update = require('../../../controllers/entities/rating_picture/update')
+const remove = require('../../../controllers/entities/rating_picture/remove')
 
 router.post('/', async (req, res, _) => {
     const result = await create(req.body, req.user, null)
