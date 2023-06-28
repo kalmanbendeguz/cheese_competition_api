@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config(/*{ path: '../.env' }*/)
+    require('dotenv').config()
 }
 
 const express = require('express')
@@ -17,8 +17,3 @@ for (const key in process.env) {
 app.listen(process.env.SERVER_URL_PORT, () => {
     console.log(`"${process.env.APPLICATION_NAME}" app listening on port: ${process.env.SERVER_URL_PORT}`)
 })
- 
-// IMPORTANT: query string values are always STRINGS. SO I SHOULD REWRITE EVERYTHING (MAINLY VALIDATION)
-// knowing this.
-
-// TODO: DECODEURICOMPONENT
