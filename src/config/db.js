@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 const db_url = `${process.env.DB_URI_SCHEME}://${process.env.DB_URI_HOST}/${process.env.DB_URI_NAME}?${process.env.DB_URI_QUERY}`
+
 const db_auth =
     process.env._DB_URI_USERNAME !== '' && process.env._DB_URI_PASSWORD !== ''
         ?
@@ -16,6 +17,7 @@ const mongoose_connect_options = {
     auth: db_auth,
     autoIndex: true,
     autoCreate: true,
+    //replicaSet: 'rs'
 }
 
 let connection

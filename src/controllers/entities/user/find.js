@@ -10,7 +10,7 @@ module.exports = async (query, user, parent_session) => {
     }
 
     // 2. Authorize find
-    const authorizer = require('../../../authorizers/user')
+    const authorizer = require('../../../authorizers/entities/user')
     try {
         query.filter = authorizer(query.filter ?? {}, 'find', user)
     } catch (reason) {

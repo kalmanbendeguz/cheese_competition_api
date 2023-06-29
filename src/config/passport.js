@@ -1,27 +1,27 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const User_Model = require('../models/User')
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt')
 
 const custom_fields = {
     usernameField: 'username',
     passwordField: 'password',
-    passReqToCallback: true
 }
 
-const verify_callback_with_request = async (req, username, password, done) => {
+const verify_callback = async (username, password, done) => {
     const user = await User_Model.findOne({ username: username })
     if (!user) return done(null, false)
     const password_correct = await bcrypt.compare(password, user.hashed_password)
-    const has_role = user.roles.includes(req.body.desired_role) // TODO (no todo, just to find: send this desired role field at login)
-    if (password_correct && has_role) {
-        return done(null, { _id: user._id, role: req.body.desired_role })
+    const roles_count = user.roles?.length ?? 0
+    if (password_correct) {
+        if (roles_count === 1) return done(null, { _id: user._id, role: user.roles[0] })
+        else return done(null, { _id: user._id })
     } else {
         return done(null, false)
     }
 }
 
-const strategy = new LocalStrategy(custom_fields, verify_callback_with_request)
+const strategy = new LocalStrategy(custom_fields, verify_callback)
 
 passport.use(strategy)
 

@@ -4,7 +4,8 @@ const session = require('./mw/session')
 const passport_initialize = require('./mw/passport_initialize')
 const passport_authenticate = require('./mw/passport_authenticate')
 const validate = require('./mw/validate')
-const authorize = require('./mw/authorize')
+const authorize_endpoint = require('../../middlewares/authorize_endpoint')
+const assign_special_role = require('./mw/assign_special_role')
 
 const router = express.Router({
     caseSensitive: true,
@@ -16,9 +17,9 @@ router.use('/',
     session,
     passport_initialize,
     passport_authenticate,
-    (req,res,next) => {console.log('requser');console.log(req.query); next()},
+    assign_special_role,
     validate,
-    authorize
+    authorize_endpoint
 )
 
 const active_password_reset = require('./active_password_reset')
@@ -48,10 +49,10 @@ router.use('/user', user)
 const login = require('./login')
 router.use('/login', login)
 
+const logout = require('./logout')
+router.use('/logout', logout)
+
 const registration = require('./registration')
 router.use('/registration', registration)
-
-const am_i_logged_in = require('./am_i_logged_in') // NEEDBACK
-router.use('/am_i_logged_in', am_i_logged_in)
 
 module.exports = router

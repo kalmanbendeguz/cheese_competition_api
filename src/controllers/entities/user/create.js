@@ -13,7 +13,7 @@ module.exports = async (body, user, parent_session) => {
     body = Array.isArray(body) ? body : [body]
 
     // 3. Authorize create
-    const authorizer = require('../../../authorizers/user')
+    const authorizer = require('../../../authorizers/entities/user')
     try {
         body = body.map((u) => authorizer(u, 'create', user))
     } catch (reason) {

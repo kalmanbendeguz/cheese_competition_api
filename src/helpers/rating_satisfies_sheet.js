@@ -1,6 +1,8 @@
-module.exports = (rating, rating_sheet) => {
+const rating_satisfies_sheet = (rating, rating_sheet) => {
     return true
 }
+
+module.exports = rating_satisfies_sheet
 
 //(aspects, rating_sheet) => true/false
 // is the array of titles the same? it needs to be the same order as well.

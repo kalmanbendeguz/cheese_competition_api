@@ -2,7 +2,7 @@
 //        product_of_rating.product_category_id
 //    )
 
-module.exports = (product_category_id) => {
+const rating_sheet_of_category_id = (product_category_id) => {
     return [
         {
             "title": "kulso",
@@ -101,3 +101,5 @@ module.exports = (product_category_id) => {
         }
     ]
 }
+
+module.exports = rating_sheet_of_category_id

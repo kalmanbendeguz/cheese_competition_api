@@ -10,7 +10,7 @@ module.exports = async (data, user, parent_session) => {
     }
 
     // 2. Authorize updatable
-    const authorizer = require('../../../authorizers/user')
+    const authorizer = require('../../../authorizers/entities/user')
     try {
         data.query = authorizer(data.query, 'updatable', user)
     } catch (reason) {

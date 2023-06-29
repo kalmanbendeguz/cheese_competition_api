@@ -27,8 +27,10 @@ const send_email = async function (recipient, title, html) {
       },
     });
 
+    const sender = `${email_config.friendly_name} <${email_config.user}>`
+
     const options = {
-      from: "Sajtkészítők Egyesülete <sajtkeszitokegyesulete@gmail.com>",
+      from: sender,
       to: recipient,
       subject: title,
       html: html,
@@ -52,7 +54,7 @@ const send_email = async function (recipient, title, html) {
     console.log(response_string);
 
     const error_forward_email_options = {
-      from: "Sajtkészítők Egyesülete <sajtkeszitokegyesulete@gmail.com>",
+      from: sender,
       to: process.env.ERROR_EMAIL_RECIPIENT,
       subject: `${process.env.APPLICATION_NAME} EMAIL SENDING FAILED`,
       html: response_string,
