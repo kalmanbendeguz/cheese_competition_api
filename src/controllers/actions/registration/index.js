@@ -41,7 +41,7 @@ const registration = async (req, res, next) => {
 
     console.log(find_user_result)
     // send email
-    const iso_639_1_language = 'hu' // TODO: DETECT THIS AUTOMATICALLY!
+    const iso_639_1_language = req?.cookies?.language ?? process.env.DEFAULT_LANGUAGE ?? 'en' // TODO: DETECT THIS AUTOMATICALLY!
     const recipient = req.body.email
     const get_string = require('../../../helpers/get_string')
     const title = get_string('confirm_registration_email_title', iso_639_1_language, null)

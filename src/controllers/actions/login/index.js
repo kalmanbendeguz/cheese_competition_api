@@ -35,7 +35,8 @@ const login = async (req, res, next) => {
             console.log(req.cookies)
             console.log(res.cookies)
             console.log(req.session)
-            console.log(res.session)
+            console.log(req.session.cookie)
+            console.log(req.session.cookies)
             return res.status(200).json({ data: 'successful_login' })
         })
 
