@@ -13,7 +13,7 @@ const rules = {
         },
         allowed_role: {
             POST: ['organizer', 'SERVER'],
-            GET: ['competitor', 'judge', 'organizer', 'receiver', 'SERVER'],
+            GET: ['competitor', 'judge', 'organizer', 'receiver', 'ROLELESS', 'SERVER'],
             PUT: ['organizer', 'SERVER'],
             DELETE: ['organizer', 'SERVER'],
         },
@@ -49,7 +49,7 @@ const rules = {
         },
         user: {
             POST: ['SERVER'],
-            GET: ['competitor', 'judge', 'organizer', 'receiver', 'SERVER'],
+            GET: ['competitor', 'judge', 'organizer', 'receiver', 'ROLELESS', 'SERVER'],
             PUT: ['competitor', 'judge', 'organizer', 'receiver', 'SERVER'],
             DELETE: ['SERVER'],
         },

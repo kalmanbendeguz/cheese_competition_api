@@ -17,8 +17,10 @@ router.use(
     cors,
     express_urlencoded,
     express_json,
+    (req,res,next) => {console.log('DEBUGrouter', req.body, req.user, req.session, req.cookies); return next()},
     decode_query_q,
-    cookie_parser
+    cookie_parser,
+    (req,res,next) => {console.log('DEBUGrouter', req.body, req.user, req.session, req.cookies); return next()}
 )
 
 // API router

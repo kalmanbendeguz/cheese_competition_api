@@ -1,12 +1,12 @@
 const Joi = require('joi')
 
 const query_validator = Joi.object({
-    filter: Joi.object({
+    filter: Joi.object(/*{
         _id: Joi.any().optional(),
         user_id: Joi.any().optional(),
         restore_id: Joi.any().optional(),
         expiring_started: Joi.any().optional(),
-    }).optional(),
+    }*/).optional(),
     projection: Joi.object()
         .pattern(Joi.string(), Joi.valid(1).required())
         .min(1)

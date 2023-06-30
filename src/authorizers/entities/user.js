@@ -1,4 +1,5 @@
 const user_authorizer = (data, verb, user) => {
+    // TODO: project _id sometimes need to be BOUND to 0 (the number ZERO)
     const rules = {
         _id: {
             create: {},
@@ -6,6 +7,7 @@ const user_authorizer = (data, verb, user) => {
                 SERVER: { rule: 'optional' },
             },
             project: {
+                organizer: { rule: 'optional' },
                 SERVER: { rule: 'optional' },
             },
             updatable: {
@@ -24,6 +26,7 @@ const user_authorizer = (data, verb, user) => {
                 SERVER: { rule: 'optional' },
             },
             project: {
+                organizer: { rule: 'optional' },
                 SERVER: { rule: 'optional' },
             },
             updatable: {
@@ -81,6 +84,8 @@ const user_authorizer = (data, verb, user) => {
                 SERVER: { rule: 'optional' },
             },
             project: {
+                organizer: { rule: 'optional' },
+                ROLELESS: { rule: 'optional' },
                 SERVER: { rule: 'optional' },
             },
             updatable: {

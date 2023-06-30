@@ -1,6 +1,9 @@
 // COMPETITOR, JUDGE, ORGANIZER, RECEIVER, SERVER
 module.exports = async (query, user, parent_session) => {
 
+    console.log('query', query)
+    console.log('user', user)
+
     // 1. Validate query
     const find_user_validator = require('../../../validators/requests/api/user/find')
     try {
@@ -9,17 +12,19 @@ module.exports = async (query, user, parent_session) => {
         return { code: 400, data: err.details }
     }
 
+    console.log(1)
     // 2. Authorize find
     const authorizer = require('../../../authorizers/entities/user')
     try {
         query.filter = authorizer(query.filter ?? {}, 'find', user)
     } catch (reason) {
+        console.log(reason)
         return {
             code: 403,
             data: reason
         }
     }
-
+    console.log(2)
     // 3. Authorize project
     try {
         query.projection = authorizer(query.projection, 'project', user)
@@ -29,12 +34,14 @@ module.exports = async (query, user, parent_session) => {
             data: reason
         }
     }
+    console.log(3)
 
     // 4. Start session and transaction if they don't exist
     const User_Model = require('../../../models/User')
     const session = parent_session ?? await User_Model.db.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
+    console.log(4)
     // 5. Find
     const filter = query.filter
     const projection = query.projection // if you pass an unknown value, it will ignore it

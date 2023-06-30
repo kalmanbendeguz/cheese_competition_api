@@ -25,3 +25,5 @@ const authorize_entity = (data, verb, user, rules) => {
 
     return data
 }
+
+module.exports = authorize_entity

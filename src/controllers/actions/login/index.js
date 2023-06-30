@@ -21,6 +21,7 @@ const login = async (req, res, next) => {
 
     const passport = require('../../../config/passport')
     passport.authenticate('local', function (err, user, info) {
+        console.log('user',user)
         if (err) { return next(err) }
         if (!user) { return res.status(200).json({ data: 'failed_login' }) }
         console.log('-----')

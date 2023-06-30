@@ -415,6 +415,10 @@ const product_authorizer = (data, verb, user) => {
                 SERVER: { rule: 'optional' },
             },
         },
+
+        // TODOS: 
+        // it is not possible to remove handed_in products for COMPETITOR
+        // to achieve this, handed_in should be bound for competitor to FALSE
         handed_in: {
             create: {
                 SERVER: { rule: 'optional' },

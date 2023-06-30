@@ -1,5 +1,4 @@
-// COMPETITOR, ORGANIZER, SERVER
-module.exports = async (query, user, parent_session) => {
+const remove = async (query, user, parent_session) => {
 
     // 1. Validate query
     const remove_product_validator = require('../../../validators/requests/api/product/remove')
@@ -10,7 +9,7 @@ module.exports = async (query, user, parent_session) => {
     }
 
     // 2. Authorize remove
-    const authorizer = require('../../../authorizers/product')
+    const authorizer = require('../../../authorizers/entities/product')
     try {
         query = authorizer(query, 'remove', user)
     } catch (reason) {
@@ -22,7 +21,7 @@ module.exports = async (query, user, parent_session) => {
 
     // 3. Start session and transaction if they don't exist
     const Product_Model = require('../../../models/Product')
-    const session = parent_session ?? await Product_Model.db.startSession()
+    const session = parent_session ?? await Product_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 4. Find
@@ -34,7 +33,7 @@ module.exports = async (query, user, parent_session) => {
             await session.endSession()
         }
         return {
-            code: 200, // this will be 200. bc this is not an error.
+            code: 200,
             data: 'no_documents_found_to_remove',
         }
     }
@@ -43,10 +42,7 @@ module.exports = async (query, user, parent_session) => {
     const product_validator = require('../../../validators/schemas/Product')
     try {
         const validator_promises = products.map(
-            (product) =>
-                product_validator.validateAsync(
-                    product
-                )
+            (product) => product_validator.validateAsync(product)
         )
         await Promise.all(validator_promises)
     } catch (err) {
@@ -92,8 +88,6 @@ module.exports = async (query, user, parent_session) => {
 
     // 9. Update dependents
     // Dependents are: Rating, Entry_Fee_Payment
-    // A rating should not be updated.
-    // If the approval_type is changed from 'payment' to anything else, then the entry_fee_payment should be removed.
     // Import dependent mutation controllers
     // create
     // No 'create' dependent controller needs to be imported
@@ -124,8 +118,10 @@ module.exports = async (query, user, parent_session) => {
         ))
     }
 
-    const update_dependent_results = await Promise.all(update_dependent_promises) // or allsettled?
-    const failed_operation = update_dependent_results.find(result => ![200, 201].includes(result.code))
+    const update_dependent_results = await Promise.all(update_dependent_promises)
+    const failed_operation = update_dependent_results.find(result =>
+        !(typeof result.code === 'number' && result.code >= 200 && result.code <= 299)
+    )
 
     if (failed_operation) {
         if (!parent_session) {
@@ -148,8 +144,4 @@ module.exports = async (query, user, parent_session) => {
     }
 }
 
-// TODOS: 
-// it is not possible to remove handed_in products for COMPETITOR
-
-// TO REMOVE: // entry should be opened. for COMPETITOR
-// competititon should be closed for COMPETITOR
+module.exports = remove

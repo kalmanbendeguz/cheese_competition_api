@@ -1,5 +1,6 @@
 // ONLY SERVER
 module.exports = async (query, user) => {
+    console.log(1)
     // 1. validate query
     const find_active_password_reset_validator = require('../../../validators/requests/api/active_password_reset/find')
     try {
@@ -7,14 +8,14 @@ module.exports = async (query, user) => {
     } catch (err) {
         return { code: 400, data: err.details }
     }
-
+    console.log(2)
     // 2. authorize {query.filter, user}
     const authorizer = require('../../../authorizers/active_password_reset')
     const filter_authorizer_result = authorizer(query.filter ?? {}, 'find', user)
     if (!filter_authorizer_result.authorized) {
         return { code: 403, data: filter_authorizer_result.message }
     }
-
+    console.log(3)
     // 3. authorize {query.projection, user}
     const projection_authorizer_result = authorizer(
         query.projection,

@@ -19,7 +19,8 @@ router.use('/',
     passport_authenticate,
     assign_special_role,
     validate,
-    authorize_endpoint
+    authorize_endpoint,
+    (req,res,next) => {console.log('DEBUGapi', req.body, req.user, req.session, req.cookies); return next()}
 )
 
 const active_password_reset = require('./active_password_reset')

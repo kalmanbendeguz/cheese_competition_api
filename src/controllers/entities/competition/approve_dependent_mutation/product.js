@@ -50,3 +50,6 @@ module.exports = async (products, user, session) => {
 //
 //// product_category_id ONLY can be changed if the competition was NEVER opened.
 //// = last_competition_open_date = UNDEFINED !!!
+
+// TO REMOVE: // entry should be opened. for COMPETITOR
+// competititon should be closed for COMPETITOR

@@ -9,13 +9,18 @@ const custom_fields = {
 }
 
 const verify_callback = async (username, password, done) => {
+    console.log('username', username)
+    console.log('password', password)
     const user = await User_Model.findOne({ username: username })
     if (!user) return done(null, false)
     const password_correct = await bcrypt.compare(password, user.hashed_password)
     const roles_count = user.roles?.length ?? 0
     if (password_correct) {
-        if (roles_count === 1) return done(null, { _id: user._id, role: user.roles[0] })
-        else return done(null, { _id: user._id })
+        if (roles_count === 1) {
+            return done(null, { _id: user._id, role: user.roles[0] })
+        } else {
+            return done(null, { _id: user._id, role: 'ROLELESS' })
+        }
     } else {
         return done(null, false)
     }
