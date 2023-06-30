@@ -1,11 +1,9 @@
 const Joi = require('joi')
-const {
-    mongoose: {
-        Types: { ObjectId, Decimal128 },
-    },
-} = require('mongoose')
+const { mongoose: { Types: { ObjectId, Decimal128 }, }, } = require('mongoose')
 
-module.exports = Joi.object({
+const valid_currencies = require('../../static/valid_currencies.json')
+
+const entry_fee_payment_validator = Joi.object({
     product_ids: Joi.array()
         .items(Joi.object().instance(ObjectId))
         .min(1)
@@ -34,7 +32,7 @@ module.exports = Joi.object({
         then: Joi.object().required().instance(Decimal128),
         otherwise: Joi.forbidden(),
     }),
-    currency: Joi.string().valid('HUF', 'EUR', 'USD').when('pending', {
+    currency: Joi.string().valid(...valid_currencies).when('pending', {
         is: false,
         then: Joi.required(),
         otherwise: Joi.forbidden(),
@@ -62,3 +60,5 @@ module.exports = Joi.object({
             otherwise: Joi.forbidden(),
         }),
 }).unknown(true)
+
+module.exports = entry_fee_payment_validator
