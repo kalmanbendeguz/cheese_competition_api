@@ -1,10 +1,12 @@
 const express = require('express')
 
-module.exports = express.json({
+const express_json = express.json({
     inflate: true,
-    limit: '100kb',
-    reviver: null,
+    limit: '200kb',
     strict: true,
     type: 'application/json',
-    verify: undefined,
+    // verify: undefined,
+    // reviver: null,
 })
+
+module.exports = express_json

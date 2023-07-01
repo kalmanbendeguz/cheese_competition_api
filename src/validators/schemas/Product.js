@@ -1,9 +1,5 @@
 const Joi = require('joi')
-const {
-    mongoose: {
-        Types: { ObjectId },
-    },
-} = require('mongoose')
+const { mongoose: { Types: { ObjectId }, }, } = require('mongoose')
 const forbidden_id_parts = require('../../static/forbidden_id_parts')
 
 module.exports = Joi.object({

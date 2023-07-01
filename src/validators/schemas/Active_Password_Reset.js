@@ -1,11 +1,8 @@
 const Joi = require('joi')
-const {
-    mongoose: {
-        Types: { ObjectId },
-    },
-} = require('mongoose')
+const { mongoose: { Types: { ObjectId }, }, } = require('mongoose')
 
-module.exports = Joi.object({
+const active_password_reset_validator = Joi.object({
+    user_id: Joi.object().instance(ObjectId).required(),
     restore_id: Joi.string()
         .trim()
         .lowercase()
@@ -13,6 +10,7 @@ module.exports = Joi.object({
         .alphanum()
         .prefs({ convert: false })
         .required(),
-    user_id: Joi.object().instance(ObjectId).required(),
     expiring_started: Joi.date().required(),
 }).unknown(true)
+
+module.exports = active_password_reset_validator
