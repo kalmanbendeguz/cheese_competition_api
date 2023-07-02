@@ -1,5 +1,9 @@
 const Joi = require('joi')
 
+// barion_payment_id should be added if pending set from true to false. this is done by update validator
+// barion_transaction_id should be added if pending set from true to false. this is done by update validator
+// amount should be added if pending set from true to false. this is done by update validator
+// currency should be added if pending set from true to false. this is done by update validator
 const data_validator = Joi.object({
     query: Joi.object({
         _id: Joi.any().optional(),

@@ -35,6 +35,7 @@ const entry_fee_payment_authorizer = (data, verb, user) => {
             },
         },
         pending: {
+            // todo: update pending can only be false ( so it can not be set to pending = true)
             create: {},
             find: {
                 SERVER: { rule: 'optional' },
