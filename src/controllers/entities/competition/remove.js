@@ -1,5 +1,5 @@
 // ORGANIZER, SERVER
-module.exports = async (query, user, parent_session) => {
+const remove = async (query, user, parent_session) => {
 
     // 1. Validate query
     const remove_competition_validator = require('../../../validators/requests/api/competition/remove')
@@ -10,7 +10,7 @@ module.exports = async (query, user, parent_session) => {
     }
 
     // 2. Authorize remove
-    const authorizer = require('../../../authorizers/competition')
+    const authorizer = require('../../../authorizers/entities/competition')
     try {
         query = authorizer(query, 'remove', user)
     } catch (reason) {
@@ -22,7 +22,7 @@ module.exports = async (query, user, parent_session) => {
 
     // 3. Start session and transaction if they don't exist
     const Competition_Model = require('../../../models/Competition')
-    const session = parent_session ?? await Competition_Model.db.startSession()
+    const session = parent_session ?? await Competition_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 4. Find
@@ -34,7 +34,7 @@ module.exports = async (query, user, parent_session) => {
             await session.endSession()
         }
         return {
-            code: 200, // this will be 200. bc this is not an error.
+            code: 200,
             data: 'no_documents_found_to_remove',
         }
     }
@@ -43,10 +43,7 @@ module.exports = async (query, user, parent_session) => {
     const competition_validator = require('../../../validators/schemas/Competition')
     try {
         const validator_promises = competitions.map(
-            (competition) =>
-                competition_validator.validateAsync(
-                    competition
-                )
+            (competition) => competition_validator.validateAsync(competition)
         )
         await Promise.all(validator_promises)
     } catch (err) {
@@ -83,8 +80,8 @@ module.exports = async (query, user, parent_session) => {
     // Nothing needs to be checked.
 
     // 8. Remove documents
-    const ids_to_delete = competitions.map((competition) => competition._id)
-    await Rating_Model.deleteMany({
+    const ids_to_delete = competitions.map((competition) => competition._id.toString())
+    await Competition_Model.deleteMany({
         _id: { $in: ids_to_delete },
     }, {
         session: session
@@ -136,15 +133,17 @@ module.exports = async (query, user, parent_session) => {
         )
     )
 
-    const update_dependent_results = await Promise.all(update_dependent_promises) // or allsettled?
-    const failed_operation = update_dependent_results.find(result => ![200, 201].includes(result.code))
+    const update_dependent_results = await Promise.all(update_dependent_promises)
+    const failed_operation = update_dependent_results.find(result =>
+        !(typeof result.code === 'number' && result.code >= 200 && result.code <= 299)
+    )
 
     if (failed_operation) {
         if (!parent_session) {
             if (session.inTransaction()) await session.abortTransaction()
             await session.endSession()
         }
-        return failed_operation // EXAMPLE: {code: 403, data: 'can_not_remove_a_rating_which_belongs_to_a_closed_competition'}
+        return failed_operation
     }
 
     // 10. Commit transaction and end session
@@ -159,3 +158,5 @@ module.exports = async (query, user, parent_session) => {
         data: undefined,
     }
 }
+
+module.exports = remove

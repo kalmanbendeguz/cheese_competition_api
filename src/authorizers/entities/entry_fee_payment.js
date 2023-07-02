@@ -3,175 +3,88 @@ const entry_fee_payment_authorizer = (data, verb, user) => {
         _id: {
             create: {},
             find: {
-                SERVER: { rule: 'optional' },
+                // competitor: { rule: 'optional' },
+                // organizer: { rule: 'optional' },
+                // receiver: { rule: 'optional' },
+                // SERVER: { rule: 'optional' },
             },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         product_ids: {
-            create: {
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         pending: {
             // todo: update pending can only be false ( so it can not be set to pending = true)
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         barion_payment_id: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         expiring_started: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         barion_transaction_id: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         amount: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         currency: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         pos_transaction_id: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         confirm_payment_id: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
     }
 
