@@ -3,68 +3,27 @@ const rating_picture_authorizer = (data, verb, user) => {
     const rules = {
         _id: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         rating_id: {
-            create: {
-                competitor: { rule: 'required' },
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
             update: {},
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         picture: {
-            create: {
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
             update: {},
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
     }
 

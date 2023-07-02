@@ -1,54 +1,12 @@
 const active_password_reset_authorizer = (data, verb, user) => {
     const rules = {
         _id: {
-            create: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            find: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         user_id: {
             create: {
