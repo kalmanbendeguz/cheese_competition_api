@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
-const email_config = require('../config/email_config')
+const email_config = require('../config/email')
 const OAuth2 = google.auth.OAuth2
 
 const send_email = async function (recipient, title, html) {

@@ -1,9 +1,4 @@
-const {
-    Schema: Schema,
-    Schema: {
-        Types: { ObjectId },
-    },
-} = require('mongoose')
+const { Schema: Schema, Schema: { Types: { ObjectId }, }, } = require('mongoose')
 const db = require('../config/db')
 const Billing_Information_Schema = require('./schemas/Billing_Information')
 const Competition_Model = require('./Competition')
@@ -37,7 +32,6 @@ const User_Schema = new Schema(
         },
         association_member: {
             type: Boolean,
-            //default: false,
         },
         registration_temporary: {
             type: Boolean,
