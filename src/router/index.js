@@ -1,10 +1,10 @@
 const express = require('express')
 
-const express_urlencoded = require('./mw/express_urlencoded')
-const express_json = require('./mw/express_json')
-const cors = require('./mw/cors')
-const decode_query_q = require('./mw/decode_query_q')
-const cookie_parser = require('./mw/cookie_parser') // NEEDBACK
+const express_urlencoded = require('../middlewares/express_urlencoded')
+const express_json = require('../middlewares/express_json')
+const cors = require('../middlewares/cors')
+const decode_query_q = require('../middlewares/decode_query_q')
+const cookie_parser = require('../middlewares/cookie_parser') // NEEDBACK
 
 const router = express.Router({
     caseSensitive: true,

@@ -1,6 +1,6 @@
 const express_session = require('express-session')
 const MongoStore = require('connect-mongo')
-const db = require('../../../config/db')
+const db = require('../config/db')
 
 const clientPromise = new Promise((resolve, reject) => {
     const client = db.connection.getClient() // Assuming this method returns MongoClient

@@ -1,11 +1,11 @@
 const express = require('express')
 
-const session = require('./mw/session')
-const passport_initialize = require('./mw/passport_initialize')
-const passport_authenticate = require('./mw/passport_authenticate')
-const validate = require('./mw/validate')
+const session = require('../../middlewares/session')
+const passport_initialize = require('../../middlewares/passport_initialize')
+const passport_authenticate = require('../../middlewares/passport_authenticate')
+const validate_api_endpoint = require('../../middlewares/validate_api_endpoint')
 const authorize_endpoint = require('../../middlewares/authorize_endpoint')
-const assign_special_role = require('./mw/assign_special_role')
+const assign_special_role = require('../../middlewares/assign_special_role')
 
 const router = express.Router({
     caseSensitive: true,
@@ -18,7 +18,7 @@ router.use('/',
     passport_initialize,
     passport_authenticate,
     assign_special_role,
-    validate,
+    validate_api_endpoint,
     authorize_endpoint,
     (req,res,next) => {console.log('DEBUGapi', req.body, req.user, req.session, req.cookies); return next()}
 )

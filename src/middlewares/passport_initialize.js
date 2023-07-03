@@ -1,4 +1,4 @@
-const passport = require('../../../config/passport')
+const passport = require('../config/passport')
 
 const passport_initialize = passport.initialize({
     userProperty: 'user',
