@@ -2,399 +2,155 @@ const competition_authorizer = (data, verb, user) => {
     const rules = {
         _id: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            remove: {},
         },
         name: {
-            create: {
-                SERVER: { rule: 'required' },
-                organizer: { rule: 'required' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         place: {
-            create: {
-                SERVER: { rule: 'required' },
-                organizer: { rule: 'required' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         creation_date: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            remove: {},
         },
         entry_opened: {
-            create: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         last_entry_open_date: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            remove: {},
         },
         last_entry_close_date: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            remove: {},
         },
         competition_opened: {
-            create: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         last_competition_open_date: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            remove: {},
         },
         last_competition_close_date: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            remove: {},
         },
         archived: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         archival_date: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            remove: {},
         },
         payment_needed: {
-            create: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         association_members_need_to_pay: {
-            create: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         entry_fee_amount: {
-            create: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         entry_fee_currency: {
-            create: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         product_category_tree: {
-            create: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
             updatable: {},
             update: {},
             remove: {},
         },
         certificate_template: {
-            create: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
             updatable: {},
-            update: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            update: {},
             remove: {},
         },
         ignore_extreme_values: {
-            create: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
     }
 

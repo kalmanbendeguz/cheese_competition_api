@@ -1,4 +1,4 @@
-const login = async (req, res, next) => {
+const login = async (req, res) => {
     // validate request, but only the parts that create_user doesnt validate, like Password
     // 1. Validate ******
     //const registration_validator = require('../../../validators/requests/api/registration')
@@ -7,7 +7,7 @@ const login = async (req, res, next) => {
     //} catch (err) {
     //    return res.status(400).json(`registration_validation_error: ${err.details}`)
     //}
-    
+
     //    const authorize_action = require('../../helpers/authorize_action')
     //
     //try {

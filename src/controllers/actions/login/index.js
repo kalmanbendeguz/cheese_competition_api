@@ -1,4 +1,9 @@
 const login = async (req, res, next) => {
+
+    // validate ((?))
+    // authorize
+    // start session and transaction, then at the end close it
+    
     // validate request, but only the parts that create_user doesnt validate, like Password
     // 1. Validate ******
     //const registration_validator = require('../../../validators/requests/api/registration')
