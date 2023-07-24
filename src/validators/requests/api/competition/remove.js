@@ -17,8 +17,8 @@ const query_validator = Joi.object({
     association_members_need_to_pay: Joi.any().optional(),
     entry_fee_amount: Joi.any().optional(),
     entry_fee_currency: Joi.any().optional(),
-    // product_category_tree: Joi.any().optional(), // ez alapján ne lehessen keresni
-    // certificate_template: Joi.any().optional(), // és ez alapján se
+    // product_category_tree: Joi.any().optional(), // not possible to find based on this field
+    // certificate_template: Joi.any().optional(), // not possible to find based on this field
     ignore_extreme_values: Joi.any().optional(),
 }).required()
 

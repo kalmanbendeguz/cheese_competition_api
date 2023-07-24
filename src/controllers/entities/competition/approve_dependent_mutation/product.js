@@ -1,9 +1,17 @@
-module.exports = async (products, user, session) => {
+const approve_product_mutation = async (products, user, session) => {
     return {
         approved: true,
         reason: null
     }
 }
+
+module.exports = approve_product_mutation
+
+// create: 
+// only if entry is opened
+
+// remvoe: 
+
 
 //// comp: exist? is entry opened?
 //const unique_competition_ids = [

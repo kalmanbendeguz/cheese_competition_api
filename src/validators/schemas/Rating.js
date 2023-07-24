@@ -7,7 +7,7 @@ const rating_validator = Joi.object({
     judge_id: Joi.object().instance(ObjectId).required(),
     anonymous: Joi.boolean().required(),
     aspects: Joi.array().items(Rating_Aspect_Validator).min(1).required(),
-    overall_impression: Joi.string().trim().min(25).max(250).required(),
+    overall_impression: Joi.string().trim().min(25).max(250).prefs({ convert: false }).required(),
 }).unknown(true)
 
 module.exports = rating_validator
