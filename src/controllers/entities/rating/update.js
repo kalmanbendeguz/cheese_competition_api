@@ -1,5 +1,4 @@
-// JUDGE, ORGANIZER, SERVER
-module.exports = async (data, user, parent_session) => {
+const update = async (data, user, parent_session) => {
     
     // 1. Validate data
     const update_rating_validator = require('../../../validators/requests/api/rating/update')
@@ -10,7 +9,7 @@ module.exports = async (data, user, parent_session) => {
     }
 
     // 2. Authorize updatable
-    const authorizer = require('../../../authorizers/rating')
+    const authorizer = require('../../../authorizers/entities/rating')
     try {
         data.query = authorizer(data.query, 'updatable', user)
     } catch (reason) {
@@ -34,7 +33,7 @@ module.exports = async (data, user, parent_session) => {
 
     // 4. Start session and transaction if they don't exist
     const Rating_Model = require('../../../models/Rating')
-    const session = parent_session ?? await Rating_Model.db.startSession()
+    const session = parent_session ?? await Rating_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Find
@@ -49,17 +48,17 @@ module.exports = async (data, user, parent_session) => {
             await session.endSession()
         }
         return {
-            code: 200, // this will be 200. bc this is not an error.
+            code: 200,
             data: 'no_documents_found_to_update',
         }
     }
 
     // 6. Update locally
-    // If something needs to be removed from the document, we need to declare it here.
-    const remove = [] // Remove that is globally true for all documents
+    // We need to go in a topological order.
+    // For every field, we deal with the field and its dependencies, but not its dependents.
     for (const rating of ratings) {
         const current_update = structuredClone(update)
-        const current_remove = structuredClone(remove)
+        const current_remove = []
 
         rating.new.set(current_update)
         for (const key of current_remove) {
@@ -82,7 +81,7 @@ module.exports = async (data, user, parent_session) => {
         return { code: 500, data: err.details }
     }
 
-    // 8. Check dependencies: Ask all dependencies if this creation is possible.
+    // 8. Check dependencies: Ask all dependencies if this update is possible.
     const dependencies = ['product', 'user']
     const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/rating`))
 
@@ -132,3 +131,5 @@ module.exports = async (data, user, parent_session) => {
         data: undefined,
     }
 }
+
+module.exports = update
