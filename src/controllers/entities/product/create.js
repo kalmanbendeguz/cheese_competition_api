@@ -149,6 +149,24 @@ module.exports = async (body, user, parent_session) => {
     const products = _products.map((product) => new Product_Model(product))
 
     // 6. Validate created documents
+    // We can not have a better validation for certificate template, since none of its contents is strictly required.
+    // product_category_tree needs to be a subtree of the default tree.
+    // No need to check for any uniqueness.
+    // TODO: this should be at validation
+    // const default_product_category_tree = require('../../static/product_category_tree.json')
+    // const is_subtree = require('../../helpers/is_subtree')
+    // for (const competition of competitions) {
+    //     if (!is_subtree(competition.new.product_category_tree, default_product_category_tree)) {
+    //         if (!parent_session) {
+    //             if (session.inTransaction()) await session.abortTransaction()
+    //             await session.endSession()
+    //         }
+    //         return {
+    //             code: 403,
+    //             data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
+    //         }
+    //     }
+    // }
     const product_validator = require('../../../validators/schemas/Product')
     try {
         const validator_promises = products.map((product) =>
@@ -164,6 +182,24 @@ module.exports = async (body, user, parent_session) => {
     }
 
     // 7. Check dependencies: Ask all dependencies if this creation is possible.
+    // We can not have a better validation for certificate template, since none of its contents is strictly required.
+    // product_category_tree needs to be a subtree of the default tree.
+    // No need to check for any uniqueness.
+    // TODO: this should be at validation
+    // const default_product_category_tree = require('../../static/product_category_tree.json')
+    // const is_subtree = require('../../helpers/is_subtree')
+    // for (const competition of competitions) {
+    //     if (!is_subtree(competition.new.product_category_tree, default_product_category_tree)) {
+    //         if (!parent_session) {
+    //             if (session.inTransaction()) await session.abortTransaction()
+    //             await session.endSession()
+    //         }
+    //         return {
+    //             code: 403,
+    //             data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
+    //         }
+    //     }
+    // }
     const dependencies = ['user', 'competition']
     const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/product`))
 
@@ -190,6 +226,24 @@ module.exports = async (body, user, parent_session) => {
     // milk_type should be valid, but it is for a later concern
     // product_category_id should be valid, but it is asked at competition/approve_dependent_mutation/product
     // an unapproved product cannot be handed in: this should be checked at document validation
+    // We can not have a better validation for certificate template, since none of its contents is strictly required.
+    // product_category_tree needs to be a subtree of the default tree.
+    // No need to check for any uniqueness.
+    // TODO: this should be at validation
+    // const default_product_category_tree = require('../../static/product_category_tree.json')
+    // const is_subtree = require('../../helpers/is_subtree')
+    // for (const competition of competitions) {
+    //     if (!is_subtree(competition.new.product_category_tree, default_product_category_tree)) {
+    //         if (!parent_session) {
+    //             if (session.inTransaction()) await session.abortTransaction()
+    //             await session.endSession()
+    //         }
+    //         return {
+    //             code: 403,
+    //             data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
+    //         }
+    //     }
+    // }
 
     // 9. Save created documents
     await Product_Model.bulkSave(products, { session: session })

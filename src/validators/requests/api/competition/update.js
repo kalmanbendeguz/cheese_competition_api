@@ -1,5 +1,6 @@
 const Joi = require('joi')
 const File_Validator = require('../../../schemas/File')
+const valid_currencies = require('../../../../static/valid_currencies.json')
 
 const data_validator = Joi.object({
     query: Joi.object({
@@ -37,6 +38,7 @@ const data_validator = Joi.object({
             .prefs({ convert: false })
             .optional(),
         // creation_date: Joi.date().required() // this is forbidden
+        // creation_date can not be changed
         entry_opened: Joi.boolean().optional(),
         // last_entry_open_date // forbidden
         // last_entry_close_date // forbidden
@@ -47,12 +49,11 @@ const data_validator = Joi.object({
         // archival_date // forbidden
         payment_needed: Joi.boolean().optional(),
         association_members_need_to_pay: Joi.boolean().optional(),
-        entry_fee_amount: Joi.string()
-            .trim()
-            .min(1)
-            .prefs({ convert: false })
+        entry_fee_amount: Joi.number()
+            .positive()
             .optional(),
-        entry_fee_currency: Joi.string().valid('HUF', 'EUR', 'USD').optional(),
+            // convert true, bc if its a string it will convert
+        entry_fee_currency: Joi.string().valid(...valid_currencies).optional(),
         // product_category_tree: Joi.any().optional(), // ezt nem szabad módosítani.
         certificate_template: File_Validator.optional(), // maybe this will come in a different format in the request. todo check!
         ignore_extreme_values: Joi.boolean().optional(),

@@ -105,6 +105,24 @@ module.exports = async (data, user, parent_session) => {
         }
         return { code: 500, data: err.details }
     }
+    // We can not have a better validation for certificate template, since none of its contents is strictly required.
+    // product_category_tree needs to be a subtree of the default tree.
+    // No need to check for any uniqueness.
+    // TODO: this should be at validation
+    // const default_product_category_tree = require('../../static/product_category_tree.json')
+    // const is_subtree = require('../../helpers/is_subtree')
+    // for (const competition of competitions) {
+    //     if (!is_subtree(competition.new.product_category_tree, default_product_category_tree)) {
+    //         if (!parent_session) {
+    //             if (session.inTransaction()) await session.abortTransaction()
+    //             await session.endSession()
+    //         }
+    //         return {
+    //             code: 403,
+    //             data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
+    //         }
+    //     }
+    // }
 
     // 8. Check dependencies: Ask all dependencies if this creation is possible.
     const dependencies = ['user', 'competition']
@@ -127,6 +145,24 @@ module.exports = async (data, user, parent_session) => {
             data: unapproved.reason
         }
     }
+    // We can not have a better validation for certificate template, since none of its contents is strictly required.
+    // product_category_tree needs to be a subtree of the default tree.
+    // No need to check for any uniqueness.
+    // TODO: this should be at validation
+    // const default_product_category_tree = require('../../static/product_category_tree.json')
+    // const is_subtree = require('../../helpers/is_subtree')
+    // for (const competition of competitions) {
+    //     if (!is_subtree(competition.new.product_category_tree, default_product_category_tree)) {
+    //         if (!parent_session) {
+    //             if (session.inTransaction()) await session.abortTransaction()
+    //             await session.endSession()
+    //         }
+    //         return {
+    //             code: 403,
+    //             data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
+    //         }
+    //     }
+    // }
 
     // 9. Check collection integrity
     // public_id and secret_id should be unique, but it is checked at creation.

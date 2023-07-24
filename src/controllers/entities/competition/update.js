@@ -1,5 +1,4 @@
-// ORGANIZER, SERVER
-module.exports = async (data, user, parent_session) => {
+const update = async (data, user, parent_session) => {
 
     // 1. Validate data
     const update_competition_validator = require('../../../validators/requests/api/competition/update')
@@ -34,7 +33,7 @@ module.exports = async (data, user, parent_session) => {
 
     // 4. Start session and transaction if they don't exist
     const Competition_Model = require('../../../models/Competition')
-    const session = parent_session ?? await Competition_Model.db.startSession()
+    const session = parent_session ?? await Competition_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Find
@@ -49,7 +48,7 @@ module.exports = async (data, user, parent_session) => {
             await session.endSession()
         }
         return {
-            code: 200, // this will be 200. bc this is not an error.
+            code: 200,
             data: 'no_documents_found_to_update',
         }
     }
@@ -71,6 +70,15 @@ module.exports = async (data, user, parent_session) => {
             current_update.entry_opened = false
             current_update.competition_opened = false
         }
+
+        if (
+            'archived' in current_update &&
+            competition.old.archived &&
+            !current_update.archived
+        ) {
+            current_remove = current_remove.concat(['archival_date',])
+        }
+
         if (
             'entry_opened' in current_update
         ) {
@@ -79,6 +87,7 @@ module.exports = async (data, user, parent_session) => {
             if (competition.old.entry_opened && !current_update.entry_opened)
                 current_update.last_entry_close_date = now
         }
+
         if (
             'competition_opened' in current_update
         ) {
@@ -93,6 +102,7 @@ module.exports = async (data, user, parent_session) => {
             )
                 current_update.last_competition_close_date = now
         }
+
         if (
             'payment_needed' in current_update &&
             competition.old.payment_needed &&
@@ -126,46 +136,10 @@ module.exports = async (data, user, parent_session) => {
     }
 
     // 8. Check dependencies: Ask all dependencies if this creation is possible.
-    const dependencies = []
-    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/competition`))
-
-    const dependency_approver_promises = []
-    for (const dependency_approver of dependency_approvers) {
-        dependency_approver_promises.push(dependency_approver(competitions, user, session))
-    }
-    const dependency_approver_results = await Promise.all(dependency_approver_promises)
-
-    const unapproved = dependency_approver_results.find(dependency_approver_result => !dependency_approver_result.approved)
-    if (unapproved) {
-        if (!parent_session) {
-            if (session.inTransaction()) await session.abortTransaction()
-            await session.endSession()
-        }
-        return {
-            code: 403,
-            data: unapproved.reason
-        }
-    }
+    // Competition has no dependencies.
 
     // 9. Check collection integrity
-    // We can not have a better validation for certificate template, since none of its contents is strictly required.
-    // product_category_tree needs to be a subtree of the default tree.
-    // No need to check for any uniqueness.
-    // TODO: this should be at validation
-    // const default_product_category_tree = require('../../static/product_category_tree.json')
-    // const is_subtree = require('../../helpers/is_subtree')
-    // for (const competition of competitions) {
-    //     if (!is_subtree(competition.new.product_category_tree, default_product_category_tree)) {
-    //         if (!parent_session) {
-    //             if (session.inTransaction()) await session.abortTransaction()
-    //             await session.endSession()
-    //         }
-    //         return {
-    //             code: 403,
-    //             data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
-    //         }
-    //     }
-    // }
+    // Nothing needs to be cheched.
 
     // 10. Save updated documents
     await Competition_Model.bulkSave(competitions.map(competition => competition.new), { session: session })
@@ -302,3 +276,5 @@ module.exports = async (data, user, parent_session) => {
         data: undefined,
     }
 }
+
+module.exports = update

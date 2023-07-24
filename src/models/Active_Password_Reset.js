@@ -1,14 +1,9 @@
-const {
-    Schema: Schema,
-    Schema: {
-        Types: { ObjectId },
-    },
-} = require('mongoose')
+const { Schema: Schema, Schema: { Types: { ObjectId }, }, } = require('mongoose')
 const db = require('../config/db')
 const User_Model = require('./User')
 
 const Active_Password_Reset_Schema = new Schema(
-    { 
+    {
         user_id: {
             type: ObjectId,
             ref: User_Model,
