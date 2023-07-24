@@ -1,5 +1,4 @@
-// COMPETITOR, JUDGE, ORGANIZER, RECEIVER, SERVER
-module.exports = async (data, user, parent_session) => {
+const update = async (data, user, parent_session) => {
 
     // 1. Validate data
     const update_user_validator = require('../../../validators/requests/api/user/update')
@@ -34,7 +33,7 @@ module.exports = async (data, user, parent_session) => {
 
     // 4. Start session and transaction if they don't exist
     const User_Model = require('../../../models/User')
-    const session = parent_session ?? await User_Model.db.startSession()
+    const session = parent_session ?? await User_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Find
@@ -49,22 +48,23 @@ module.exports = async (data, user, parent_session) => {
             await session.endSession()
         }
         return {
-            code: 200, // this will be 200. bc this is not an error.
+            code: 200,
             data: 'no_documents_found_to_update',
         }
     }
 
     // 6. Update locally
-    // If something needs to be removed from the document, we need to declare it here.
-    const remove = [] // Remove that is globally true for all documents
+    // We need to go in a topological order.
+    // For every field, we deal with the field and its dependencies, but not its dependents.
     for (const u of users) {
         const current_update = structuredClone(update)
-        let current_remove = structuredClone(remove)
+        const current_remove = []
 
         // email cannot be changed
         // username CAN be changed, OK
         // hashed_password CAN be changed, OK
-        // roles
+
+        // roles: if it is string, then convert modifier string to an actual new roles array
         if ('roles' in current_update && typeof current_update.roles === 'string') {
             const role_modifiers = current_update.roles.split(' ')
             const roles_to_add = role_modifiers.filter(role_modifier => role_modifier[0] === '+').map(role_modifier => role_modifier.substring(1))
@@ -89,10 +89,10 @@ module.exports = async (data, user, parent_session) => {
         }
         // registration_temporary is OK
         // confirm_registration_id
-        if ('registration_temporary' in current_update && u.old.registration_temporary && !current_update.registration_temporary) { // it can only be false
+        if ('registration_temporary' in current_update && u.old.registration_temporary === true && current_update.registration_temporary === false) {
             current_remove = current_remove.concat(['confirm_registration_id'])
         }
-        // table_leader
+        // table_leader: if it is string, then convert modifier string to an actual new table_leader array
         if ('table_leader' in current_update && typeof current_update.table_leader === 'string') {
             const table_leader_modifiers = current_update.table_leader.split(' ')
             const competition_ids_to_add = table_leader_modifiers.filter(table_leader_modifier => table_leader_modifier[0] === '+').map(table_leader_modifier => table_leader_modifier.substring(1))
@@ -228,49 +228,23 @@ module.exports = async (data, user, parent_session) => {
                 session
             ))
         }
-        // If we remove a 'table_leader', all rating_pictures should be removed from that competition.
-        // THIS IS A TODO. EZT ÁT KELL GONDOLNI
-        /**
-         * remove_rating_picture(
-         * {
-         *      rating_id: olyan rating, ahol rating.judge_id = judge_id és rating.product.competition_id = removed_comp_id
-         * },
-         * user,
-         * session
-         * )
-         * 
-         */
 
-        // If we remove an 'arrived', all of the judge's ratings should be removed from that competition.
-        // THIS IS A TODO. EZT IS ÁT KELL GONDOLNI
-        //if (u.old.arrived?.length ?? 0 !== u.new.arrived?.length ?? 0) {
-        //    // u.old beli azon elemek, amelyek nincsenek benne u.new ben
-        //    // filter(not in u.new)
-        //    const removed_competition_ids = (u.old.arrived ?? []).filter(competition_id => !(u.new.arrived ?? []).includes(competition_id) )
-        //    update_dependent_promises.push(remove_rating(
-        //        {
-        //            product_id: 
-        //            judge_id: u.old._id.toString()
-        //        },
-        //        user,
-        //        session
-        //    ))
-        //}
+        // If we remove a 'table_leader', nothing happens, so the pictures will remain.
 
-        // If the approval_type is changed from 'payment' to anything else, then the entry_fee_payment should be removed.
-        // THIS IS A TODO
-
+        // If we remove an 'arrived', nothing happens, so the ratings will remain.
     }
 
-    const update_dependent_results = await Promise.all(update_dependent_promises) // or allsettled?
-    const failed_operation = update_dependent_results.find(result => ![200, 201].includes(result.code))
+    const update_dependent_results = await Promise.all(update_dependent_promises)
+    const failed_operation = update_dependent_results.find(result =>
+        !(typeof result.code === 'number' && result.code >= 200 && result.code <= 299)
+    )
 
     if (failed_operation) {
         if (!parent_session) {
             if (session.inTransaction()) await session.abortTransaction()
             await session.endSession()
         }
-        return failed_operation // EXAMPLE: {code: 403, data: 'can_not_remove_a_rating_which_belongs_to_a_closed_competition'}
+        return failed_operation
     }
 
     // 12. Commit transaction and end session
@@ -285,3 +259,5 @@ module.exports = async (data, user, parent_session) => {
         data: undefined,
     }
 }
+
+module.exports = update
