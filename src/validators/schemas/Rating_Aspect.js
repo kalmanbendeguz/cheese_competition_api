@@ -15,7 +15,7 @@ const rating_aspect_validator = Joi.object({
         .items(
             Joi.array()
                 .items(Joi.string().trim().lowercase().min(1).required())
-                .min(1)
+                .min(1) // i think this should not be min 1, it can be 0
                 .unique()
                 .required()
         ),
