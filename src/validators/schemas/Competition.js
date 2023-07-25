@@ -1,12 +1,20 @@
 const Joi = require('joi')
-const {
-    mongoose: {
-        Types: { Decimal128 },
-    },
-} = require('mongoose')
+const { mongoose: { Types: { Decimal128 }, }, } = require('mongoose')
 const File_Validator = require('./File')
+const valid_currencies = require('../../static/valid_currencies.json')
 
-module.exports = Joi.object({
+const product_category_tree_validator = (value, helpers) => {
+    const default_product_category_tree = require('../../static/product_category_tree.json')
+    const is_subtree = require('../../helpers/is_subtree')
+
+    if (is_subtree(value, default_product_category_tree)) {
+        return value
+    } else {
+        throw new Error('product_category_tree_must_be_a_subtree_of_the_default_product_category_tree')
+    }
+}
+
+const competition_validator = Joi.object({
     name: Joi.string()
         .trim()
         .min(1)
@@ -58,42 +66,50 @@ module.exports = Joi.object({
             otherwise: Joi.forbidden(),
         }),
     }),
-    archived: Joi.boolean()
-        .required()
-        .when(
-            Joi.object({
-                entry_opened: Joi.boolean().valid(false),
-                competition_opened: Joi.boolean().valid(false),
-            }).unknown(true),
-            {
-                then: Joi.boolean().valid(true),
-                otherwise: Joi.boolean().valid(false),
-            }
-        ),
+    archived: Joi.boolean().required().when('/', {
+        is: Joi.object({
+            entry_opened: Joi.valid(false),
+            competition_opened: Joi.valid(false)
+        }).unknown(true),
+        then: Joi.any(),
+        otherwise: Joi.valid(false)
+    }),
     archival_date: Joi.date()
         .min(Joi.ref('creation_date'))
-        .min(Joi.ref('last_entry_close_date'))
-        .min(Joi.ref('last_competition_close_date'))
+        .when('last_entry_close_date',{
+            is: Joi.exist(),
+            then: Joi.min(Joi.ref('last_entry_close_date')),
+        })
+        .when('last_competition_close_date',{
+            is: Joi.exist(),
+            then: Joi.min(Joi.ref('last_competition_close_date')),
+        })
         .when('archived', {
             is: true,
             then: Joi.required(),
             otherwise: Joi.forbidden(),
         }),
     payment_needed: Joi.boolean().required(),
-    association_members_need_to_pay: Joi.boolean().required(),
+    association_members_need_to_pay: Joi.boolean().when('payment_needed', {
+        is: true,
+        then: Joi.required(),
+        otherwise: Joi.forbidden(),
+    }),
     entry_fee_amount: Joi.when('payment_needed', {
         is: true,
         then: Joi.object().instance(Decimal128).required(),
         otherwise: Joi.forbidden(),
     }),
     entry_fee_currency: Joi.string()
-        .valid('HUF', 'EUR', 'USD')
+        .valid(...valid_currencies)
         .when('payment_needed', {
             is: true,
             then: Joi.required(),
             otherwise: Joi.forbidden(),
         }),
-    product_category_tree: Joi.any().required(), // needs better validation
-    certificate_template: File_Validator.required(), // needs better validation
+    product_category_tree: Joi.custom(product_category_tree_validator).required(),
+    certificate_template: File_Validator.required(),
     ignore_extreme_values: Joi.boolean().required(),
 }).unknown(true)
+
+module.exports = competition_validator
