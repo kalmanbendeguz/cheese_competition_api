@@ -9,7 +9,7 @@ const update = async (data, user, parent_session) => {
     }
 
     // 2. Authorize updatable
-    const authorizer = require('../../../authorizers/entry_fee_payment')
+    const authorizer = require('../../../authorizers/entities/entry_fee_payment')
     try {
         data.query = authorizer(data.query, 'updatable', user)
     } catch (reason) {
@@ -54,21 +54,45 @@ const update = async (data, user, parent_session) => {
     }
 
     // 6. Update locally
-    // If something needs to be removed from the document, we need to declare it here.
-    const remove = [] // Remove that is globally true for all documents
+    // We need to go in a topological order.
+    // For every field, we deal with the field and its dependencies, but not its dependents.
+    // We need to do type casting here, if needed.
     for (const entry_fee_payment of entry_fee_payments) {
         const current_update = structuredClone(update)
-        let current_remove = structuredClone(remove)
+        const current_remove = []
 
+        // product_ids cannot be changed
+        // pending CAN be changed (once), OK
+        // barion_payment_id CAN be changed (once), OK  
+        // barion_transaction_id CAN be changed (once), OK
+
+        // amount CAN be changed (once), we need to cast it
+        // comes as a string, we need to convert it to Decimal128
+        if (
+            'amount' in current_update
+        ) {
+            const { mongoose: { Types: { Decimal128 }, }, } = require('mongoose')
+            current_update.amount = Decimal128.fromString(current_update.amount)
+        }
+
+        // currency CAN be changed (once), OK
+
+        // pos_transaction_id
         if (
             'pending' in current_update &&
             entry_fee_payment.old.pending === true &&
             current_update.pending === false
         ) {
-            current_remove = current_remove.concat([
-                'pos_transaction_id',
-                'confirm_payment_id',
-            ])
+            current_remove = current_remove.concat(['pos_transaction_id'])
+        }
+
+        // confirm_payment_id
+        if (
+            'pending' in current_update &&
+            entry_fee_payment.old.pending === true &&
+            current_update.pending === false
+        ) {
+            current_remove = current_remove.concat(['confirm_payment_id'])
         }
 
         entry_fee_payment.new.set(current_update)
@@ -92,7 +116,7 @@ const update = async (data, user, parent_session) => {
         return { code: 500, data: err.details }
     }
 
-    // 8. Check dependencies: Ask all dependencies if this creation is possible.
+    // 8. Check dependencies: Ask all dependencies if this update is possible.
     const dependencies = ['product']
     const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/entry_fee_payment`))
 
@@ -116,7 +140,7 @@ const update = async (data, user, parent_session) => {
 
     // 9. Check collection integrity
     // barion_payment_ids should be unique
-    if ('barion_payment_id' in data.body) {
+    if ('barion_payment_id' in update) {
         const new_barion_payment_ids = entry_fee_payments.map(entry_fee_payment => entry_fee_payment.new.barion_payment_id)
         const unique_barion_payment_ids = [...new Set(new_barion_payment_ids)]
 
@@ -147,7 +171,7 @@ const update = async (data, user, parent_session) => {
     }
 
     // barion_transaction_ids should be unique
-    if ('barion_transaction_id' in data.body) {
+    if ('barion_transaction_id' in update) {
         const new_barion_transaction_ids = entry_fee_payments.map(entry_fee_payment => entry_fee_payment.new.barion_transaction_id)
         const unique_barion_transaction_ids = [...new Set(new_barion_transaction_ids)]
 
@@ -176,6 +200,7 @@ const update = async (data, user, parent_session) => {
             }
         }
     }
+    
     // pos_transaction_id and confirm_payment_id can not be updated (only deleted) so we don't have to check for uniqueness.
 
     // 10. Save updated documents

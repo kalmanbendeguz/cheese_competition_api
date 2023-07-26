@@ -9,95 +9,28 @@ const active_password_reset_authorizer = (data, verb, user) => {
             remove: {},
         },
         user_id: {
-            create: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         restore_id: {
-            create: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                ROLELESS: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         expiring_started: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
     }
 

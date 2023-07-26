@@ -21,12 +21,12 @@ const data_validator = Joi.object({
         //    Joi.string().trim().min(1).prefs({ convert: false }).required(),
         //).min(1).optional(),
         pending: Joi.boolean().optional(),
-        barion_payment_id: Joi.string()
+        barion_payment_id: Joi.string() // only allowed if pending is false?? i think yes.
             .trim()
             .min(1)
             .prefs({ convert: false })
             .optional(),
-        barion_transaction_id: Joi.string()
+        barion_transaction_id: Joi.string() // only allowed if pending is false??
             .trim()
             .min(1)
             .prefs({ convert: false })
