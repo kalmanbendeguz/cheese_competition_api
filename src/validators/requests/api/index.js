@@ -1,5 +1,5 @@
 const Joi = require('joi')
 
-const query_validator = Joi.object().optional()
+const request_validator = Joi.object().required()
 
-module.exports = query_validator
+module.exports = request_validator
