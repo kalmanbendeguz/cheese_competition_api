@@ -1,14 +1,21 @@
 const Joi = require('joi')
 
 const query_validator = Joi.object({
-    filter: Joi.object(/*{
+    filter: Joi.object({
         _id: Joi.any().optional(),
-        product_id: Joi.any().optional(),
-        judge_id: Joi.any().optional(),
-        anonymous: Joi.any().optional(),
-        aspects: Joi.any().optional(),
-        overall_impression: Joi.any().optional(),
-    }*/).optional(),
+        email: Joi.any().optional(),
+        username: Joi.any().optional(),
+        // hashed_password // forbidden
+        roles: Joi.any().optional(),
+        full_name: Joi.any().optional(),
+        contact_phone_number: Joi.any().optional(),
+        billing_information: Joi.any().optional(),
+        association_member: Joi.any().optional(),
+        registration_temporary: Joi.any().optional(),
+        confirm_registration_id: Joi.any().optional(),
+        table_leader: Joi.any().optional(),
+        arrived: Joi.any().optional(),
+    }).optional(),
     projection: Joi.object()
         .pattern(Joi.string(), Joi.valid(1).required())
         .min(1)
