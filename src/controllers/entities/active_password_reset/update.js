@@ -1,5 +1,4 @@
-// ONLY SERVER
-module.exports = async (data, user, parent_session) => {
+const update = async (data, user, parent_session) => {
 
     // 1. Validate data
     const update_active_password_reset_validator = require('../../../validators/requests/api/active_password_reset/update')
@@ -10,7 +9,7 @@ module.exports = async (data, user, parent_session) => {
     }
 
     // 2. Authorize updatable
-    const authorizer = require('../../../authorizers/active_password_reset')
+    const authorizer = require('../../../authorizers/entities/active_password_reset')
     try {
         data.query = authorizer(data.query, 'updatable', user)
     } catch (reason) {
@@ -34,7 +33,7 @@ module.exports = async (data, user, parent_session) => {
 
     // 4. Start session and transaction if they don't exist
     const Active_Password_Reset_Model = require('../../../models/Active_Password_Reset')
-    const session = parent_session ?? await Active_Password_Reset_Model.db.startSession()
+    const session = parent_session ?? await Active_Password_Reset_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Find
@@ -49,17 +48,17 @@ module.exports = async (data, user, parent_session) => {
             await session.endSession()
         }
         return {
-            code: 200, // this will be 200. bc this is not an error.
+            code: 200,
             data: 'no_documents_found_to_update',
         }
     }
 
     // 6. Update locally
-    // If something needs to be removed from the document, we need to declare it here.
-    const remove = [] // Remove that is globally true for all documents
+    // We need to go in a topological order.
+    // For every field, we deal with the field and its dependencies, but not its dependents.
     for (const active_password_reset of active_password_resets) {
         const current_update = structuredClone(update)
-        const current_remove = structuredClone(remove)
+        const current_remove = []
 
         active_password_reset.new.set(current_update)
         for (const key of current_remove) {
@@ -111,14 +110,7 @@ module.exports = async (data, user, parent_session) => {
     await Active_Password_Reset_Model.bulkSave(active_password_resets.map(active_password_reset => active_password_reset.new), { session: session })
 
     // 11. Update dependents
-    // Import dependent mutation controllers
-    // create
-    // No 'create' dependent controller needs to be imported
-    // update
-    // No 'update' dependent controller needs to be imported
-    // remove
-    // No 'remove' dependent controller needs to be imported
-    // Nothing to do here.
+    // Active_Password_Reset has no dependents.
 
     // 12. Commit transaction and end session
     if (!parent_session) {
@@ -132,3 +124,5 @@ module.exports = async (data, user, parent_session) => {
         data: undefined,
     }
 }
+
+module.exports = update
