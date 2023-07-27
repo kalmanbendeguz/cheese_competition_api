@@ -1,6 +1,6 @@
 const express = require('express')
 
-module.exports = express.urlencoded({
+const express_urlencoded = express.urlencoded({
     extended: true,
     inflate: true,
     limit: '100kb',
@@ -8,3 +8,5 @@ module.exports = express.urlencoded({
     type: 'application/x-www-form-urlencoded',
     verify: undefined,
 })
+
+module.exports = express_urlencoded
