@@ -1,5 +1,5 @@
-// Function to find elements in the tree
-function find_in_tree(tree, predicate) {
+// Function to find elements in a tree
+const find_in_tree = (tree, predicate) => {
     if (predicate(tree)) {
         return tree
     } else {
@@ -12,4 +12,5 @@ function find_in_tree(tree, predicate) {
     }
     return null
 }
-//// NEED TO EXPORT !!!!!!!!!!!!!!!
+
+module.exports = find_in_tree
