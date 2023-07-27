@@ -2,66 +2,27 @@ const allowed_role_authorizer = (data, verb, user) => {
     const rules = {
         _id: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            remove: {},
         },
         email: {
-            create: {
-                SERVER: { rule: 'required' },
-                organizer: { rule: 'required' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            remove: {},
         },
         allowed_roles: {
-            create: {
-                SERVER: { rule: 'required' },
-                organizer: { rule: 'required' },
-            },
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
-            update: {
-                SERVER: { rule: 'required' },
-                organizer: { rule: 'required' },
-            },
-            remove: {
-                SERVER: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
     }
 
