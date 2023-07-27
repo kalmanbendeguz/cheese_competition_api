@@ -1,9 +1,4 @@
-const {
-    Schema: Schema,
-    Schema: {
-        Types: { ObjectId },
-    },
-} = require('mongoose')
+const { Schema: Schema, Schema: { Types: { ObjectId } } } = require('mongoose')
 const db = require('../config/db')
 const Product_Model = require('./Product')
 const User_Model = require('./User')

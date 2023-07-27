@@ -1,10 +1,9 @@
-// ONLY SERVER
-module.exports = async (body, user, parent_session) => {
+const create = async (body, user, parent_session) => {
 
     // 1. Validate body
-    const create_rating_validator = require('../../../validators/requests/api/rating/create')
+    const create_rating_picture_validator = require('../../../validators/requests/api/rating_picture/create')
     try {
-        await create_rating_validator.validateAsync(body)
+        await create_rating_picture_validator.validateAsync(body)
     } catch (err) {
         return { code: 400, data: err.details }
     }
@@ -13,9 +12,9 @@ module.exports = async (body, user, parent_session) => {
     body = Array.isArray(body) ? body : [body]
 
     // 3. Authorize create
-    const authorizer = require('../../../authorizers/rating')
+    const authorizer = require('../../../authorizers/entities/rating_picture')
     try {
-        body = body.map((rating) => authorizer(rating, 'create', user))
+        body = body.map((rating_picture) => authorizer(rating_picture, 'create', user))
     } catch (reason) {
         return {
             code: 403,
@@ -24,25 +23,22 @@ module.exports = async (body, user, parent_session) => {
     }
 
     // 4. Start session and transaction if they don't exist
-    const Rating_Model = require('../../../models/Rating')
-    const session = parent_session ?? await Rating_Model.db.startSession()
+    const Rating_Picture_Model = require('../../../models/Rating_Picture')
+    const session = parent_session ?? await Rating_Picture_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Create locally
-    const _ratings = body.map((rating) => ({
-        product_id: rating.product_id,
-        judge_id: rating.judge_id,
-        anonymous: rating.anonymous, // undefined fields aren't saved to database? this needs to be checked.
-        aspects: rating.aspects,
-        overall_impression: rating.overall_impression,
+    const _rating_pictures = body.map((rating_picture) => ({
+        rating_id: rating_picture.rating_id,
+        picture: rating_picture.picture
     }))
-    const ratings = _ratings.map((rating) => new Rating_Model(rating))
+    const rating_pictures = _rating_pictures.map((rating_picture) => new Rating_Picture_Model(rating_picture))
 
     // 6. Validate created documents
-    const rating_validator = require('../../../validators/schemas/Rating')
+    const rating_picture_validator = require('../../../validators/schemas/Rating_Picture')
     try {
-        const validator_promises = ratings.map((rating) =>
-            rating_validator.validateAsync(rating)
+        const validator_promises = rating_pictures.map((rating_picture) =>
+            rating_picture_validator.validateAsync(rating_picture)
         )
         await Promise.all(validator_promises)
     } catch (err) {
@@ -54,12 +50,12 @@ module.exports = async (body, user, parent_session) => {
     }
 
     // 7. Check dependencies: Ask all dependencies if this creation is possible.
-    const dependencies = ['product', 'user']
-    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/rating`))
+    const dependencies = ['rating']
+    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/rating_picture`))
 
     const dependency_approver_promises = []
     for (const dependency_approver of dependency_approvers) {
-        dependency_approver_promises.push(dependency_approver(ratings.map(rating => ({ old: null, new: rating })), user, session))
+        dependency_approver_promises.push(dependency_approver(rating_pictures.map(rating_picture => ({ old: null, new: rating_picture })), user, session))
     }
     const dependency_approver_results = await Promise.all(dependency_approver_promises)
 
@@ -76,30 +72,13 @@ module.exports = async (body, user, parent_session) => {
     }
 
     // 8. Check collection integrity
-    // We need compound uniqueness of {product_id, judge_id}
-    for (const rating of ratings) {
-        if (
-            await Rating_Model.exists({
-                product_id: rating.product_id,
-                judge_id: rating.judge_id,
-            }, { session: session })
-        ) {
-            if (!parent_session) {
-                if (session.inTransaction()) await session.abortTransaction()
-                await session.endSession()
-            }
-            return {
-                code: 409,
-                data: 'product_id_and_judge_id_should_be_compound_unique',
-            }
-        }
-    }
+    // Nothing needs to be checked.
 
     // 9. Save created documents
-    await Rating_Model.bulkSave(ratings, { session: session })
+    await Rating_Picture_Model.bulkSave(rating_pictures, { session: session })
 
     // 10. Update dependents
-    // Nothing needs to be updated
+    // Rating_Picture has no dependents.
 
     // 11. Commit transaction and end session.
     if (!parent_session) {
@@ -110,6 +89,8 @@ module.exports = async (body, user, parent_session) => {
     // 12. Reply
     return {
         code: 201,
-        data: undefined, // TODO: check if it works if i leave it out, etc.
+        data: undefined,
     }
 }
+
+module.exports = create

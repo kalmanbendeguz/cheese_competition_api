@@ -102,7 +102,8 @@ const remove = async (query, user, parent_session) => {
     const update_dependent_promises = []
 
     for (const product of products) {
-        update_dependent_promises.push(remove_entry_fee_payment( // he will be unauthorized, but thats ok.
+        // He will be unauthorized, but that's ok.
+        update_dependent_promises.push(remove_entry_fee_payment( 
             {
                 product_ids: { $in: [product._id.toString()] },
             },
@@ -128,7 +129,7 @@ const remove = async (query, user, parent_session) => {
             if (session.inTransaction()) await session.abortTransaction()
             await session.endSession()
         }
-        return failed_operation // EXAMPLE: {code: 403, data: 'can_not_remove_a_rating_which_belongs_to_a_closed_competition'}
+        return failed_operation
     }
 
     // 10. Commit transaction and end session

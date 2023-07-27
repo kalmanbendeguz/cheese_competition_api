@@ -3,11 +3,8 @@ const Joi = require('joi')
 const query_validator = Joi.object({
     filter: Joi.object({
         _id: Joi.any().optional(),
-        product_id: Joi.any().optional(),
-        judge_id: Joi.any().optional(),
-        anonymous: Joi.any().optional(),
-        aspects: Joi.any().optional(),
-        overall_impression: Joi.any().optional(),
+        rating_id: Joi.any().optional(),
+        picture: Joi.any().optional(),
     }).optional(),
     projection: Joi.object()
         .pattern(Joi.string(), Joi.valid(1).required())

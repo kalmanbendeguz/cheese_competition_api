@@ -2,12 +2,7 @@ const entry_fee_payment_authorizer = (data, verb, user) => {
     const rules = {
         _id: {
             create: {},
-            find: {
-                // competitor: { rule: 'optional' },
-                // organizer: { rule: 'optional' },
-                // receiver: { rule: 'optional' },
-                // SERVER: { rule: 'optional' },
-            },
+            find: {},
             project: {},
             updatable: {},
             update: {},

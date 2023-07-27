@@ -1,5 +1,4 @@
-// ONLY SERVER
-module.exports = async (body, user, parent_session) => {
+const create = async (body, user, parent_session) => {
 
     // 1. Validate body
     const create_active_password_reset_validator = require('../../../validators/requests/api/active_password_reset/create')
@@ -13,7 +12,7 @@ module.exports = async (body, user, parent_session) => {
     body = Array.isArray(body) ? body : [body]
 
     // 3. Authorize create
-    const authorizer = require('../../../authorizers/active_password_reset')
+    const authorizer = require('../../../authorizers/entities/active_password_reset')
     try {
         body = body.map((active_password_reset) => authorizer(active_password_reset, 'create', user))
     } catch (reason) {
@@ -25,7 +24,7 @@ module.exports = async (body, user, parent_session) => {
 
     // 4. Start session and transaction if they don't exist
     const Active_Password_Reset_Model = require('../../../models/Active_Password_Reset')
-    const session = parent_session ?? await Active_Password_Reset_Model.db.startSession()
+    const session = parent_session ?? await Active_Password_Reset_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Create locally
@@ -42,12 +41,10 @@ module.exports = async (body, user, parent_session) => {
         } while (
             (await Active_Password_Reset_Model.exists({
                 restore_id: restore_id,
-            }, { session: session })) ||
-            body.some(
-                (active_password_reset) =>
-                    active_password_reset.restore_id === restore_id
-            ))
-
+            }, { session: session }))
+            ||
+            body.some((active_password_reset) => active_password_reset.restore_id === restore_id)
+        )
         active_password_reset.restore_id = restore_id
     }
 
@@ -58,8 +55,7 @@ module.exports = async (body, user, parent_session) => {
     }))
 
     const active_password_resets = _active_password_resets.map(
-        (active_password_reset) =>
-            new Active_Password_Reset_Model(active_password_reset)
+        (active_password_reset) => new Active_Password_Reset_Model(active_password_reset)
     )
 
     // 6. Validate created documents
@@ -100,20 +96,7 @@ module.exports = async (body, user, parent_session) => {
     }
 
     // 8. Check collection integrity
-    // restore_ids should be unique
-    const restore_ids = active_password_resets.map(active_password_reset => active_password_reset.restore_id.toString())
-    if (await Active_Password_Reset_Model.exists({
-        restore_id: { $in: restore_ids }
-    }, { session: session })) {
-        if (!parent_session) {
-            if (session.inTransaction()) await session.abortTransaction()
-            await session.endSession()
-        }
-        return {
-            code: 409,
-            data: 'generated_restore_ids_are_not_unique',
-        }
-    }
+    // restore_ids should be unique, but this is ensured at creation.
 
     // 9. Save created documents
     await Active_Password_Reset_Model.bulkSave(active_password_resets, { session: session })
@@ -130,6 +113,8 @@ module.exports = async (body, user, parent_session) => {
     // 12. Reply
     return {
         code: 201,
-        data: undefined, // TODO: check if it works if i leave it out, etc.
+        data: undefined,
     }
 }
+
+module.exports = create
