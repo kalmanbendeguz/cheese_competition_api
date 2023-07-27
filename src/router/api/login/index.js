@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const login = require('../../../controllers/actions/loginn')
+const login = require('../../../controllers/actions/login')
 
 router.post('/', login)
 
