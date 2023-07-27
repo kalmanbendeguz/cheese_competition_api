@@ -1,5 +1,4 @@
-// ONLY SERVER
-module.exports = async (body, user, parent_session) => {
+const create = async (body, user, parent_session) => {
 
     // 1. Validate body
     const create_rating_validator = require('../../../validators/requests/api/rating/create')
@@ -13,7 +12,7 @@ module.exports = async (body, user, parent_session) => {
     body = Array.isArray(body) ? body : [body]
 
     // 3. Authorize create
-    const authorizer = require('../../../authorizers/rating')
+    const authorizer = require('../../../authorizers/entities/rating')
     try {
         body = body.map((rating) => authorizer(rating, 'create', user))
     } catch (reason) {
@@ -25,14 +24,14 @@ module.exports = async (body, user, parent_session) => {
 
     // 4. Start session and transaction if they don't exist
     const Rating_Model = require('../../../models/Rating')
-    const session = parent_session ?? await Rating_Model.db.startSession()
+    const session = parent_session ?? await Rating_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Create locally
     const _ratings = body.map((rating) => ({
         product_id: rating.product_id,
         judge_id: rating.judge_id,
-        anonymous: rating.anonymous, // undefined fields aren't saved to database? this needs to be checked.
+        anonymous: rating.anonymous,
         aspects: rating.aspects,
         overall_impression: rating.overall_impression,
     }))
@@ -76,7 +75,19 @@ module.exports = async (body, user, parent_session) => {
     }
 
     // 8. Check collection integrity
-    // We need compound uniqueness of {product_id, judge_id}
+    // We need compound uniqueness of { product_id, judge_id }
+    const new_product_ids_and_judge_ids = ratings.map(rating => `${rating.product_id.toString()}${rating.judge_id.toString()}`)
+    const unique_new_product_ids_and_judge_ids = [...new Set(new_product_ids_and_judge_ids)]
+    if (new_product_ids_and_judge_ids.length !== unique_new_product_ids_and_judge_ids.length) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        } return {
+            code: 409,
+            data: 'provided_product_ids_and_judge_ids_are_not_compound_unique',
+        }
+    }
+
     for (const rating of ratings) {
         if (
             await Rating_Model.exists({
@@ -99,7 +110,7 @@ module.exports = async (body, user, parent_session) => {
     await Rating_Model.bulkSave(ratings, { session: session })
 
     // 10. Update dependents
-    // Nothing needs to be updated
+    // Nothing needs to be updated.
 
     // 11. Commit transaction and end session.
     if (!parent_session) {
@@ -110,6 +121,8 @@ module.exports = async (body, user, parent_session) => {
     // 12. Reply
     return {
         code: 201,
-        data: undefined, // TODO: check if it works if i leave it out, etc.
+        data: undefined,
     }
 }
+
+module.exports = create
