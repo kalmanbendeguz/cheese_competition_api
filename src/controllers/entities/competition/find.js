@@ -1,5 +1,4 @@
-// COMPETITOR, JUDGE, ORGANIZER, RECEIVER, SERVER
-module.exports = async (query, user, parent_session) => {
+const find = async (query, user, parent_session) => {
 
     // 1. Validate query
     const find_competition_validator = require('../../../validators/requests/api/competition/find')
@@ -10,7 +9,7 @@ module.exports = async (query, user, parent_session) => {
     }
 
     // 2. Authorize find
-    const authorizer = require('../../../authorizers/competition')
+    const authorizer = require('../../../authorizers/entities/competition')
     try {
         query.filter = authorizer(query.filter ?? {}, 'find', user)
     } catch (reason) {
@@ -32,37 +31,22 @@ module.exports = async (query, user, parent_session) => {
 
     // 4. Start session and transaction if they don't exist
     const Competition_Model = require('../../../models/Competition')
-    const session = parent_session ?? await Competition_Model.db.startSession()
+    const session = parent_session ?? await Competition_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Find
     const filter = query.filter
-    const projection = query.projection // if you pass an unknown value, it will ignore it
-    const options = query.options // limit: validated, skip: validated, sort: what if you pass an unknown key?
+    const projection = query.projection
+    const options = query.options
 
     const competitions = await Competition_Model.find(
         filter,
-        projection, // is undefined okay? or should i convert to null
-        { ...options, session: session } // is undefined okay? or should i convert to null
+        projection,
+        { ...options, session: session }
     )
 
     // 6. Validate documents
-    //const competition_validator = require('../../../validators/schemas/Competition')
-    //try {
-    //    const validator_promises = competitions.map(
-    //        (competition) =>
-    //            competition_validator.validateAsync(
-    //                competition
-    //            )
-    //    )
-    //    await Promise.all(validator_promises)
-    //} catch (err) {
-    //    if (!parent_session) {
-    //        if (session.inTransaction()) await session.abortTransaction()
-    //        await session.endSession()
-    //    }
-    //    return { code: 500, data: err.details }
-    //}
+    // Because we only get the projected fields from the DB, we won't validate queried documents.
 
     // 7. Commit transaction and end session
     if (!parent_session) {
@@ -76,3 +60,5 @@ module.exports = async (query, user, parent_session) => {
         data: competitions,
     }
 }
+
+module.exports = find

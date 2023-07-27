@@ -1,11 +1,11 @@
 const express = require('express')
 
-const session = require('../../middlewares/session')
-const passport_initialize = require('../../middlewares/passport_initialize')
-const passport_authenticate = require('../../middlewares/passport_authenticate')
-const validate_api_endpoint = require('../../middlewares/validate_api_endpoint')
-const authorize_endpoint = require('../../middlewares/authorize_endpoint')
 const assign_special_role = require('../../middlewares/assign_special_role')
+const authorize_endpoint = require('../../middlewares/authorize_endpoint')
+const passport_authenticate = require('../../middlewares/passport_authenticate')
+const passport_initialize = require('../../middlewares/passport_initialize')
+const session = require('../../middlewares/session')
+const validate_api_endpoint = require('../../middlewares/validate_api_endpoint')
 
 const router = express.Router({
     caseSensitive: true,
@@ -20,8 +20,11 @@ router.use('/',
     assign_special_role,
     validate_api_endpoint,
     authorize_endpoint,
-    (req,res,next) => {console.log('DEBUGapi', req.body, req.user, req.session, req.cookies); return next()}
 )
+
+/* 
+    Entity routers 
+*/
 
 const active_password_reset = require('./active_password_reset')
 router.use('/active_password_reset', active_password_reset)
@@ -46,6 +49,11 @@ router.use('/rating_picture', rating_picture)
 
 const user = require('./user')
 router.use('/user', user)
+
+
+/* 
+    Action routers 
+*/
 
 const login = require('./login')
 router.use('/login', login)

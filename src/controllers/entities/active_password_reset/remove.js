@@ -1,5 +1,4 @@
-// ONLY SERVER
-module.exports = async (query, user, parent_session) => {
+const remove = async (query, user, parent_session) => {
 
     // 1. Validate query
     const remove_active_password_reset_validator = require('../../../validators/requests/api/active_password_reset/remove')
@@ -10,7 +9,7 @@ module.exports = async (query, user, parent_session) => {
     }
 
     // 2. Authorize remove
-    const authorizer = require('../../../authorizers/active_password_reset')
+    const authorizer = require('../../../authorizers/entities/active_password_reset')
     try {
         query = authorizer(query, 'remove', user)
     } catch (reason) {
@@ -22,7 +21,7 @@ module.exports = async (query, user, parent_session) => {
 
     // 3. Start session and transaction if they don't exist
     const Active_Password_Reset_Model = require('../../../models/Active_Password_Reset')
-    const session = parent_session ?? await Active_Password_Reset_Model.db.startSession()
+    const session = parent_session ?? await Active_Password_Reset_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 4. Find
@@ -34,7 +33,7 @@ module.exports = async (query, user, parent_session) => {
             await session.endSession()
         }
         return {
-            code: 200, // this will be 200. bc this is not an error.
+            code: 200,
             data: 'no_documents_found_to_remove',
         }
     }
@@ -91,7 +90,7 @@ module.exports = async (query, user, parent_session) => {
     })
 
     // 9. Update dependents
-    // There are no dependents.
+    // There are no dependents of Active_Password_Reset.
 
     // 10. Commit transaction and end session
     if (!parent_session) {
@@ -105,3 +104,5 @@ module.exports = async (query, user, parent_session) => {
         data: undefined,
     }
 }
+
+module.exports = remove
