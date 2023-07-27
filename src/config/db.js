@@ -3,11 +3,11 @@ const mongoose = require('mongoose')
 const db_url = `${process.env.DB_URI_SCHEME}://${process.env.DB_URI_HOST}/${process.env.DB_URI_NAME}?${process.env.DB_URI_QUERY}`
 
 const db_auth =
-    process.env._DB_URI_USERNAME !== '' && process.env._DB_URI_PASSWORD !== ''
+    process.env.__DB_URI_USERNAME !== '' && process.env.__DB_URI_PASSWORD !== ''
         ?
         {
-            username: process.env._DB_URI_USERNAME,
-            password: process.env._DB_URI_PASSWORD
+            username: process.env.__DB_URI_USERNAME,
+            password: process.env.__DB_URI_PASSWORD
         }
         :
         undefined

@@ -18,7 +18,7 @@ const session_store = MongoStore.create({
 })
 
 const session = express_session({
-    secret: process.env._COOKIE_SECRET,
+    secret: process.env.__COOKIE_SECRET,
     resave: false,
     saveUninitialized: false, // NEEDBACK FALSE ????
     store: session_store,
