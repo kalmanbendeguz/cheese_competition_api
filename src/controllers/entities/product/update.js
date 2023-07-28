@@ -1,6 +1,5 @@
-// COMPETITOR, ORGANIZER, RECEIVER, SERVER
-module.exports = async (data, user, parent_session) => {
-    
+const update = async (data, user, parent_session) => {
+
     // 1. Validate data
     const update_product_validator = require('../../../validators/requests/api/product/update')
     try {
@@ -10,7 +9,7 @@ module.exports = async (data, user, parent_session) => {
     }
 
     // 2. Authorize updatable
-    const authorizer = require('../../../authorizers/product')
+    const authorizer = require('../../../authorizers/entities/product')
     try {
         data.query = authorizer(data.query, 'updatable', user)
     } catch (reason) {
@@ -20,7 +19,7 @@ module.exports = async (data, user, parent_session) => {
         }
     }
     const filter = data.query
-    
+
     // 3. Authorize update
     try {
         data.body = authorizer(data.body, 'update', user)
@@ -31,10 +30,10 @@ module.exports = async (data, user, parent_session) => {
         }
     }
     const update = data.body
-    
+
     // 4. Start session and transaction if they don't exist
     const Product_Model = require('../../../models/Product')
-    const session = parent_session ?? await Product_Model.db.startSession()
+    const session = parent_session ?? await Product_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Find
@@ -49,41 +48,57 @@ module.exports = async (data, user, parent_session) => {
             await session.endSession()
         }
         return {
-            code: 200, // this will be 200. bc this is not an error.
+            code: 200,
             data: 'no_documents_found_to_update',
         }
     }
 
     // 6. Update locally
-    // If something needs to be removed from the document, we need to declare it here.
-    const remove = [] // Remove that is globally true for all documents
+    // We need to go in a topological order.
+    // For every field, we deal with the field and its dependencies, but not its dependents.
     for (const product of products) {
         const current_update = structuredClone(update)
-        let current_remove = structuredClone(remove)
+        const current_remove = structuredClone(remove)
 
         // competition_id, competitor_id, public_id and secret_id cannot be changed
-        // product_name, anonimized_product_name, factory_name is OK
+        // product_name, anonimized_product_name, factory_name and maturation_time_type is OK.
+
+        // maturation_time_quantity
         if (
             'maturation_time_type' in current_update &&
             product.old.maturation_time_type === 'matured' &&
             current_update.maturation_time_type === 'fresh'
         ) {
             current_remove = current_remove.concat([
-                'maturation_time_quantity',
-                'maturation_time_unit',
+                'maturation_time_quantity'
             ])
         }
-        // milk_type, product_category_id, product_description, anonimized_product_description is OK
+
+        // maturation_time_unit
+        if (
+            'maturation_time_type' in current_update &&
+            product.old.maturation_time_type === 'matured' &&
+            current_update.maturation_time_type === 'fresh'
+        ) {
+            current_remove = current_remove.concat([
+                'maturation_time_unit'
+            ])
+        }
+
+        // milk_type, product_category_id, product_description, anonimized_product_description and approved is OK.
+
+        // approval_type
         if (
             'approved' in current_update &&
-            product.old.approved &&
-            !current_update.approved
+            product.old.approved === true &&
+            current_update.approved === false
         ) {
             current_remove = current_remove.concat([
                 'approval_type',
             ])
         }
-        // handed_in is OK
+
+        // handed_in is OK.
 
         product.new.set(current_update)
         for (const key of current_remove) {
@@ -105,24 +120,6 @@ module.exports = async (data, user, parent_session) => {
         }
         return { code: 500, data: err.details }
     }
-    // We can not have a better validation for certificate template, since none of its contents is strictly required.
-    // product_category_tree needs to be a subtree of the default tree.
-    // No need to check for any uniqueness.
-    // TODO: this should be at validation
-    // const default_product_category_tree = require('../../static/product_category_tree.json')
-    // const is_subtree = require('../../helpers/is_subtree')
-    // for (const competition of competitions) {
-    //     if (!is_subtree(competition.new.product_category_tree, default_product_category_tree)) {
-    //         if (!parent_session) {
-    //             if (session.inTransaction()) await session.abortTransaction()
-    //             await session.endSession()
-    //         }
-    //         return {
-    //             code: 403,
-    //             data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
-    //         }
-    //     }
-    // }
 
     // 8. Check dependencies: Ask all dependencies if this creation is possible.
     const dependencies = ['user', 'competition']
@@ -145,53 +142,40 @@ module.exports = async (data, user, parent_session) => {
             data: unapproved.reason
         }
     }
-    // We can not have a better validation for certificate template, since none of its contents is strictly required.
-    // product_category_tree needs to be a subtree of the default tree.
-    // No need to check for any uniqueness.
-    // TODO: this should be at validation
-    // const default_product_category_tree = require('../../static/product_category_tree.json')
-    // const is_subtree = require('../../helpers/is_subtree')
-    // for (const competition of competitions) {
-    //     if (!is_subtree(competition.new.product_category_tree, default_product_category_tree)) {
-    //         if (!parent_session) {
-    //             if (session.inTransaction()) await session.abortTransaction()
-    //             await session.endSession()
-    //         }
-    //         return {
-    //             code: 403,
-    //             data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
-    //         }
-    //     }
-    // }
 
     // 9. Check collection integrity
-    // public_id and secret_id should be unique, but it is checked at creation.
-    // milk_type should be valid, but it is for a later concern (at validation OR at approve dep mut.)
-    // product_category_id should be valid, but it is asked at competition/approve_dependent_mutation/product
-    // an unapproved product cannot be handed in: this should be checked at document validation
+    // Nothing needs to be checked.
 
     // 10. Save updated documents
     await Product_Model.bulkSave(products.map(product => product.new), { session: session })
 
     // 11. Update dependents
     // Dependents are: Rating, Entry_Fee_Payment
-    // A rating should not be updated.
-    // If the approval_type is changed from 'payment' to anything else, then the entry_fee_payment should be removed.
+
     // Import dependent mutation controllers
-    // create
-    // No 'create' dependent controller needs to be imported
-    // find
-    // No 'find' dependent controller needs to be imported
-    // update
-    // No 'update' dependent controller needs to be imported
-    // remove
+    const remove_rating = require('../rating/remove')
     const remove_entry_fee_payment = require('../entry_fee_payment/remove')
 
     const update_dependent_promises = []
 
     for (const product of products) {
+        // If we change the category, then all belonging Ratings should be removed.
+        // We can only reach this code if Competition allowed this modification.
+        if (product.old.product_category_id !== product.new.product_category_id) {
+            // Maybe it will be denied, but thats OK.
+            update_dependent_promises.push(remove_rating(
+                {
+                    product_id: product.old._id.toString(),
+                },
+                user,
+                session
+            ))
+        }
+
+        // If the approval_type is changed from 'payment' to anything else, then the entry_fee_payment should be removed.
         if (product.old.approval_type === 'payment' && product.new.approval_type !== 'payment') {
-            update_dependent_promises.push(remove_entry_fee_payment( // he will be unauthorized, but thats ok.
+            // He will be unauthorized, but thats OK.
+            update_dependent_promises.push(remove_entry_fee_payment(
                 {
                     product_ids: { $in: [product.old._id.toString()] },
                 },
@@ -201,15 +185,17 @@ module.exports = async (data, user, parent_session) => {
         }
     }
 
-    const update_dependent_results = await Promise.all(update_dependent_promises) // or allsettled?
-    const failed_operation = update_dependent_results.find(result => ![200, 201].includes(result.code))
+    const update_dependent_results = await Promise.all(update_dependent_promises)
+    const failed_operation = update_dependent_results.find(result =>
+        !(typeof result.code === 'number' && result.code >= 200 && result.code <= 299)
+    )
 
     if (failed_operation) {
         if (!parent_session) {
             if (session.inTransaction()) await session.abortTransaction()
             await session.endSession()
         }
-        return failed_operation // EXAMPLE: {code: 403, data: 'can_not_remove_a_rating_which_belongs_to_a_closed_competition'}
+        return failed_operation
     }
 
     // 12. Commit transaction and end session
@@ -224,3 +210,5 @@ module.exports = async (data, user, parent_session) => {
         data: undefined,
     }
 }
+
+module.exports = update
