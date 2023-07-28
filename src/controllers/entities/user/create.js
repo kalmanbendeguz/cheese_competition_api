@@ -1,5 +1,4 @@
-// ONLY SERVER
-module.exports = async (body, user, parent_session) => {
+const create = async (body, user, parent_session) => {
 
     // 1. Validate body
     const create_user_validator = require('../../../validators/requests/api/user/create')
@@ -25,7 +24,7 @@ module.exports = async (body, user, parent_session) => {
 
     // 4. Start session and transaction if they don't exist
     const User_Model = require('../../../models/User')
-    const session = parent_session ?? await User_Model.db.startSession()
+    const session = parent_session ?? await User_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Create locally
@@ -41,30 +40,25 @@ module.exports = async (body, user, parent_session) => {
         } while (
             (await User_Model.exists({
                 confirm_registration_id: confirm_registration_id,
-            }, { session: session })) ||
+            }, { session: session }))
+            ||
             body.some(
                 (u) =>
                     u.confirm_registration_id === confirm_registration_id
-            ))
+            )
+        )
         u.confirm_registration_id = confirm_registration_id
     }
+
     const _users = body.map((u) => ({
-        email: u.email, // ok
-        username: u.username, // ok
-        hashed_password: u.hashed_password, // ok
+        email: u.email,
+        username: u.username,
+        hashed_password: u.hashed_password,
         roles: [],
-        //full_name: u.full_name, // we dont need this
-        //contact_phone_number: u.contact_phone_number,
-        //billing_information: u.billing_information, // we dont need this
-        // association_member: u.association_member, // we dont need this
-        registration_temporary: true, //u.registration_temporary,
+        registration_temporary: true,
         confirm_registration_id: u.confirm_registration_id,
-        //table_leader: [], //u.table_leader, // we dont need this
-        // arrived: [], //u.arrived, // we dont need this
     }))
     const users = _users.map((u) => new User_Model(u))
-
-    console.log(users)
 
     // 6. Validate created documents
     const user_validator = require('../../../validators/schemas/User')
@@ -105,8 +99,26 @@ module.exports = async (body, user, parent_session) => {
 
     // 8. Check collection integrity
     // We need uniqueness of email, username and confirm_registration_id
+    // confirm_registration_id uniqueness is ensured at creation
+
+    // uniqueness of email
+    const new_emails = users.map(u => u.email)
+    const unique_new_emails = [...new Set(new_emails)]
+    if (new_emails.length !== unique_new_emails.length) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        } return {
+            code: 409,
+            data: 'provided_user_emails_are_not_unique',
+        }
+    }
+
     for (const u of users) {
-        if (await User_Model.exists({ email: u.email }, { session: session })
+        if (
+            await User_Model.exists({
+                email: u.email,
+            }, { session: session })
         ) {
             if (!parent_session) {
                 if (session.inTransaction()) await session.abortTransaction()
@@ -114,21 +126,29 @@ module.exports = async (body, user, parent_session) => {
             }
             return {
                 code: 409,
-                data: 'email_already_exists',
+                data: 'at_least_one_provided_user_email_already_exists_in_db',
             }
         }
-        if (await User_Model.exists({ username: u.username }, { session: session })
-        ) {
-            if (!parent_session) {
-                if (session.inTransaction()) await session.abortTransaction()
-                await session.endSession()
-            }
-            return {
-                code: 409,
-                data: 'username_already_exists',
-            }
+    }
+
+    // uniqueness of username
+    const new_usernames = users.map(u => u.username)
+    const unique_new_usernames = [...new Set(new_usernames)]
+    if (new_usernames.length !== unique_new_usernames.length) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        } return {
+            code: 409,
+            data: 'provided_user_usernames_are_not_unique',
         }
-        if (await User_Model.exists({ confirm_registration_id: u.confirm_registration_id }, { session: session })
+    }
+
+    for (const u of users) {
+        if (
+            await User_Model.exists({
+                username: u.username,
+            }, { session: session })
         ) {
             if (!parent_session) {
                 if (session.inTransaction()) await session.abortTransaction()
@@ -136,7 +156,7 @@ module.exports = async (body, user, parent_session) => {
             }
             return {
                 code: 409,
-                data: 'confirm_registration_id_already_exists',
+                data: 'at_least_one_provided_user_username_already_exists_in_db',
             }
         }
     }
@@ -156,6 +176,8 @@ module.exports = async (body, user, parent_session) => {
     // 12. Reply
     return {
         code: 201,
-        data: undefined, // TODO: check if it works if i leave it out, etc.
+        data: undefined,
     }
 }
+
+module.exports = create
