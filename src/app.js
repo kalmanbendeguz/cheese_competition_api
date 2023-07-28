@@ -11,7 +11,7 @@ app.use(router)
 
 console.log('ENVIRONMENT VARIABLES (SECRETS ARE FILTERED):')
 for (const key in process.env) {
-    console.log(`${key}: ${key.startsWith('_') ? '*****' : process.env[key]}`)
+    console.log(`${key}: ${key.startsWith('__') ? '*****' : process.env[key]}`)
 }
 
 app.listen(process.env.SERVER_URL_PORT, () => {

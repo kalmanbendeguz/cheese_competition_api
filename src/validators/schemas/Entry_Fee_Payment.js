@@ -59,6 +59,12 @@ const entry_fee_payment_validator = Joi.object({
             then: Joi.required(),
             otherwise: Joi.forbidden(),
         }),
+    expiring_started: Joi.date()
+        .when('pending', {
+            is: true,
+            then: Joi.required(),
+            otherwise: Joi.forbidden(),
+        }),
 }).unknown(true)
 
 module.exports = entry_fee_payment_validator

@@ -24,11 +24,6 @@ const Entry_Fee_Payment_Schema = new Schema(
         barion_payment_id: {
             type: String,
         },
-        expiring_started: {
-            type: Date,
-            default: Date.now,
-            expires: 15 * 60,
-        },
         barion_transaction_id: {
             type: String,
         },
@@ -43,6 +38,11 @@ const Entry_Fee_Payment_Schema = new Schema(
         },
         confirm_payment_id: {
             type: String,
+        },
+        expiring_started: {
+            type: Date,
+            default: Date.now,
+            expires: 15 * 60,
         },
     },
     {

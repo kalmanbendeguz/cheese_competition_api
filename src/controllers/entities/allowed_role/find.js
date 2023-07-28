@@ -1,62 +1,64 @@
-// ONLY SERVER
-module.exports = async (query, user) => {
-    console.log(1)
-    // 1. validate query
-    const find_active_password_reset_validator = require('../../../validators/requests/api/active_password_reset/find')
+const find = async (query, user, parent_session) => {
+
+    // 1. Validate query
+    const find_allowed_role_validator = require('../../../validators/requests/api/allowed_role/find')
     try {
-        await find_active_password_reset_validator.validateAsync(query)
+        await find_allowed_role_validator.validateAsync(query)
     } catch (err) {
         return { code: 400, data: err.details }
     }
-    console.log(2)
-    // 2. authorize {query.filter, user}
-    const authorizer = require('../../../authorizers/active_password_reset')
-    const filter_authorizer_result = authorizer(query.filter ?? {}, 'find', user)
-    if (!filter_authorizer_result.authorized) {
-        return { code: 403, data: filter_authorizer_result.message }
-    }
-    console.log(3)
-    // 3. authorize {query.projection, user}
-    const projection_authorizer_result = authorizer(
-        query.projection,
-        'project',
-        user
-    )
-    if (!projection_authorizer_result.authorized) {
-        return { code: 403, data: projection_authorizer_result.message }
+    
+    // 2. Authorize find
+    const authorizer = require('../../../authorizers/entities/allowed_role')
+    try {
+        query.filter = authorizer(query.filter ?? {}, 'find', user)
+    } catch (reason) {
+        return {
+            code: 403,
+            data: reason
+        }
     }
 
-    // 3. prepare
+    // 3. Authorize project
+    try {
+        query.projection = authorizer(query.projection, 'project', user)
+    } catch (reason) {
+        return {
+            code: 403,
+            data: reason
+        }
+    }
+
+    // 4. Start session and transaction if they don't exist
+    const Allowed_Role_Model = require('../../../models/Allowed_Role')
+    const session = parent_session ?? await Allowed_Role_Model.startSession()
+    if (!session.inTransaction()) session.startTransaction()
+
+    // 5. Find
     const filter = query.filter
-    const projection = query.projection // if you pass an unknown value, it will ignore it
-    const options = query.options // limit: validated, skip: validated, sort: what if you pass an unknown key?
+    const projection = query.projection
+    const options = query.options
 
-    // 4. find
-    const Active_Password_Reset_Model = require('../../../models/Active_Password_Reset')
-
-    const active_password_resets = await Active_Password_Reset_Model.find(
+    const allowed_roles = await Allowed_Role_Model.find(
         filter,
-        projection, // is undefined okay? or should i convert to null
-        options // is undefined okay? or should i convert to null
+        projection,
+        { ...options, session: session }
     )
 
-    // 5. validate documents
-    //const active_password_reset_validator = require('../../../validators/schemas/Active_Password_Reset')
-    //try {
-    //    const validator_promises = active_password_resets.map(
-    //        (active_password_reset) =>
-    //            active_password_reset_validator.validateAsync(
-    //                active_password_reset
-    //            )
-    //    )
-    //    await Promise.all(validator_promises)
-    //} catch (err) {
-    //    return { code: 500, data: err.details }
-    //}
+    // 6. Validate documents
+    // Because we only get the projected fields from the DB, we won't validate queried documents.
 
-    // 6. send
+    // 7. Commit transaction and end session
+    if (!parent_session) {
+        if (session.inTransaction()) await session.commitTransaction()
+        await session.endSession()
+    }
+
+    // 8. Send
     return {
         code: 200,
-        data: active_password_resets,
+        data: allowed_roles,
     }
 }
+
+module.exports = find
