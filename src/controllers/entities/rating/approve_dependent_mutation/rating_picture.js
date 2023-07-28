@@ -53,7 +53,7 @@ const approve_rating_picture_mutation = async (rating_pictures, user, session) =
     ))?.data ?? []
 
     // 3. Based only on Rating, is this mutation possible?
-    // If it is a creation, then all provided rating_ids should belong to a real Rating.
+    // All provided rating_ids should belong to a real Rating.
     if(unique_rating_ids.length !== ratings.length){
         return {
             approved: false,
