@@ -1,8 +1,9 @@
 const Joi = require('joi')
 const Billing_Information_Validator = require('./Billing_Information')
 const { mongoose: { Types: { ObjectId }, }, } = require('mongoose')
+const valid_roles = require('../../static/valid_roles.json')
 
-module.exports = Joi.object({
+const user_validator = Joi.object({
     email: Joi.string().email().required(),
     username: Joi.string()
         .trim()
@@ -14,7 +15,7 @@ module.exports = Joi.object({
     hashed_password: Joi.string().min(1).required(),
     roles: Joi.array()
         .items(
-            Joi.string().valid('competitor', 'judge', 'organizer', 'receiver')
+            Joi.string().valid(...valid_roles)
         )
         .unique()
         .min(0)
@@ -32,7 +33,7 @@ module.exports = Joi.object({
         is: Joi.array().items(Joi.string().invalid('competitor')),
         then: Joi.forbidden(),
         otherwise: Joi.string()
-            .pattern(/^\+?\d+$/)
+            .pattern(/^\+?\d+$/) // One optional "+" sign at the beginning, then only numbers
             .required(),
     }),
     billing_information: Joi.when('roles', {
@@ -72,3 +73,5 @@ module.exports = Joi.object({
             .required(),
     }),
 }).unknown(true)
+
+module.exports = user_validator
