@@ -90,10 +90,7 @@ const approve_rating_mutation = async (ratings, user, session) => {
                 reason: 'product_should_be_handed_in_to_mutate_rating'
             }
         }
-
     }
-
-    
 
     // 4. Based on Rating's dependencies, is this mutation possible?
     // The dependencies will only see that Rating has changed, they won't know anything about Rating_Picture.
