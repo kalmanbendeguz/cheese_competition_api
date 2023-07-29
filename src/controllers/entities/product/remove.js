@@ -79,7 +79,7 @@ const remove = async (query, user, parent_session) => {
     // Nothing needs to be checked.
 
     // 8. Remove documents
-    const ids_to_delete = products.map((product) => product._id)
+    const ids_to_delete = products.map((product) => product._id.toString())
     await Product_Model.deleteMany({
         _id: { $in: ids_to_delete },
     }, {

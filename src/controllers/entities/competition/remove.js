@@ -1,4 +1,3 @@
-// ORGANIZER, SERVER
 const remove = async (query, user, parent_session) => {
 
     // 1. Validate query
@@ -55,26 +54,7 @@ const remove = async (query, user, parent_session) => {
     }
 
     // 6. Check dependencies: Ask all dependencies if this remove is possible.
-    const dependencies = []
-    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/competition`))
-
-    const dependency_approver_promises = []
-    for (const dependency_approver of dependency_approvers) {
-        dependency_approver_promises.push(dependency_approver(competitions.map(competition => ({ old: competition, new: null })), user, session))
-    }
-    const dependency_approver_results = await Promise.all(dependency_approver_promises)
-
-    const unapproved = dependency_approver_results.find(dependency_approver_result => !dependency_approver_result.approved)
-    if (unapproved) {
-        if (!parent_session) {
-            if (session.inTransaction()) await session.abortTransaction()
-            await session.endSession()
-        }
-        return {
-            code: 403,
-            data: unapproved.reason
-        }
-    }
+    // Competition has no dependencies.
 
     // 7. Check collection integrity
     // Nothing needs to be checked.
@@ -88,13 +68,12 @@ const remove = async (query, user, parent_session) => {
     })
 
     // 9. Update dependents
-    const update_dependent_promises = []
     // Dependents are: User, Product
+
+    const update_dependent_promises = []
+
     // If we remove a competition, we should remove all products associated with it.
-
     const remove_product = require('../product/remove')
-    const update_user = require('../user/update')
-
     update_dependent_promises.push(
         remove_product(
             { competition_id: { $in: ids_to_delete } },
@@ -104,6 +83,7 @@ const remove = async (query, user, parent_session) => {
     )
 
     // We should remove its _id from all associated users' table_leader and arrived array.
+    const update_user = require('../user/update')
     update_dependent_promises.push(
         update_user(
             {
