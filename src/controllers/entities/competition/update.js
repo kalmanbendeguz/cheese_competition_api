@@ -9,7 +9,7 @@ const update = async (data, user, parent_session) => {
     }
 
     // 2. Authorize updatable
-    const authorizer = require('../../../authorizers/competition')
+    const authorizer = require('../../../authorizers/entitier/competition')
     try {
         data.query = authorizer(data.query, 'updatable', user)
     } catch (reason) {
@@ -54,65 +54,127 @@ const update = async (data, user, parent_session) => {
     }
 
     // 6. Update locally
-    // If something needs to be removed from the document, we need to declare it here.
-    const remove = [] // Remove that is globally true for all documents
+    // We need to go in a topological order.
+    // For every field, we deal with the field and its dependencies, but not its dependents.
     const now = Date.now
     for (const competition of competitions) {
         const current_update = structuredClone(update)
-        let current_remove = structuredClone(remove)
+        const current_remove = []
 
-        if (
-            'archived' in current_update &&
-            !competition.old.archived &&
-            current_update.archived
-        ) {
-            current_update.archival_date = now
-            current_update.entry_opened = false
-            current_update.competition_opened = false
-        }
+        // ignore_extreme_values CAN be changed, OK
+        // certificate_template CAN be changed, OK
+        // product_category_tree CAN NOT be changed, OK
+        // payment_needed CAN be changed, OK
 
-        if (
-            'archived' in current_update &&
-            competition.old.archived &&
-            !current_update.archived
-        ) {
-            current_remove = current_remove.concat(['archival_date',])
-        }
-
-        if (
-            'entry_opened' in current_update
-        ) {
-            if (!competition.old.entry_opened && current_update.entry_opened)
-                current_update.last_entry_open_date = now
-            if (competition.old.entry_opened && !current_update.entry_opened)
-                current_update.last_entry_close_date = now
-        }
-
-        if (
-            'competition_opened' in current_update
-        ) {
-            if (
-                !competition.old.competition_opened &&
-                current_update.competition_opened
-            )
-                current_update.last_competition_open_date = now
-            if (
-                competition.old.competition_opened &&
-                !current_update.competition_opened
-            )
-                current_update.last_competition_close_date = now
-        }
-
+        // entry_fee_currency
         if (
             'payment_needed' in current_update &&
-            competition.old.payment_needed &&
-            !current_update.payment_needed
+            competition.old.payment_needed === true &&
+            current_update.payment_needed === false
         ) {
             current_remove = current_remove.concat([
-                'entry_fee_amount',
                 'entry_fee_currency',
             ])
         }
+
+        // entry_fee_amount
+        if (
+            'payment_needed' in current_update &&
+            competition.old.payment_needed === true &&
+            current_update.payment_needed === false
+        ) {
+            current_remove = current_remove.concat([
+                'entry_fee_amount',
+            ])
+        }
+
+        // association_members_need_to_pay
+        if (
+            'payment_needed' in current_update &&
+            competition.old.payment_needed === true &&
+            current_update.payment_needed === false
+        ) {
+            current_remove = current_remove.concat([
+                'association_members_need_to_pay',
+            ])
+        }
+
+        // archived CAN be changed, OK
+
+        // archival_date
+        if (
+            'archived' in current_update &&
+            competition.old.archived === false &&
+            current_update.archived === true
+        ) {
+            current_update.archival_date = now
+        }
+        if (
+            'archived' in current_update &&
+            competition.old.archived === true &&
+            current_update.archived === false
+        ) {
+            current_remove = current_remove.concat([
+                'archival_date',
+            ])
+        }
+
+        // competition_opened
+        if (
+            'archived' in current_update &&
+            competition.old.archived === false &&
+            current_update.archived === true
+        ) {
+            current_update.competition_opened = false
+        }
+
+        // last_competition_close_date
+        if ('competition_opened' in current_update &&
+            competition.old.competition_opened === true &&
+            current_update.competition_opened === false
+        ) {
+            current_update.last_competition_close_date = now
+        }
+
+        // last_competition_open_date
+        if (
+            'competition_opened' in current_update &&
+            competition.old.competition_opened === false &&
+            current_update.competition_opened === true
+        ) {
+            current_update.last_competition_open_date = now
+        }
+
+        // entry_opened
+        if (
+            'archived' in current_update &&
+            competition.old.archived === false &&
+            current_update.archived === true
+        ) {
+            current_update.entry_opened = false
+        }
+
+        // last_entry_close_date
+        if (
+            'entry_opened' in current_update &&
+            competition.old.entry_opened === true &&
+            current_update.entry_opened === false
+        ) {
+            current_update.last_entry_close_date = now
+        }
+
+        // last_entry_open_date
+        if (
+            'entry_opened' in current_update &&
+            competition.old.entry_opened === false &&
+            current_update.entry_opened === true
+        ) {
+            current_update.last_entry_open_date = now
+        }
+
+        // creation_date CAN NOT be changed, OK
+        // place CAN be changed, OK
+        // name CAN be changed, OK
 
         competition.new.set(current_update)
         for (const key of current_remove) {
@@ -147,21 +209,15 @@ const update = async (data, user, parent_session) => {
     // 11. Update dependents
     const update_dependent_promises = []
     // Dependents are: User, Product
-    // Import dependent mutation controllers
-    // create
-    // No 'create' dependent controller needs to be imported
-    // find
+
     const find_product = require('../product/find')
     const find_user = require('../user/find')
-    // update
     const update_product = require('../product/update')
-    // remove
-    // No 'remove' dependent controller needs to be imported
 
     for (const competition of competitions) {
         // association_members_need_to_pay: false -> true:
         // All approved && approval_type=association_member products should be approved=false
-        if (!competition.old.association_members_need_to_pay && competition.new.association_members_need_to_pay) {
+        if (competition.old.association_members_need_to_pay === false && competition.new.association_members_need_to_pay === true) {
             update_dependent_promises.push(update_product(
                 {
                     query: {
@@ -180,7 +236,7 @@ const update = async (data, user, parent_session) => {
 
         // association_members_need_to_pay: true -> false:
         // All unapproved && competitor.association_member products should be approved=true && approval_type=association_member
-        if (competition.old.association_members_need_to_pay && !competition.new.association_members_need_to_pay) {
+        if (competition.old.association_members_need_to_pay === true && competition.new.association_members_need_to_pay === false) {
             const unapproved_products_of_competition = (await find_product(
                 {
                     competition_id: competition.new._id.toString(),
@@ -216,7 +272,7 @@ const update = async (data, user, parent_session) => {
 
         // payment_needed: false -> true:
         // All approved && approval_type=bypass products should be approved=false
-        if (!competition.old.payment_needed && competition.new.payment_needed) {
+        if (competition.old.payment_needed === false && competition.new.payment_needed === true) {
             update_dependent_promises.push(update_product(
                 {
                     query: {
@@ -235,7 +291,7 @@ const update = async (data, user, parent_session) => {
 
         // payment_needed: true -> false:
         // All unapproved products should be approved=true && approval_type=bypass
-        if (competition.old.payment_needed && !competition.new.payment_needed) {
+        if (competition.old.payment_needed === true && competition.new.payment_needed === false) {
             update_dependent_promises.push(update_product(
                 {
                     query: {
@@ -253,15 +309,17 @@ const update = async (data, user, parent_session) => {
         }
     }
 
-    const update_dependent_results = await Promise.all(update_dependent_promises) // or allsettled?
-    const failed_operation = update_dependent_results.find(result => ![200, 201].includes(result.code))
+    const update_dependent_results = await Promise.all(update_dependent_promises)
+    const failed_operation = update_dependent_results.find(result =>
+        !(typeof result.code === 'number' && result.code >= 200 && result.code <= 299)
+    )
 
     if (failed_operation) {
         if (!parent_session) {
             if (session.inTransaction()) await session.abortTransaction()
             await session.endSession()
         }
-        return failed_operation // EXAMPLE: {code: 403, data: 'can_not_remove_a_rating_which_belongs_to_a_closed_competition'}
+        return failed_operation
     }
 
     // 12. Commit transaction and end session
