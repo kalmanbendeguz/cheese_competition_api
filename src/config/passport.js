@@ -9,8 +9,6 @@ const custom_fields = {
 }
 
 const verify_callback = async (username, password, done) => {
-    console.log('username', username)
-    console.log('password', password)
     const user = await User_Model.findOne({ username: username })
     if (!user) return done(null, false)
     const password_correct = await bcrypt.compare(password, user.hashed_password)
