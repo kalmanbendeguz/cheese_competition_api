@@ -83,7 +83,7 @@ const remove = async (query, user, parent_session) => {
         { session: session }
     )
     const organizers_to_remove = users.filter(u => u.roles.includes('organizer'))
-    if (organizers_in_total.length === organizers_to_remove.length) {
+    if (organizers_in_total.length > 0 && organizers_in_total.length === organizers_to_remove.length) {
         if (!parent_session) {
             if (session.inTransaction()) await session.abortTransaction()
             await session.endSession()

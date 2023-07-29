@@ -157,10 +157,9 @@ const update = async (data, user, parent_session) => {
     }
 
     // 9. Check collection integrity
+
     // We need uniqueness of email, username and confirm_registration_id
     // But we only need to check uniqueness of 'username' because it is the only field that can be changed.
-    // TODO: uniqueness needs to be checked at creation too !! (bc local uniqueness is not checked there, i guess)
-    // (and check local uniqueness everywhere else)
     const new_usernames = users.map(u => u.new.username)
     const unique_new_usernames = [...new Set(new_usernames)]
     if (new_usernames.length !== unique_new_usernames.length) {
@@ -188,20 +187,29 @@ const update = async (data, user, parent_session) => {
         }
     }
 
+    // You cannot change the number of organizers from N>0 to N=0
+    const organizers_in_total = await User_Model.find(
+        { roles: { $in: ['organizer'] } },
+        null,
+        { session: session }
+    )
+    const users_who_lose_their_organizer_role = users.filter(u => u.old.roles.includes('organizer') && !u.new.roles.includes('organizer'))
+    if (organizers_in_total.length > 0 && organizers_in_total.length === users_who_lose_their_organizer_role.length) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
+        return {
+            code: 403,
+            data: 'it_is_not_allowed_to_remove_the_last_organizers_organizer_role',
+        }
+    }
+
     // 10. Save updated documents
     await User_Model.bulkSave(users.map(u => u.new), { session: session })
 
     // 11. Update dependents
     // Dependents are: Active_Password_Reset, Rating, Product
-    // An active_password_reset should not be updated.
-    // Import dependent mutation controllers
-    // create
-    // No 'create' dependent controller needs to be imported
-    // find
-    // No 'find' dependent controller needs to be imported
-    // update
-    // No 'update' dependent controller needs to be imported
-    // remove
     const remove_rating = require('../rating/remove')
     const remove_product = require('../product/remove')
 
@@ -229,7 +237,7 @@ const update = async (data, user, parent_session) => {
             ))
         }
 
-        // If we remove a 'table_leader', nothing happens, so the pictures will remain.
+        // If we remove a 'table_leader', nothing happens, so the pictures will remain, because the pictures belong to the Product, not to the Judge.
 
         // If we remove an 'arrived', nothing happens, so the ratings will remain.
     }
