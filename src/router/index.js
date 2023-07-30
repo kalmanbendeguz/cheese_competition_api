@@ -4,7 +4,7 @@ const express_urlencoded = require('../middlewares/express_urlencoded')
 const express_json = require('../middlewares/express_json')
 const cors = require('../middlewares/cors')
 const decode_query_q = require('../middlewares/decode_query_q')
-const cookie_parser = require('../middlewares/cookie_parser') // NEEDBACK
+const cookie_parser = require('../middlewares/cookie_parser') 
 
 const router = express.Router({
     caseSensitive: true,
@@ -17,10 +17,8 @@ router.use(
     cors,
     express_urlencoded,
     express_json,
-    (req,res,next) => {console.log('DEBUGrouter', req.body, req.user, req.session, req.cookies); return next()},
     decode_query_q,
     cookie_parser,
-    (req,res,next) => {console.log('DEBUGrouter', req.body, req.user, req.session, req.cookies); return next()}
 )
 
 // API router
