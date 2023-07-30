@@ -1,5 +1,4 @@
-// COMPETITOR, SERVER
-module.exports = async (body, user, parent_session) => {
+const create = async (body, user, parent_session) => {
 
     // 1. Validate body
     const create_product_validator = require('../../../validators/requests/api/product/create')
@@ -13,7 +12,7 @@ module.exports = async (body, user, parent_session) => {
     body = Array.isArray(body) ? body : [body]
 
     // 3. Authorize create
-    const authorizer = require('../../../authorizers/product')
+    const authorizer = require('../../../authorizers/entities/product')
     try {
         body = body.map((product) => authorizer(product, 'create', user))
     } catch (reason) {
@@ -25,13 +24,13 @@ module.exports = async (body, user, parent_session) => {
 
     // 4. Start session and transaction if they don't exist
     const Product_Model = require('../../../models/Product')
-    const session = parent_session ?? await Product_Model.db.startSession()
+    const session = parent_session ?? await Product_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Create locally
     // Generate public_ids and secret_ids
     const randomstring = require('randomstring')
-    const forbidden_id_parts = require('../../static/forbidden_id_parts')
+    const forbidden_id_parts = require('../../../static/forbidden_id_parts.json')
 
     let existing_product
     let is_forbidden_part
@@ -263,3 +262,5 @@ module.exports = async (body, user, parent_session) => {
         data: undefined, // TODO: check if it works if i leave it out, etc.
     }
 }
+
+module.exports = create
