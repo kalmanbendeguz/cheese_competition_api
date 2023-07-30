@@ -114,6 +114,7 @@ const create = async (body, user, parent_session) => {
             product.approved = true
             product.approval_type = 'bypass'
         }
+        // Otherwise, the approved will be the default, "false", but this needs to be tested.
     }
 
     const _products = body.map((product) => ({
@@ -137,8 +138,7 @@ const create = async (body, user, parent_session) => {
         product_category_id: product.product_category_id, // required
         product_description: product.product_description, // required
         ...(product.anonimized_product_description && { // optional
-            anonimized_product_description: // optional
-                product.anonimized_product_description, // optional
+            anonimized_product_description: product.anonimized_product_description, // optional
         }),
         ...(product.approved && { approved: product.approved }), // GENERATED
         ...(product.approved && { approval_type: product.approval_type }), // GENERATED
@@ -148,24 +148,6 @@ const create = async (body, user, parent_session) => {
     const products = _products.map((product) => new Product_Model(product))
 
     // 6. Validate created documents
-    // We can not have a better validation for certificate template, since none of its contents is strictly required.
-    // product_category_tree needs to be a subtree of the default tree.
-    // No need to check for any uniqueness.
-    // TODO: this should be at validation
-    // const default_product_category_tree = require('../../static/product_category_tree.json')
-    // const is_subtree = require('../../helpers/is_subtree')
-    // for (const competition of competitions) {
-    //     if (!is_subtree(competition.new.product_category_tree, default_product_category_tree)) {
-    //         if (!parent_session) {
-    //             if (session.inTransaction()) await session.abortTransaction()
-    //             await session.endSession()
-    //         }
-    //         return {
-    //             code: 403,
-    //             data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
-    //         }
-    //     }
-    // }
     const product_validator = require('../../../validators/schemas/Product')
     try {
         const validator_promises = products.map((product) =>
@@ -181,25 +163,7 @@ const create = async (body, user, parent_session) => {
     }
 
     // 7. Check dependencies: Ask all dependencies if this creation is possible.
-    // We can not have a better validation for certificate template, since none of its contents is strictly required.
-    // product_category_tree needs to be a subtree of the default tree.
-    // No need to check for any uniqueness.
-    // TODO: this should be at validation
-    // const default_product_category_tree = require('../../static/product_category_tree.json')
-    // const is_subtree = require('../../helpers/is_subtree')
-    // for (const competition of competitions) {
-    //     if (!is_subtree(competition.new.product_category_tree, default_product_category_tree)) {
-    //         if (!parent_session) {
-    //             if (session.inTransaction()) await session.abortTransaction()
-    //             await session.endSession()
-    //         }
-    //         return {
-    //             code: 403,
-    //             data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
-    //         }
-    //     }
-    // }
-    const dependencies = ['user', 'competition']
+    const dependencies = ['competition', 'user']
     const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/product`))
 
     const dependency_approver_promises = []
@@ -221,28 +185,7 @@ const create = async (body, user, parent_session) => {
     }
 
     // 8. Check collection integrity
-    // public_id and secret_id should be unique, but it is checked at creation.
-    // milk_type should be valid, but it is for a later concern
-    // product_category_id should be valid, but it is asked at competition/approve_dependent_mutation/product
-    // an unapproved product cannot be handed in: this should be checked at document validation
-    // We can not have a better validation for certificate template, since none of its contents is strictly required.
-    // product_category_tree needs to be a subtree of the default tree.
-    // No need to check for any uniqueness.
-    // TODO: this should be at validation
-    // const default_product_category_tree = require('../../static/product_category_tree.json')
-    // const is_subtree = require('../../helpers/is_subtree')
-    // for (const competition of competitions) {
-    //     if (!is_subtree(competition.new.product_category_tree, default_product_category_tree)) {
-    //         if (!parent_session) {
-    //             if (session.inTransaction()) await session.abortTransaction()
-    //             await session.endSession()
-    //         }
-    //         return {
-    //             code: 403,
-    //             data: 'product_category_tree_needs_to_be_a_subtree_of_the_default_product_category_tree',
-    //         }
-    //     }
-    // }
+    // Nothing needs to be checked, public_id and secret_id uniqueness is ensured at creation.
 
     // 9. Save created documents
     await Product_Model.bulkSave(products, { session: session })
@@ -259,7 +202,7 @@ const create = async (body, user, parent_session) => {
     // 12. Reply
     return {
         code: 201,
-        data: undefined, // TODO: check if it works if i leave it out, etc.
+        data: undefined,
     }
 }
 
