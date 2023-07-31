@@ -16,4 +16,6 @@ const object_schema = Joi.object({
 
 const array_schema = Joi.array().items(object_schema).min(1).required()
 
-module.exports = Joi.alternatives().try(object_schema, array_schema)
+const alternatives_schema = Joi.alternatives().try(object_schema, array_schema)
+
+module.exports = alternatives_schema

@@ -1,9 +1,4 @@
-const {
-    Schema: Schema,
-    Schema: {
-        Types: { Decimal128, Mixed },
-    },
-} = require('mongoose')
+const { Schema: Schema, Schema: { Types: { Decimal128, Mixed }, }, } = require('mongoose')
 const db = require('../config/db')
 const File_Schema = require('./schemas/File')
 
