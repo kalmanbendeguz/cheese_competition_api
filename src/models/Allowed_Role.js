@@ -1,5 +1,5 @@
 const { Schema } = require('mongoose')
-const db = require('../../src/config/db')
+const db = require('../config/db')
 
 const Allowed_Role_Schema = new Schema(
     {

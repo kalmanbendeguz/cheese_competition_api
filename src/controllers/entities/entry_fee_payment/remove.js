@@ -79,7 +79,7 @@ const remove = async (query, user, parent_session) => {
     // Nothing needs to be checked.
 
     // 8. Remove documents
-    const ids_to_delete = entry_fee_payments.map((entry_fee_payment) => entry_fee_payment._id)
+    const ids_to_delete = entry_fee_payments.map((entry_fee_payment) => entry_fee_payment._id.toString())
     await Entry_Fee_Payment_Model.deleteMany({
         _id: { $in: ids_to_delete },
     }, {
