@@ -61,6 +61,10 @@ const approve_rating_picture_mutation = async (rating_pictures, user, session) =
         }
     }
 
+    // Note: It is a design problem that because Rating_Picture's only dependency is Rating,
+    // we can't implement the table_leader check, because if here we ask the User (one of the next dependencies in the graph)
+    // then the User 'approve_rating_mutation' won't see that a Rating_Picture changed, it will only see Rating.
+
     // 4. Based on Rating's dependencies, is this mutation possible?
     // The dependencies will only see that Rating has changed, they won't know anything about Rating_Picture.
     const dependencies = ['product', 'user']

@@ -23,4 +23,6 @@ const Allowed_Role_Schema = new Schema(
     }
 )
 
-module.exports = db.model('Allowed_Role', Allowed_Role_Schema)
+const Allowed_Role_Model = db.model('Allowed_Role', Allowed_Role_Schema)
+
+module.exports = Allowed_Role_Model
