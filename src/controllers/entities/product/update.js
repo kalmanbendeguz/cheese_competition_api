@@ -121,7 +121,7 @@ const update = async (data, user, parent_session) => {
         return { code: 500, data: err.details }
     }
 
-    // 8. Check dependencies: Ask all dependencies if this creation is possible.
+    // 8. Check dependencies: Ask all dependencies if this update is possible.
     const dependencies = ['user', 'competition']
     const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/product`))
 

@@ -1,16 +1,15 @@
-// JUDGE, ORGANIZER, SERVER
-module.exports = async (data, user, parent_session) => {
-    
+const update = async (data, user, parent_session) => {
+
     // 1. Validate data
-    const update_rating_validator = require('../../../validators/requests/api/rating/update')
+    const update_rating_picture_validator = require('../../../validators/requests/api/rating_picture/update')
     try {
-        await update_rating_validator.validateAsync(data)
+        await update_rating_picture_validator.validateAsync(data)
     } catch (err) {
         return { code: 400, data: err.details }
     }
 
     // 2. Authorize updatable
-    const authorizer = require('../../../authorizers/rating')
+    const authorizer = require('../../../authorizers/entities/rating_picture')
     try {
         data.query = authorizer(data.query, 'updatable', user)
     } catch (reason) {
@@ -33,45 +32,45 @@ module.exports = async (data, user, parent_session) => {
     const update = data.body
 
     // 4. Start session and transaction if they don't exist
-    const Rating_Model = require('../../../models/Rating')
-    const session = parent_session ?? await Rating_Model.db.startSession()
+    const Rating_Picture_Model = require('../../../models/Rating_Picture')
+    const session = parent_session ?? await Rating_Picture_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Find
-    const ratings = (await Rating_Model.find(
+    const rating_pictures = (await Rating_Picture_Model.find(
         filter,
         null,
         { session: session }
-    )).map(rating => ({ old: structuredClone(rating), new: rating }))
-    if (ratings.length === 0) {
+    )).map(rating_picture => ({ old: structuredClone(rating_picture), new: rating_picture }))
+    if (rating_pictures.length === 0) {
         if (!parent_session) {
             if (session.inTransaction()) await session.commitTransaction()
             await session.endSession()
         }
         return {
-            code: 200, // this will be 200. bc this is not an error.
+            code: 200,
             data: 'no_documents_found_to_update',
         }
     }
 
     // 6. Update locally
-    // If something needs to be removed from the document, we need to declare it here.
-    const remove = [] // Remove that is globally true for all documents
-    for (const rating of ratings) {
+    // We need to go in a topological order.
+    // For every field, we deal with the field and its dependencies, but not its dependents.
+    for (const rating_picture of rating_pictures) {
         const current_update = structuredClone(update)
-        const current_remove = structuredClone(remove)
+        const current_remove = []
 
-        rating.new.set(current_update)
+        rating_picture.new.set(current_update)
         for (const key of current_remove) {
-            rating.new[key] = undefined
+            rating_picture.new[key] = undefined
         }
     }
 
     // 7. Validate new documents
-    const rating_validator = require('../../../validators/schemas/Rating')
+    const rating_picture_validator = require('../../../validators/schemas/Rating_Picture')
     try {
-        const validator_promises = ratings.map((rating) =>
-            rating_validator.validateAsync(rating.new)
+        const validator_promises = rating_pictures.map((rating_picture) =>
+            rating_picture_validator.validateAsync(rating_picture.new)
         )
         await Promise.all(validator_promises)
     } catch (err) {
@@ -82,13 +81,13 @@ module.exports = async (data, user, parent_session) => {
         return { code: 500, data: err.details }
     }
 
-    // 8. Check dependencies: Ask all dependencies if this creation is possible.
-    const dependencies = ['product', 'user']
-    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/rating`))
+    // 8. Check dependencies: Ask all dependencies if this update is possible.
+    const dependencies = ['rating']
+    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/rating_picture`))
 
     const dependency_approver_promises = []
     for (const dependency_approver of dependency_approvers) {
-        dependency_approver_promises.push(dependency_approver(ratings, user, session))
+        dependency_approver_promises.push(dependency_approver(rating_pictures, user, session))
     }
     const dependency_approver_results = await Promise.all(dependency_approver_promises)
 
@@ -108,17 +107,10 @@ module.exports = async (data, user, parent_session) => {
     // Nothing needs to be checked.
 
     // 10. Save updated documents
-    await Rating_Model.bulkSave(ratings.map(rating => rating.new), { session: session })
+    await Rating_Picture_Model.bulkSave(rating_pictures.map(rating_picture => rating_picture.new), { session: session })
 
     // 11. Update dependents
-    // Import dependent mutation controllers
-    // create
-    // No 'create' dependent controller needs to be imported
-    // update
-    // No 'update' dependent controller needs to be imported
-    // remove
-    // No 'remove' dependent controller needs to be imported
-    // Nothing to do here.
+    // Rating_Picture has no dependents.
 
     // 12. Commit transaction and end session
     if (!parent_session) {
@@ -132,3 +124,5 @@ module.exports = async (data, user, parent_session) => {
         data: undefined,
     }
 }
+
+module.exports = update

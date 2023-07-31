@@ -10,7 +10,7 @@ const authorize_endpoint = (req, res, next) => {
     for (const part of full_path_array) {
         current_path = `${current_path}/${part}`
         if (!(part in node)) {
-            return res.status(403).json({ data: `no_authorization_rule_found_for_endpoint_'${current_path}'` })
+            return res.status(403).json(`no_authorization_rule_found_for_endpoint_'${current_path}'`)
         }
         node = node[part]
 
@@ -22,13 +22,13 @@ const authorize_endpoint = (req, res, next) => {
         }
 
         if (!(req.method in method_rules)) {
-            return res.status(403).json({ data: `no_'${req.method}'_authorization_rule_found_for_endpoint_'${current_path}'` })
+            return res.status(403).json(`no_'${req.method}'_authorization_rule_found_for_endpoint_'${current_path}'`)
         }
 
         const user_role = req.user?.role ?? 'UNAUTHENTICATED'
 
         if (!method_rules[req.method].includes(user_role)) {
-            return res.status(403).json({ data: `role_'${user_role}'_is_not_authorized_to_'${req.method}'_'${current_path}'` })
+            return res.status(403).json(`role_'${user_role}'_is_not_authorized_to_'${req.method}'_'${current_path}'`)
         }
     }
 
