@@ -1,6 +1,8 @@
 const Joi = require('joi')
+const valid_milk_types = require('../../../../static/valid_milk_types.json')
 
 const object_schema = Joi.object({
+
     competition_id: Joi.string()
         .trim()
         .min(1)
@@ -28,7 +30,7 @@ const object_schema = Joi.object({
         .min(3)
         .max(25)
         .prefs({ convert: false })
-        .optional(), // server can set
+        .optional(),
 
     factory_name: Joi.string()
         .trim()
@@ -59,7 +61,7 @@ const object_schema = Joi.object({
         otherwise: Joi.forbidden(),
     }),
 
-    milk_type: Joi.string().trim().min(1).prefs({ convert: false }).required(), // milk_types should be stored in a file, and this should validate based on that.
+    milk_type: Joi.string().trim().valid(...valid_milk_types).prefs({ convert: false }).required(),
 
     product_category_id: Joi.string()
         .trim()
@@ -79,23 +81,25 @@ const object_schema = Joi.object({
         .min(25)
         .max(1000)
         .prefs({ convert: false })
-        .optional(), // server can set
+        .optional(),
 
-    approved: Joi.boolean().optional(), // only server can set this at creation, and only to "bypass"
+    approved: Joi.boolean().optional(), // Only server can set at creation
 
     approval_type: Joi.when('approved', {
         is: true,
         then: Joi.string()
             .trim()
             .required()
-            .valid('bypass')
+            .valid('bypass') // Only this is allowed at creation.
             .prefs({ convert: false }),
         otherwise: Joi.forbidden(),
     }),
 
-    handed_in: Joi.boolean().optional(), // only server can set this at creation
+    handed_in: Joi.boolean().optional(), // Only server can set this at creation.ks
 }).required()
 
 const array_schema = Joi.array().items(object_schema).min(1).required()
 
-module.exports = Joi.alternatives().try(object_schema, array_schema)
+const alternatives_schema = Joi.alternatives().try(object_schema, array_schema)
+
+module.exports = alternatives_schema
