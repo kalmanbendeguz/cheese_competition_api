@@ -46,7 +46,8 @@ const approve_product_mutation = async (products, user, session) => {
                 roles: { $in: ['competitor'] }
             },
             projection: {
-                _id: 1
+                _id: 1,
+                association_member: 1
                 // Check if anything else needed!
             }
         },
