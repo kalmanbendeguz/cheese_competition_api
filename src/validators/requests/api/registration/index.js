@@ -16,7 +16,7 @@ const registration_validator = Joi.object({
             .min(8)
             .max(25)
             .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)
-            // TODO: this might be a wrong code here.
+            // TODO: this might be a wrong code here (the .message(...)).
             .message('{#label}_must_have_at_least_one_lowercase_letter_one_uppercase_letter_and_one_number')
             .required()
     }).required(),
