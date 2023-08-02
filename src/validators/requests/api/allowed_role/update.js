@@ -1,4 +1,5 @@
 const Joi = require('joi')
+const limited_roles = require('../../../../static/limited_roles.json')
 
 const allowed_roles_modifier_string_validator = (value, helpers) => {
     // we know: string, trimmed, matches the regex, but not unique
@@ -22,13 +23,13 @@ const data_validator = Joi.object({
         allowed_roles: Joi.alternatives()
             .try(
                 Joi.array()
-                    .items(Joi.string().valid('judge', 'organizer', 'receiver'))
+                    .items(Joi.string().valid(...limited_roles))
                     .unique()
                     .min(1),
                 Joi.string()
                     .trim()
                     .prefs({ convert: false })
-                    .regex(/^(\s*([-+](judge|organizer|receiver))\s*)+$/)
+                    .pattern(new RegExp(`^(\s*([-+](${limited_roles.join('|')}))\s*)+$`))
                     .custom(allowed_roles_modifier_string_validator)
             )
             .required(),

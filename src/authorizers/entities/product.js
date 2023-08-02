@@ -3,447 +3,150 @@ const product_authorizer = (data, verb, user) => {
     const rules = {
         _id: {
             create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         competition_id: {
-            create: {
-                competitor: { rule: 'required' },
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
             update: {},
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         competitor_id: {
-            create: {
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                competitor: { rule: 'optional' },
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
             update: {},
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         public_id: {
             create: {},
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
             update: {},
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         secret_id: {
             create: {},
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            find: {},
             project: {},
-            updatable: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
             update: {},
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         product_name: {
-            create: {
-                competitor: { rule: 'required' },
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
-            project: {
-                organizer: { rule: 'optional' },
-            },
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         anonimized_product_name: {
-            create: {
-                SERVER: { rule: 'optional' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
         factory_name: {
-            create: {
-                competitor: { rule: 'required' },
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
         maturation_time_type: {
-            create: {
-                competitor: { rule: 'required' },
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
         maturation_time_quantity: {
-            create: {
-                competitor: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
         maturation_time_unit: {
-            create: {
-                competitor: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
         milk_type: {
-            create: {
-                competitor: { rule: 'required' },
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
         product_category_id: {
-            create: {
-                competitor: { rule: 'required' },
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
         product_description: {
-            create: {
-                competitor: { rule: 'required' },
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
         anonimized_product_description: {
-            create: {
-                SERVER: { rule: 'optional' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
         approved: {
-            create: {
-                SERVER: { rule: 'optional' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
         approval_type: {
-            create: {
-                SERVER: { rule: 'optional' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
-
         // TODOS: 
         // it is not possible to remove handed_in products for COMPETITOR
         // to achieve this, handed_in should be bound for competitor to FALSE
         handed_in: {
-            create: {
-                SERVER: { rule: 'optional' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
             project: {},
-            updatable: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                organizer: { rule: 'optional' },
-                receiver: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                competitor: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            updatable: {},
+            update: {},
+            remove: {},
         },
     }
 
