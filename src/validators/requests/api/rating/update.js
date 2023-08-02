@@ -13,12 +13,9 @@ const data_validator = Joi.object({
     body: Joi.object({
         // product_id // Forbidden to update.
         // judge_id // Forbidden to update.
-        anonymous: Joi.boolean().optional(), 
+        anonymous: Joi.boolean().optional(),
         aspects: Joi.array()
-            .items(
-                Rating_Aspect_Validator 
-                // At 'Check dependencies', ask from the product: is this conforming with the product's rating sheet?
-            )
+            .items(Rating_Aspect_Validator)
             .min(1)
             .optional(),
         overall_impression: Joi.string().trim().min(25).max(250).prefs({ convert: false }).optional(),
