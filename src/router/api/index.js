@@ -2,6 +2,7 @@ const express = require('express')
 
 const assign_special_role = require('../../middlewares/assign_special_role')
 const authorize_endpoint = require('../../middlewares/authorize_endpoint')
+const convert_email_to_username = require('../../middlewares/convert_email_to_username')
 const passport_authenticate = require('../../middlewares/passport_authenticate')
 const passport_initialize = require('../../middlewares/passport_initialize')
 const session = require('../../middlewares/session')
@@ -16,6 +17,7 @@ const router = express.Router({
 router.use('/',
     session,
     passport_initialize,
+    convert_email_to_username,
     passport_authenticate,
     assign_special_role,
     validate_api_endpoint,

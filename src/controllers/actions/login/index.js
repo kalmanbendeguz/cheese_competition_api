@@ -1,7 +1,5 @@
 const login = async (req, res, next) => {
 
-    // TODO: he must be able to login either with email or username as well
-
     // 1. Validate request
     const login_validator = require('../../../validators/requests/api/login')
     try {
