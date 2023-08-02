@@ -139,7 +139,7 @@ const product_authorizer = (data, verb, user) => {
         },
         // TODOS: 
         // it is not possible to remove handed_in products for COMPETITOR
-        // to achieve this, handed_in should be bound for competitor to FALSE
+        // to achieve this, handed_in should be bound for COMPETITOR to FALSE
         handed_in: {
             create: {},
             find: {},
