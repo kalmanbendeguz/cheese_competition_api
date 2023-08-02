@@ -16,9 +16,9 @@ const registration = async (req, res, next) => {
     // hash password
     const bcrypt = require('bcrypt')
     const salt = await bcrypt.genSalt()
-    const hashed_password = await bcrypt.hash(req.body.password, salt) // PLAIN_PASSWORD!
+    const hashed_password = await bcrypt.hash(req.body.plain_password, salt) // PLAIN_PASSWORD!
     req.body.hashed_password = hashed_password
-    delete req.body.password
+    delete req.body.plain_password
 
     console.log(req.body)
 

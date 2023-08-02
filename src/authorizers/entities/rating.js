@@ -3,159 +3,51 @@ const rating_authorizer = (data, verb, user) => {
     const rules = {
         _id: {
             create: {},
-            find: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         product_id: {
-            create: {
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            create: {}, // required for server
+            find: {},
+            project: {},
+            updatable: {},
             update: {},
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         judge_id: {
-            create: {
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                judge: { rule: 'bound', value: user._id.toString() },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            create: {}, // required for server
+            find: {},
+            project: {},
+            updatable: {}, // bound for judge
             update: {},
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            remove: {},
         },
         anonymous: {
-            create: {
-                SERVER: { rule: 'optional' },
-            },
-            find: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         aspects: {
-            create: {
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
         overall_impression: {
-            create: {
-                SERVER: { rule: 'required' },
-            },
-            find: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            project: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            update: {
-                judge: { rule: 'optional' },
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
-            remove: {
-                organizer: { rule: 'optional' },
-                SERVER: { rule: 'optional' },
-            },
+            create: {},
+            find: {},
+            project: {},
+            updatable: {},
+            update: {},
+            remove: {},
         },
     }
 
