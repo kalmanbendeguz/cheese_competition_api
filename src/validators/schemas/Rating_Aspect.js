@@ -1,30 +1,28 @@
 const Joi = require('joi')
 
 const rating_aspect_validator = Joi.object({
-    // further validation will happen after we know the rating sheet.
     title: Joi.string()
-        .required()
         .trim()
-        .lowercase()
+        .prefs({ convert: false })
         .min(1)
-        .prefs({ convert: false }),
+        .lowercase()
+        .required(),
     score: Joi.number().integer().min(0).required(),
     blocks: Joi.array()
-        .required()
         .min(1)
         .items(
             Joi.array()
-                .items(Joi.string().trim().lowercase().min(1).required())
-                .min(1) // i think this should not be min 1, it can be 0
+                .items(Joi.string().trim().prefs({ convert: false }).min(1).lowercase())
+                .min(0)
                 .unique()
-                .required()
-        ),
+        )
+        .required(),
     comment: Joi.string()
-        .required()
         .trim()
         .min(12)
         .max(250)
-        .prefs({ convert: false }),
+        .prefs({ convert: false })
+        .required(),
 }).unknown(true)
 
 module.exports = rating_aspect_validator

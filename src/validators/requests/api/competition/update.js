@@ -20,8 +20,8 @@ const data_validator = Joi.object({
         association_members_need_to_pay: Joi.any().optional(),
         entry_fee_amount: Joi.any().optional(),
         entry_fee_currency: Joi.any().optional(),
-        // product_category_tree: Joi.any().optional(), // ez alapján ne lehessen keresni
-        // certificate_template: Joi.any().optional(), // és ez alapján se
+        product_category_tree: Joi.any().optional(),
+        certificate_template: Joi.any().optional(),
         ignore_extreme_values: Joi.any().optional(),
     }).required(),
     body: Joi.object({
@@ -37,25 +37,23 @@ const data_validator = Joi.object({
             .max(1000)
             .prefs({ convert: false })
             .optional(),
-        // creation_date: Joi.date().required() // this is forbidden
-        // creation_date can not be changed
+        // creation_date // Forbidden to update.
         entry_opened: Joi.boolean().optional(),
-        // last_entry_open_date // forbidden
-        // last_entry_close_date // forbidden
+        // last_entry_open_date // Forbidden to update.
+        // last_entry_close_date // Forbidden to update.
         competition_opened: Joi.boolean().optional(),
-        // last_competition_open_date // forbidden
-        // last_competition_close_date // forbidden
+        // last_competition_open_date // Forbidden to update.
+        // last_competition_close_date // Forbidden to update.
         archived: Joi.boolean().optional(),
-        // archival_date // forbidden
+        // archival_date // Forbidden to update.
         payment_needed: Joi.boolean().optional(),
         association_members_need_to_pay: Joi.boolean().optional(),
-        entry_fee_amount: Joi.number()
+        entry_fee_amount: Joi.number() // Important: .number() also matches strings that can be converted to numbers!
             .positive()
             .optional(),
-            // convert true, bc if its a string it will convert
         entry_fee_currency: Joi.string().valid(...valid_currencies).optional(),
-        // product_category_tree: Joi.any().optional(), // ezt nem szabad módosítani.
-        certificate_template: File_Validator.optional(), // maybe this will come in a different format in the request. todo check!
+        // product_category_tree // Forbidden to update.
+        certificate_template: File_Validator.optional(),
         ignore_extreme_values: Joi.boolean().optional(),
     }).required(),
 }).required()

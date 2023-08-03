@@ -1,9 +1,4 @@
-const {
-    Schema: Schema,
-    Schema: {
-        Types: { ObjectId, Decimal128 },
-    },
-} = require('mongoose')
+const { Schema: Schema, Schema: { Types: { ObjectId, Decimal128 }, }, } = require('mongoose')
 const db = require('../config/db')
 const Product_Model = require('./Product')
 
@@ -42,7 +37,7 @@ const Entry_Fee_Payment_Schema = new Schema(
         expiring_started: {
             type: Date,
             default: Date.now,
-            expires: 15 * 60,
+            expires: 15 * 60, // TODO: how much should this be?
         },
     },
     {
