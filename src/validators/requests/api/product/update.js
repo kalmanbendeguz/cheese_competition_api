@@ -1,4 +1,5 @@
 const Joi = require('joi')
+const valid_milk_types = require('../../../../static/valid_milk_types.json')
 
 const data_validator = Joi.object({
     query: Joi.object({
@@ -22,20 +23,10 @@ const data_validator = Joi.object({
         handed_in: Joi.any().optional(),
     }).required(),
     body: Joi.object({
-        ///competition_id: Joi.string() // not possible to put into another competition.
-        ///    .trim()
-        ///    .min(1)
-        ///    .prefs({ convert: false })
-        ///    .optional(),
-
-        //competitor_id: Joi.string() not possible to change competitor.
-        //    .trim()
-        //    .min(1)
-        //    .prefs({ convert: false })
-        //    .optional(), // if competitor, it is forbidden, if server, it is required
-
-        //public_id // auto generated
-        //secret_id // auto generated
+        // competition_id // Forbidden to update.
+        // competitor_id // Forbidden to update.
+        // public_id // // Forbidden to update.
+        // secret_id // // Forbidden to update.
 
         product_name: Joi.string()
             .trim()
@@ -49,7 +40,7 @@ const data_validator = Joi.object({
             .min(3)
             .max(25)
             .prefs({ convert: false })
-            .optional(), // server can set
+            .optional(),
 
         factory_name: Joi.string()
             .trim()
@@ -80,7 +71,7 @@ const data_validator = Joi.object({
             otherwise: Joi.forbidden(),
         }),
 
-        milk_type: Joi.string().trim().min(1).prefs({ convert: false }).optional(), // milk_types should be stored in a file, and this should validate based on that.
+        milk_type: Joi.string().trim().valid(...valid_milk_types).prefs({ convert: false }).optional(),
 
         product_category_id: Joi.string()
             .trim()
@@ -100,21 +91,21 @@ const data_validator = Joi.object({
             .min(25)
             .max(1000)
             .prefs({ convert: false })
-            .optional(), // server can set
+            .optional(),
 
-        approved: Joi.boolean().optional(), // only server can set this at creation, and only to "bypass"
+        approved: Joi.boolean().optional(),
 
         approval_type: Joi.when('approved', {
             is: true,
             then: Joi.string()
                 .trim()
-                .required()
-                .valid('bypass')
-                .prefs({ convert: false }),
+                .valid('bypass', 'association_member', 'payment')
+                .prefs({ convert: false })
+                .required(),
             otherwise: Joi.forbidden()
         }),
 
-        handed_in: Joi.boolean().optional(), // only server can set this at creation
+        handed_in: Joi.boolean().optional(),
     }).required(),
 }).required()
 

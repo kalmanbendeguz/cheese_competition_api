@@ -56,8 +56,8 @@ const approve_product_mutation = async (products, user, session) => {
     ))?.data ?? []
 
     // 3. Based only on User, is this mutation possible?
-    // All provided competitor_ids should belong to a real Competitor.
-    if (unique_user_ids.length !== users.length) {
+    // If action is not 'remove', all provided competitor_ids should belong to a real Competitor.
+    if (action !== 'remove' && unique_user_ids.length !== users.length) {
         return {
             approved: false,
             reason: 'not_all_provided_competitor_ids_belong_to_a_real_competitor'
