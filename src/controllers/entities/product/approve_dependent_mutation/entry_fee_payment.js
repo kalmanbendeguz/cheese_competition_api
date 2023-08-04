@@ -109,3 +109,44 @@ const approve_entry_fee_payment_mutation = async (entry_fee_payments, user, sess
 }
 
 module.exports = approve_entry_fee_payment_mutation
+
+/**
+ * // 4. check_dependencies
+    // all products should exist
+    const unique_product_ids = [
+        ...new Set(
+            body.flatMap((entry_fee_payment) => entry_fee_payment.product_ids)
+        ),
+    ]
+    if (
+        (await Product_Model.countDocuments({
+            _id: { $in: unique_product_ids },
+        })) !== unique_product_ids.length
+    )
+        return {
+            code: 403,
+            data: 'one_or_more_provided_product_ids_are_not_existing',
+        }
+    // a product cannot be paid twice
+    if (
+        await Entry_Fee_Payment_Model.exists({
+            product_ids: { $in: unique_product_ids },
+            pending: false,
+        })
+    )
+        return {
+            code: 403,
+            data: 'at_least_one_of_the_provided_products_are_already_paid',
+        }
+    // an approved product cannot be paid
+    if (
+        await Product_Model.exists({
+            _id: { $in: unique_product_ids },
+            approved: true,
+        })
+    )
+        return {
+            code: 403,
+            data: 'at_least_one_of_the_provided_products_are_already_approved',
+        }
+ */

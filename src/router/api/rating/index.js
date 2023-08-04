@@ -1,16 +1,15 @@
 const express = require('express')
 const router = express.Router()
 
-// const create = require('../../../controllers/entities/rating/create')
+const create = require('../../../controllers/entities/rating/create')
 const find = require('../../../controllers/entities/rating/find')
 const update = require('../../../controllers/entities/rating/update')
 const remove = require('../../../controllers/entities/rating/remove')
 
-// WILL ONLY BE USED INTERNALLY
-// router.post('/', async (req, res, _) => {
-//     const result = await create(req.body, req.user, null)
-//     return res.status(result.code).json(result.data)
-// })
+router.post('/', async (req, res, _) => {
+    const result = await create(req.body, req.user, null)
+    return res.status(result.code).json(result.data)
+})
 
 router.get('/', async (req, res, _) => {
     const result = await find(req.query, req.user, null)

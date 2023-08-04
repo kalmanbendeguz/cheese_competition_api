@@ -26,5 +26,4 @@ router.delete('/', async (req, res, _) => {
     return res.status(result.code).json(result.data)
 })
 
-
 module.exports = router
