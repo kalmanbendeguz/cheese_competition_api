@@ -2,7 +2,7 @@ const approve_rating_picture_mutation = async (rating_pictures, user, session) =
 
     // 1. Detect action
     let action
-    if(!Array.isArray(rating_pictures)) {
+    if (!Array.isArray(rating_pictures)) {
         return {
             approved: false,
             reason: 'provided_rating_pictures_is_not_an_array'
@@ -32,7 +32,7 @@ const approve_rating_picture_mutation = async (rating_pictures, user, session) =
 
     // 2. We need to query the owner Rating documents into an array
     // Projection should contain the _id, and the fields that are needed to check if Rating_Picture mutation is allowed.
-    const rating_ids = action === 'create' ? 
+    const rating_ids = action === 'create' ?
         rating_pictures.map(rating_picture => rating_picture.new.rating_id.toString())
         :
         rating_pictures.map(rating_picture => rating_picture.old.rating_id.toString())
@@ -53,8 +53,8 @@ const approve_rating_picture_mutation = async (rating_pictures, user, session) =
     ))?.data ?? []
 
     // 3. Based only on Rating, is this mutation possible?
-    // All provided rating_ids should belong to a real Rating.
-    if(unique_rating_ids.length !== ratings.length){
+    // If action is not 'remove', all provided rating_ids should belong to a real Rating.
+    if (action !== 'remove' && unique_rating_ids.length !== ratings.length) {
         return {
             approved: false,
             reason: 'not_all_provided_rating_ids_belong_to_a_real_rating'
