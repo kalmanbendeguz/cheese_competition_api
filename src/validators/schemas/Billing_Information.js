@@ -1,52 +1,62 @@
 const Joi = require('joi')
 
-module.exports = Joi.object({
+const billing_information_validator = Joi.object({
     name: Joi.string()
         .trim()
-        .required()
         .min(1)
         .max(1000)
-        .prefs({ convert: false }), // KÖ
+        .prefs({ convert: false })
+        .required(),
+
     tax_number: Joi.string()
-        .optional()
         .trim()
         .min(1)
         .max(1000)
-        .prefs({ convert: false }), // NK
+        .prefs({ convert: false })
+        .optional(),
+
     zip: Joi.string()
         .trim()
-        .required()
         .min(1)
         .max(1000)
-        .prefs({ convert: false }), // KÖ
+        .prefs({ convert: false })
+        .required(),
+
     city: Joi.string()
         .trim()
-        .required()
         .min(1)
         .max(1000)
-        .prefs({ convert: false }), // KÖ
+        .prefs({ convert: false })
+        .required(),
+
     street: Joi.string()
         .trim()
-        .required()
         .min(1)
         .max(1000)
-        .prefs({ convert: false }), // KÖ
+        .prefs({ convert: false })
+        .required(),
+
     street_type: Joi.string()
-        .optional()
         .trim()
         .min(1)
         .max(1000)
-        .prefs({ convert: false }), // NK
+        .prefs({ convert: false })
+        .optional(),
+
     house_number: Joi.string()
         .trim()
-        .required()
         .min(1)
         .max(1000)
-        .prefs({ convert: false }), // KÖ
+        .prefs({ convert: false })
+        .required(),
+
     address_details: Joi.string()
-        .optional()
         .trim()
         .min(1)
         .max(1000)
-        .prefs({ convert: false }), // NK
+        .prefs({ convert: false })
+        .optional(),
+
 }).unknown(true)
+
+module.exports = billing_information_validator
