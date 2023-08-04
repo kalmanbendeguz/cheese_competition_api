@@ -1,4 +1,5 @@
 const tree_to_flat_array = (node, parent_id = null, result = []) => {
+    // TODO: is this works with every kind of input?
     result.push({ node_id: node.id, parent_id: parent_id })
 
     if (node.children && Array.isArray(node.children) && node.children.length > 0) {

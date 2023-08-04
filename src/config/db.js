@@ -25,6 +25,7 @@ let connection
 try {
     connection = /*await*/ mongoose.connect(db_url, mongoose_connect_options)
     // await would be better but this is the top level of the module so there is the usual problem ...
+    // TODO: after "type: module", fix this!
 } catch (error) {
     console.error('Error connecting to database:', error)
 }
