@@ -2,30 +2,29 @@ const express_session = require('express-session')
 const MongoStore = require('connect-mongo')
 const db = require('../config/db')
 
-const clientPromise = new Promise((resolve, reject) => {
-    const client = db.connection.getClient() // Assuming this method returns MongoClient
-
-    if (client) {
-        resolve(client)
-    } else {
-        reject(new Error('MongoClient instance not found.'))
-    }
-})
+const mongo_client = db.connection.getClient()
 
 const session_store = MongoStore.create({
-    clientPromise: clientPromise,
     touchAfter: 60 * 60 * 24, // seconds
+    client: mongo_client,
+    collectionName: 'sessions',
+    ttl: 1209600,
+    stringify: true,
+    createAutoRemoveIdx: true,
+    autoRemove: 'native',
 })
 
 const session = express_session({
-    secret: process.env.__COOKIE_SECRET,
-    resave: false,
-    saveUninitialized: false, // NEEDBACK FALSE ????
-    store: session_store,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24, // milliseconds
+        httpOnly: true,
+        path: '/',
     },
     name: `${process.env.APPLICATION_NAME}.connect.sid`,
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.__COOKIE_SECRET,
+    store: session_store,
 })
 
 module.exports = session
