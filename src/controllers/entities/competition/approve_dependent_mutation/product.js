@@ -62,24 +62,25 @@ const approve_product_mutation = async (products, user, session) => {
         }
     }
 
-    const string_is_route_in_tree = require('../../../../helpers/string_is_route_in_tree')
+    const tree_to_flat_array = require('../../../../helpers/tree_to_flat_array')
 
     for (const product of products) {
         if (action === 'create') {
             const competition_of_product = competitions.find(competition => competition._id.toString() === product.new.competition_id.toString())
-            if(!competition_of_product.entry_opened) {
+            if (!competition_of_product.entry_opened) {
                 return {
                     approved: false,
                     reason: 'can_not_create_a_product_because_competition_is_closed'
                 }
             }
-            if(!string_is_route_in_tree(product.new.product_category_id, competition_of_product.product_category_tree)) {
+            const product_category_array = tree_to_flat_array(competition_of_product.product_category_tree)
+            if (!product_category_array.some(node => node.node_id === product.new.product_category_id)) {
                 return {
                     approved: false,
                     reason: 'can_not_create_a_product_because_product_category_id_is_not_a_route_in_competition_product_category_tree'
                 }
             }
-            if(!)
+            if (!)
         } else if (action === 'update') {
 
         } else if (action === 'remove') {
