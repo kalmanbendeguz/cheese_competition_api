@@ -1,8 +1,9 @@
 const Joi = require('joi')
 const { mongoose: { Types: { ObjectId }, }, } = require('mongoose')
-const forbidden_id_parts = require('../../static/forbidden_id_parts')
+const forbidden_id_parts = require('../../static/forbidden_id_parts.json')
+const valid_milk_types = require('../../static/valid_milk_types.json')
 
-module.exports = Joi.object({
+const product_validator = Joi.object({
     competition_id: Joi.object().instance(ObjectId).required(),
     competitor_id: Joi.object().instance(ObjectId).required(),
     public_id: Joi.string()
@@ -60,12 +61,12 @@ module.exports = Joi.object({
             .prefs({ convert: false }),
         otherwise: Joi.forbidden(),
     }),
-    milk_type: Joi.string().trim().required().min(1).prefs({ convert: false }), // should validate based on tree
+    milk_type: Joi.string().trim().valid(...valid_milk_types).prefs({ convert: false }).required(),
     product_category_id: Joi.string()
         .trim()
         .required()
         .min(1)
-        .prefs({ convert: false }), // needs better validation: pl. '1_2_3__12' erre könnyű regexet írni.
+        .prefs({ convert: false }),
     product_description: Joi.string()
         .trim()
         .required()
@@ -90,3 +91,5 @@ module.exports = Joi.object({
     }),
     handed_in: Joi.boolean().required(),
 }).unknown(true)
+
+module.exports = product_validator

@@ -95,7 +95,7 @@ const object_schema = Joi.object({
         otherwise: Joi.forbidden(),
     }),
 
-    handed_in: Joi.boolean().optional(), // Only server can set this at creation.ks
+    handed_in: Joi.boolean().optional(), // Only server can set this at creation.
 }).required()
 
 const array_schema = Joi.array().items(object_schema).min(1).required()
