@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const sanitize_file_name = require('sanitize-filename')
 
-module.exports = Joi.object({
+const file_validator = Joi.object({
     name: Joi.string()
         .max(200)
         .custom((value, helpers) => {
@@ -32,3 +32,5 @@ module.exports = Joi.object({
         .max(5242880) // 5 MiB !!! = 5 * 1024^2 bytes
         .required(),
 }).unknown(true)
+
+module.exports = file_validator

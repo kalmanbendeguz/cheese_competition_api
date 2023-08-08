@@ -4,7 +4,7 @@ const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
         /** Maximum size of each form field name in bytes. (Default: 100) */
-        fieldNameSize: 256,
+        fieldNameSize: 200,
         /** Maximum size of each form field value in bytes. (Default: 1048576) */
         fieldSize: 5242880, // 5 MiB = 5 * 1024^2 bytes
         /** Maximum size of each file in bytes. (Default: Infinity) */

@@ -54,7 +54,7 @@ const approve_rating_mutation = async (ratings, user, session) => {
 
     // 3. Based only on Product, is this mutation possible?
     // All provided product_ids should belong to a real Product.
-    if (unique_product_ids.length !== products.length) {
+    if (action !== 'remove' && unique_product_ids.length !== products.length) {
         return {
             approved: false,
             reason: 'not_all_provided_product_ids_belong_to_a_real_product'
@@ -64,11 +64,14 @@ const approve_rating_mutation = async (ratings, user, session) => {
     const rating_satisfies_sheet = require('../../../../helpers/rating_satisfies_sheet')
     const rating_sheet_of_category_id = require('../../../../helpers/rating_sheet_of_category_id')
     for (const rating of ratings) {
-        const product_of_rating = products.find(product => product._id.toString() === rating.new.product_id.toString())
+        const product_of_rating = action === 'create' ?
+            products.find(product => product._id.toString() === rating.new.product_id.toString())
+            :
+            products.find(product => product._id.toString() === rating.old.product_id.toString())
 
         // We should check if Rating's "aspects" satisfies the rating sheet.
         const rating_sheet_of_product_category = rating_sheet_of_category_id(product_of_rating.product_category_id)
-        if (!rating_satisfies_sheet(rating.new.aspects, rating_sheet_of_product_category)) {
+        if (action !== 'remove' && !rating_satisfies_sheet(rating.new.aspects, rating_sheet_of_product_category)) {
             return {
                 approved: false,
                 reason: 'rating_aspects_does_not_satisfy_the_rating_sheet_of_the_product_category'
