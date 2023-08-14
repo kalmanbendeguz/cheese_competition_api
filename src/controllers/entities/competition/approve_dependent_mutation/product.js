@@ -55,7 +55,7 @@ const approve_product_mutation = async (products, user, session) => {
 
     // 3. Based only on Competition, is this mutation possible?
     // All provided competition_ids should belong to a real Competition.
-    if (unique_competition_ids.length !== competitions.length) {
+    if (action !== 'remove' && unique_competition_ids.length !== competitions.length) {
         return {
             approved: false,
             reason: 'not_all_provided_competition_ids_belong_to_a_real_competition'
@@ -65,12 +65,16 @@ const approve_product_mutation = async (products, user, session) => {
     const tree_to_flat_array = require('../../../../helpers/tree_to_flat_array')
 
     for (const product of products) {
+        const competition_of_product = action === 'create' ?
+            competitions.find(competition => competition._id.toString() === product.new.competition_id.toString())
+            :
+            competitions.find(competition => competition._id.toString() === product.old.competition_id.toString())
+
         if (action === 'create') {
-            const competition_of_product = competitions.find(competition => competition._id.toString() === product.new.competition_id.toString())
             if (!competition_of_product.entry_opened) {
                 return {
                     approved: false,
-                    reason: 'can_not_create_a_product_because_competition_is_closed'
+                    reason: 'can_not_create_a_product_because_entry_is_closed'
                 }
             }
             const product_category_array = tree_to_flat_array(competition_of_product.product_category_tree)
@@ -80,30 +84,94 @@ const approve_product_mutation = async (products, user, session) => {
                     reason: 'can_not_create_a_product_because_product_category_id_is_not_a_route_in_competition_product_category_tree'
                 }
             }
-            if (!)
-        } else if (action === 'update') {
-
-        } else if (action === 'remove') {
-
-        }
-
-    }
-
-    //for (const competition of competitions) {
-    //    if(action === 'create') {
-    //        if (!competition.entry_opened || )
-    //    }
-    //
-    //}
-
-    // If we change the approval_type to "association_member", then the owner User should be association_member=true
-    for (const product of products) {
-        if ((product.old?.approval_type ?? null !== 'association_member') && (product.new?.approval_type ?? null === 'association_member')) {
-            // For later: it might be a better way to just put the owner User into a variable, for further checks.
-            if (!users.some(u => u._id.toString() === product.new.competitor_id.toString() && (u.association_member ?? false === true))) {
+            if (product.new.approved && product.new.approval_type === 'payment' && !competition_of_product.payment_needed) {
                 return {
                     approved: false,
-                    reason: 'not_possible_to_change_approval_type_to_association_member_because_owner_competitor_is_not_association_member'
+                    reason: 'can_not_create_a_product_because_product_approval_type_is_payment_but_competition_does_not_need_payments'
+                }
+            }
+            if (product.new.approved && product.new.approval_type === 'association_member' && competition_of_product.association_members_need_to_pay) {
+                return {
+                    approved: false,
+                    reason: 'can_not_create_a_product_because_product_approval_type_is_association_member_but_for_this_competition_association_members_also_need_to_pay'
+                }
+            }
+        } else if (action === 'update') {
+            if (user.role === 'competitor') {
+                if (!competition_of_product.entry_opened) {
+                    return {
+                        approved: false,
+                        reason: 'can_not_update_product_because_entry_is_closed'
+                    }
+                }
+                if (competition_of_product.competition_opened) {
+                    return {
+                        approved: false,
+                        reason: 'can_not_update_product_because_competition_is_opened'
+                    }
+                }
+
+                const product_category_array = tree_to_flat_array(competition_of_product.product_category_tree)
+                if (!product_category_array.some(node => node.node_id === product.new.product_category_id)) {
+                    return {
+                        approved: false,
+                        reason: 'can_not_update_product_because_product_category_id_is_not_a_route_in_competition_product_category_tree'
+                    }
+                }
+
+                if (product.new.approved && product.new.approval_type === 'payment' && !competition_of_product.payment_needed) {
+                    return {
+                        approved: false,
+                        reason: 'can_not_update_product_because_product_approval_type_is_payment_but_competition_does_not_need_payments'
+                    }
+                }
+                if (product.new.approved && product.new.approval_type === 'association_member' && competition_of_product.association_members_need_to_pay) {
+                    return {
+                        approved: false,
+                        reason: 'can_not_update_product_because_product_approval_type_is_association_member_but_for_this_competition_association_members_also_need_to_pay'
+                    }
+                }
+            } else if (user.role === 'organizer') {
+                const product_category_array = tree_to_flat_array(competition_of_product.product_category_tree)
+                if (!product_category_array.some(node => node.node_id === product.new.product_category_id)) {
+                    return {
+                        approved: false,
+                        reason: 'can_not_update_product_because_product_category_id_is_not_a_route_in_competition_product_category_tree'
+                    }
+                }
+                if (product.new.approved && product.new.approval_type === 'payment' && !competition_of_product.payment_needed) {
+                    return {
+                        approved: false,
+                        reason: 'can_not_update_product_because_product_approval_type_is_payment_but_competition_does_not_need_payments'
+                    }
+                }
+                if (product.new.approved && product.new.approval_type === 'association_member' && competition_of_product.association_members_need_to_pay) {
+                    return {
+                        approved: false,
+                        reason: 'can_not_update_product_because_product_approval_type_is_association_member_but_for_this_competition_association_members_also_need_to_pay'
+                    }
+                }
+            } else if (user.role === 'receiver') {
+                if (competition_of_product.archived) {
+                    return {
+                        approved: false,
+                        reason: 'can_not_update_product_because_competition_is_archived'
+                    }
+                }
+            }
+        } else if (action === 'remove') {
+            if (user.role === 'competitor') {
+                if (!competition_of_product.entry_opened) {
+                    return {
+                        approved: false,
+                        reason: 'can_not_remove_product_because_entry_is_closed'
+                    }
+                }
+                if (competition_of_product.competition_opened) {
+                    return {
+                        approved: false,
+                        reason: 'can_not_remove_product_because_competition_is_opened'
+                    }
                 }
             }
         }
@@ -121,58 +189,3 @@ const approve_product_mutation = async (products, user, session) => {
 }
 
 module.exports = approve_product_mutation
-
-// create: 
-// only if entry is opened
-
-// remvoe: 
-
-
-//// comp: exist? is entry opened?
-//const unique_competition_ids = [
-//    ...new Set(body.map((product) => product.competition_id.toString())),
-//]
-//if (
-//    (await Competition_Model.countDocuments({
-//        _id: { $in: unique_competition_ids },
-//        entry_opened: true,
-//    })) !== unique_competition_ids.length
-//)
-//    return {
-//        code: 403,
-//        data: 'one_or_more_provided_competitions_are_not_existing_or_not_opened',
-//    }
-//
-//// is the product category valid?
-//const competitions = await Competition_Model.find(
-//    { _id: { $in: unique_competition_ids } },
-//    [
-//        '_id',
-//        'product_category_tree',
-//        'payment_needed',
-//        'association_members_need_to_pay',
-//    ],
-//    { lean: true }
-//)
-//for (const product of body) {
-//    const current_product_category_tree = competitions.find(
-//        (competition) => competition._id === product.competition_id
-//    ).product_category_tree
-//    const found_category = find_in_tree(
-//        current_product_category_tree,
-//        (node) =>
-//            node.id === product.product_category_id &&
-//            node.children.length === 0 // csak legalsó szintű kategóriát lehet választani.
-//    )
-//    if (!found_category)
-//        return {
-//            code: 400,
-//            data: 'provided_category_is_invalid',
-//        }
-//}* /
-//
-//// product_category_id ONLY can be changed if the competition was NEVER opened.
-//// = last_competition_open_date = UNDEFINED !!!
-
-// TO REMOVE: // entry should be opened. for COMPETITOR
-// competititon should be closed for COMPETITOR
