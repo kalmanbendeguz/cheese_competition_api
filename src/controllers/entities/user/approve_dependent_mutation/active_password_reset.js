@@ -55,7 +55,7 @@ const approve_active_password_reset_mutation = async (active_password_resets, us
 
     // 3. Based only on User, is this mutation possible?
     // All provided user_ids should belong to a real User.
-    if (unique_user_ids.length !== users.length) {
+    if (action !== 'remove' && unique_user_ids.length !== users.length) {
         return {
             approved: false,
             reason: 'not_all_provided_user_ids_belong_to_a_real_user'

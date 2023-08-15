@@ -1,6 +1,5 @@
 const Joi = require('joi')
 
-// competitor, organizer, SERVER
 const query_validator = Joi.object({
     _id: Joi.any().optional(),
     competition_id: Joi.any().optional(),
