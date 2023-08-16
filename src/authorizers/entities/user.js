@@ -10,15 +10,23 @@ const user_authorizer = (data, verb, user) => {
             remove: {},
         },
         email: {
-            create: {},
-            find: {},
-            project: {},
+            create: {
+                SERVER: { rule: 'required' },
+            },
+            find: {
+                SERVER: { rule: 'optional' },
+            },
+            project: {
+                SERVER: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},
         },
         username: {
-            create: {},
+            create: {
+                SERVER: { rule: 'required' },
+            },
             find: {},
             project: {},
             updatable: {},
@@ -26,7 +34,9 @@ const user_authorizer = (data, verb, user) => {
             remove: {},
         },
         hashed_password: {
-            create: {},
+            create: {
+                SERVER: { rule: 'required' },
+            },
             find: {},
             project: {},
             updatable: {},
@@ -84,7 +94,9 @@ const user_authorizer = (data, verb, user) => {
         confirm_registration_id: {
             create: {},
             find: {},
-            project: {},
+            project: {
+                SERVER: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},

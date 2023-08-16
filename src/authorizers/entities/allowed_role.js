@@ -3,15 +3,21 @@ const allowed_role_authorizer = (data, verb, user) => {
         _id: {
             create: {},
             find: {},
-            project: {},
+            project: {
+                SERVER: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},
         },
         email: {
             create: {},
-            find: {},
-            project: {},
+            find: {
+                SERVER: { rule: 'optional' },
+            },
+            project: {
+                SERVER: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},
@@ -19,7 +25,9 @@ const allowed_role_authorizer = (data, verb, user) => {
         allowed_roles: {
             create: {},
             find: {},
-            project: {},
+            project: {
+                SERVER: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},

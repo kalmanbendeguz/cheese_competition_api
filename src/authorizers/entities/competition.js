@@ -2,8 +2,12 @@ const competition_authorizer = (data, verb, user) => {
     const rules = {
         _id: {
             create: {},
-            find: {},
-            project: {},
+            find: {
+                SERVER: { rule: 'optional' },
+            },
+            project: {
+                SERVER: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},

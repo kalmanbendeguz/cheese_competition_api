@@ -10,7 +10,6 @@ const session_store = MongoStore.create({
     collectionName: 'sessions',
     ttl: 1209600,
     stringify: true,
-    createAutoRemoveIdx: true,
     autoRemove: 'native',
 })
 

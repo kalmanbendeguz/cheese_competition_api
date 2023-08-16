@@ -2,7 +2,7 @@ const rules = {
     api: {
 
         // HTTP verb rules
-        POST: [],
+        POST: ['UNAUTHENTICATED'],
         GET: [],
         PUT: [],
         DELETE: [],
@@ -65,7 +65,7 @@ const rules = {
             POST: [],
         },
         registration: {
-            POST: [],
+            POST: ['UNAUTHENTICATED'],
         },
     },
 }

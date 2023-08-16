@@ -56,7 +56,6 @@ const approve_user_mutation = async (users, user, session) => {
     ))?.data ?? []
 
     // 3. Based only on Allowed_Role, is this mutation possible?
-
     // Not all provided emails should belong to a real Allowed_Role, since Competitors don't need an Allowed_Role document.
 
     // If we give a role to a User, then that role should be present in his allowed roles.
