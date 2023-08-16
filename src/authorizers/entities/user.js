@@ -27,8 +27,12 @@ const user_authorizer = (data, verb, user) => {
             create: {
                 SERVER: { rule: 'required' },
             },
-            find: {},
-            project: {},
+            find: {
+                SERVER: { rule: 'optional' },
+            },
+            project: {
+                SERVER: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},
@@ -38,7 +42,9 @@ const user_authorizer = (data, verb, user) => {
                 SERVER: { rule: 'required' },
             },
             find: {},
-            project: {},
+            project: {
+                SERVER: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},

@@ -44,7 +44,9 @@ const product_authorizer = (data, verb, user) => {
         product_name: {
             create: {},
             find: {},
-            project: {},
+            project: {
+                organizer: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},
@@ -60,7 +62,9 @@ const product_authorizer = (data, verb, user) => {
         factory_name: {
             create: {},
             find: {},
-            project: {},
+            project: {
+                organizer: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},

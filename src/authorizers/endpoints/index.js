@@ -3,7 +3,7 @@ const rules = {
 
         // HTTP verb rules
         POST: ['UNAUTHENTICATED'],
-        GET: [],
+        GET: ['organizer'],
         PUT: [],
         DELETE: [],
 
@@ -34,7 +34,7 @@ const rules = {
         },
         product: {
             POST: [],
-            GET: [],
+            GET: ['organizer'],
             PUT: [],
             DELETE: [],
         },
@@ -59,7 +59,7 @@ const rules = {
 
         // Action endpoint rules
         login: {
-            POST: [],
+            POST: ['UNAUTHENTICATED'],
         },
         logout: {
             POST: [],

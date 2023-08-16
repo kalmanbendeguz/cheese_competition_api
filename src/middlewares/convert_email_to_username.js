@@ -13,6 +13,7 @@ const convert_email_to_username = async (req, res, next) => {
 
     if (user_of_email) {
         req.body.username = user_of_email.username
+        delete req.body.email
     }
 
     return next()
