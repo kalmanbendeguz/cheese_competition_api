@@ -33,7 +33,7 @@ const logout = async (req, res, next) => {
     })
 
     try {
-        await logout_promise()
+        await logout_promise
     } catch (error) {
         if (session.inTransaction()) await session.abortTransaction()
         await session.endSession()

@@ -41,7 +41,7 @@ const update = async (data, user, parent_session) => {
         filter,
         null,
         { session: session }
-    )).map(allowed_role => ({ old: structuredClone(allowed_role), new: allowed_role }))
+    )).map(allowed_role => ({ old: allowed_role.$clone(), new: allowed_role }))
     if (allowed_roles.length === 0) {
         if (!parent_session) {
             if (session.inTransaction()) await session.commitTransaction()
@@ -58,7 +58,7 @@ const update = async (data, user, parent_session) => {
     // For every field, we deal with the field and its dependencies, but not its dependents.
     for (const allowed_role of allowed_roles) {
         const current_update = structuredClone(update)
-        const current_remove = []
+        let current_remove = []
 
         // email cannot be updated
 

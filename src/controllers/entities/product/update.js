@@ -41,7 +41,7 @@ const update = async (data, user, parent_session) => {
         filter,
         null,
         { session: session }
-    )).map(product => ({ old: structuredClone(product), new: product }))
+    )).map(product => ({ old: product.$clone(), new: product }))
     if (products.length === 0) {
         if (!parent_session) {
             if (session.inTransaction()) await session.commitTransaction()
@@ -58,7 +58,7 @@ const update = async (data, user, parent_session) => {
     // For every field, we deal with the field and its dependencies, but not its dependents.
     for (const product of products) {
         const current_update = structuredClone(update)
-        const current_remove = structuredClone(remove)
+        let current_remove = structuredClone(remove)
 
         // competition_id, competitor_id, public_id and secret_id cannot be changed
         // product_name, anonimized_product_name, factory_name and maturation_time_type is OK.

@@ -57,6 +57,9 @@ router.use('/user', user)
     Action routers 
 */
 
+const confirm_registration = require('./confirm_registration')
+router.use('/confirm_registration', confirm_registration)
+
 const login = require('./login')
 router.use('/login', login)
 

@@ -41,7 +41,7 @@ const update = async (data, user, parent_session) => {
         filter,
         null,
         { session: session }
-    )).map(competition => ({ old: structuredClone(competition), new: competition }))
+    )).map(competition => ({ old: competition.$clone(), new: competition }))
     if (competitions.length === 0) {
         if (!parent_session) {
             if (session.inTransaction()) await session.commitTransaction()
@@ -59,7 +59,7 @@ const update = async (data, user, parent_session) => {
     const now = Date.now
     for (const competition of competitions) {
         const current_update = structuredClone(update)
-        const current_remove = []
+        let current_remove = []
 
         // ignore_extreme_values CAN be changed, OK
         // certificate_template CAN be changed, OK

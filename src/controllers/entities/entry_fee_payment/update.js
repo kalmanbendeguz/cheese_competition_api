@@ -41,7 +41,7 @@ const update = async (data, user, parent_session) => {
         filter,
         null,
         { session: session }
-    )).map(entry_fee_payment => ({ old: structuredClone(entry_fee_payment), new: entry_fee_payment }))
+    )).map(entry_fee_payment => ({ old: entry_fee_payment.$clone(), new: entry_fee_payment }))
     if (entry_fee_payments.length === 0) {
         if (!parent_session) {
             if (session.inTransaction()) await session.commitTransaction()
@@ -59,7 +59,7 @@ const update = async (data, user, parent_session) => {
     // We need to do type casting here, if needed.
     for (const entry_fee_payment of entry_fee_payments) {
         const current_update = structuredClone(update)
-        const current_remove = []
+        let current_remove = []
 
         // product_ids cannot be changed
         // pending CAN be changed (once), OK

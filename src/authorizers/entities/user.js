@@ -4,7 +4,9 @@ const user_authorizer = (data, verb, user) => {
         _id: {
             create: {},
             find: {},
-            project: {},
+            project: {
+                SERVER: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},
@@ -94,16 +96,22 @@ const user_authorizer = (data, verb, user) => {
             find: {},
             project: {},
             updatable: {},
-            update: {},
+            update: {
+                SERVER: { rule: 'optional' },
+            },
             remove: {},
         },
         confirm_registration_id: {
             create: {},
-            find: {},
+            find: {
+                SERVER: { rule: 'optional' },
+            },
             project: {
                 SERVER: { rule: 'optional' },
             },
-            updatable: {},
+            updatable: {
+                SERVER: { rule: 'optional' },
+            },
             update: {},
             remove: {},
         },

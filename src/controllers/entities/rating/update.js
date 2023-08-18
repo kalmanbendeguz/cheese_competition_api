@@ -41,7 +41,7 @@ const update = async (data, user, parent_session) => {
         filter,
         null,
         { session: session }
-    )).map(rating => ({ old: structuredClone(rating), new: rating }))
+    )).map(rating => ({ old: rating.$clone(), new: rating }))
     if (ratings.length === 0) {
         if (!parent_session) {
             if (session.inTransaction()) await session.commitTransaction()
@@ -58,7 +58,7 @@ const update = async (data, user, parent_session) => {
     // For every field, we deal with the field and its dependencies, but not its dependents.
     for (const rating of ratings) {
         const current_update = structuredClone(update)
-        const current_remove = []
+        let current_remove = []
 
         rating.new.set(current_update)
         for (const key of current_remove) {
