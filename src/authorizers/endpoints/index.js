@@ -2,8 +2,8 @@ const rules = {
     api: {
 
         // HTTP verb rules
-        POST: ['organizer', 'UNAUTHENTICATED',],
-        GET: ['organizer', 'UNAUTHENTICATED'],
+        POST: ['organizer', 'ROLELESS', 'UNAUTHENTICATED'],
+        GET: ['organizer', 'ROLELESS', 'UNAUTHENTICATED'],
         PUT: [],
         DELETE: [],
 
@@ -61,11 +61,14 @@ const rules = {
         confirm_registration: {
             GET: ['UNAUTHENTICATED'],
         },
+        get_role: {
+            GET: ['competitor', 'judge', 'organizer', 'receiver', 'ROLELESS', 'UNAUTHENTICATED']
+        },
         login: {
             POST: ['UNAUTHENTICATED'],
         },
         logout: {
-            POST: ['organizer'],
+            POST: ['organizer', 'ROLELESS',],
         },
         registration: {
             POST: ['UNAUTHENTICATED'],

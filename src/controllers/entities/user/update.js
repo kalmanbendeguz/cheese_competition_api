@@ -42,6 +42,7 @@ const update = async (data, user, parent_session) => {
         null,
         { session: session }
     )).map(u => ({ old: u.$clone(), new: u }))
+
     if (users.length === 0) {
         if (!parent_session) {
             if (session.inTransaction()) await session.commitTransaction()

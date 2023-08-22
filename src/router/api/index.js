@@ -21,6 +21,7 @@ router.use('/',
     passport_authenticate,
     assign_special_role,
     validate_api_endpoint,
+    //(req, res, next) => { console.log(req.session); console.log(req.cookies); return next(); },
     authorize_endpoint,
 )
 
@@ -59,6 +60,9 @@ router.use('/user', user)
 
 const confirm_registration = require('./confirm_registration')
 router.use('/confirm_registration', confirm_registration)
+
+const get_role = require('./get_role')
+router.use('/get_role', get_role)
 
 const login = require('./login')
 router.use('/login', login)
