@@ -1,9 +1,11 @@
-const { Schema: Schema, Schema: { Types: { ObjectId }, }, } = require('mongoose')
+const config = require('../config/schema')
 const db = require('../config/db')
+const { Schema: Schema, Schema: { Types: { ObjectId }, }, } = require('mongoose')
 const User_Model = require('./User')
 
 const Active_Password_Reset_Schema = new Schema(
     {
+        // Cannot be changed
         user_id: {
             type: ObjectId,
             ref: User_Model,
@@ -17,13 +19,7 @@ const Active_Password_Reset_Schema = new Schema(
             expires: 15 * 60,
         },
     },
-    {
-        timestamps: true,
-        minimize: false,
-        strict: true,
-        strictQuery: false,
-        validateBeforeSave: true,
-    }
+    config.model_schema_options
 )
 
 const Active_Password_Reset_Model = db.model(

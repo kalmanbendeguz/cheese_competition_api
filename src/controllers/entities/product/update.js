@@ -1,4 +1,4 @@
-const update = async (data, user, parent_session) => {
+const update = async (data, actor, parent_session) => {
 
     // 1. Validate data
     const update_product_validator = require('../../../validators/requests/api/product/update')
@@ -11,7 +11,7 @@ const update = async (data, user, parent_session) => {
     // 2. Authorize updatable
     const authorizer = require('../../../authorizers/entities/product')
     try {
-        data.query = authorizer(data.query, 'updatable', user)
+        data.query = authorizer(data.query, 'updatable', actor)
     } catch (reason) {
         return {
             code: 403,
@@ -22,7 +22,7 @@ const update = async (data, user, parent_session) => {
 
     // 3. Authorize update
     try {
-        data.body = authorizer(data.body, 'update', user)
+        data.body = authorizer(data.body, 'update', actor)
     } catch (reason) {
         return {
             code: 403,
@@ -37,82 +37,99 @@ const update = async (data, user, parent_session) => {
     if (!session.inTransaction()) session.startTransaction()
 
     // 5. Find
-    const products = (await Product_Model.find(
+    const product = (await Product_Model.findOne(
         filter,
         null,
         { session: session }
-    )).map(product => ({ old: product.$clone(), new: product }))
-    if (products.length === 0) {
+    ))
+
+    if (!product) {
         if (!parent_session) {
             if (session.inTransaction()) await session.commitTransaction()
             await session.endSession()
         }
         return {
             code: 200,
-            data: 'no_documents_found_to_update',
+            data: 'no_document_found_to_update',
         }
     }
+
+
+
+    ////////////////////////////////
+    // Check dependencies
+    // if we only update one:
+    is_competition_exist()
+    is_product_category_id_ok()
+    is_payment_conforming_with_competition_rule()
+    is_association_member_conforming_with_competition_rule()
+    if (actor.role === 'competitor') {
+        is_entry_opened()
+        is_competition_closed()
+    } else if (actor.role === 'receiver') {
+        is_competition_not_archived()
+    }
+
+    ////////////////////////////////
+
+
 
     // 6. Update locally
     // We need to go in a topological order.
     // For every field, we deal with the field and its dependencies, but not its dependents.
-    for (const product of products) {
-        const current_update = structuredClone(update)
-        let current_remove = structuredClone(remove)
 
-        // competition_id, competitor_id, public_id and secret_id cannot be changed
-        // product_name, anonimized_product_name, factory_name and maturation_time_type is OK.
+    const current_update = structuredClone(update)
+    let current_remove = structuredClone(remove)
 
-        // maturation_time_quantity
-        if (
-            'maturation_time_type' in current_update &&
-            product.old.maturation_time_type === 'matured' &&
-            current_update.maturation_time_type === 'fresh'
-        ) {
-            current_remove = current_remove.concat([
-                'maturation_time_quantity'
-            ])
-        }
+    // competition_id, competitor_id, public_id and secret_id cannot be changed
+    // product_name, anonimized_product_name, factory_name and maturation_time_type is OK.
 
-        // maturation_time_unit
-        if (
-            'maturation_time_type' in current_update &&
-            product.old.maturation_time_type === 'matured' &&
-            current_update.maturation_time_type === 'fresh'
-        ) {
-            current_remove = current_remove.concat([
-                'maturation_time_unit'
-            ])
-        }
+    // maturation_time_quantity
+    if (
+        'maturation_time_type' in current_update &&
+        product.maturation_time_type === 'matured' &&
+        current_update.maturation_time_type === 'fresh'
+    ) {
+        current_remove = current_remove.concat([
+            'maturation_time_quantity'
+        ])
+    }
 
-        // milk_type, product_category_id, product_description, anonimized_product_description and approved is OK.
+    // maturation_time_unit
+    if (
+        'maturation_time_type' in current_update &&
+        product.maturation_time_type === 'matured' &&
+        current_update.maturation_time_type === 'fresh'
+    ) {
+        current_remove = current_remove.concat([
+            'maturation_time_unit'
+        ])
+    }
 
-        // approval_type
-        if (
-            'approved' in current_update &&
-            product.old.approved === true &&
-            current_update.approved === false
-        ) {
-            current_remove = current_remove.concat([
-                'approval_type',
-            ])
-        }
+    // milk_type, product_category_id, product_description, anonimized_product_description and approved is OK.
 
-        // handed_in is OK.
+    // approval_type
+    if (
+        'approved' in current_update &&
+        product.approved === true &&
+        current_update.approved === false
+    ) {
+        current_remove = current_remove.concat([
+            'approval_type',
+        ])
+    }
 
-        product.new.set(current_update)
-        for (const key of current_remove) {
-            product.new[key] = undefined
-        }
+    // handed_in is OK.
+
+    product.set(current_update)
+    for (const key of current_remove) {
+        product[key] = undefined
     }
 
     // 7. Validate new documents
     const product_validator = require('../../../validators/schemas/Product')
     try {
-        const validator_promises = products.map((product) =>
-            product_validator.validateAsync(product.new)
-        )
-        await Promise.all(validator_promises)
+        await product_validator.validateAsync(product)
     } catch (err) {
         if (!parent_session) {
             if (session.inTransaction()) await session.abortTransaction()
@@ -127,7 +144,7 @@ const update = async (data, user, parent_session) => {
 
     const dependency_approver_promises = []
     for (const dependency_approver of dependency_approvers) {
-        dependency_approver_promises.push(dependency_approver(products, user, session))
+        dependency_approver_promises.push(dependency_approver(products, actor, session))
     }
     const dependency_approver_results = await Promise.all(dependency_approver_promises)
 
@@ -167,7 +184,7 @@ const update = async (data, user, parent_session) => {
                 {
                     product_id: product.old._id.toString(),
                 },
-                user,
+                actor,
                 session
             ))
         }
@@ -179,7 +196,7 @@ const update = async (data, user, parent_session) => {
                 {
                     product_ids: { $in: [product.old._id.toString()] },
                 },
-                user,
+                actor,
                 session
             ))
         }

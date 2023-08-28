@@ -1,53 +1,60 @@
-const { Schema: Schema, Schema: { Types: { Decimal128, Mixed }, }, } = require('mongoose')
+const config = require('../config/schema')
 const db = require('../config/db')
-const File_Schema = require('./schemas/File')
+const { Schema: Schema, Schema: { Types: { Decimal128, Mixed }, }, } = require('mongoose')
 
 const Competition_Schema = new Schema(
     {
+        // Cannot be changed
+        creation_date: {
+            type: Date,
+        },
+
+        // Can be changed independently
         name: {
             type: String,
         },
         place: {
             type: String,
         },
-        creation_date: {
-            type: Date,
-            default: Date.now,
-        },
-        entry_opened: {
+        ignore_extreme_values: {
             type: Boolean,
-            default: false,
         },
-        last_entry_open_date: {
-            type: Date,
+        certificate_template: {
+            type: Mixed,
         },
-        last_entry_close_date: {
-            type: Date,
-        },
-        competition_opened: {
-            type: Boolean,
-            default: false,
-        },
-        last_competition_open_date: {
-            type: Date,
-        },
-        last_competition_close_date: {
-            type: Date,
+
+        // Can be changed independently, but something depends on it
+        product_category_tree: {
+            type: Mixed,
         },
         archived: {
             type: Boolean,
-            default: false,
-        },
-        archival_date: {
-            type: Date,
         },
         payment_needed: {
             type: Boolean,
-            default: false,
+        },
+
+        // Can be changed, but depends on something AND something depends on it
+        rating_map: {
+            type: Mixed,
+        },
+        entry_opened: {
+            type: Boolean,
+        },
+        competition_opened: {
+            type: Boolean,
+        },
+
+        // Can be changed but depends on something
+        rating_sheets: {
+            type: [
+                {
+                    type: Mixed,
+                },
+            ],
         },
         association_members_need_to_pay: {
             type: Boolean,
-            default: true,
         },
         entry_fee_amount: {
             type: Decimal128,
@@ -55,26 +62,30 @@ const Competition_Schema = new Schema(
         entry_fee_currency: {
             type: String,
         },
-        product_category_tree: {
-            type: Mixed,
+
+        // Can be changed, but only internally because it depends on something
+        archival_date: {
+            type: Date,
         },
-        certificate_template: {
-            type: File_Schema,
+        last_entry_open_date: {
+            type: Date,
         },
-        ignore_extreme_values: {
-            type: Boolean,
-            default: false,
+        last_entry_close_date: {
+            type: Date,
+        },
+        last_competition_open_date: {
+            type: Date,
+        },
+        last_competition_close_date: {
+            type: Date,
         },
     },
-    {
-        timestamps: true,
-        minimize: false,
-        strict: true,
-        strictQuery: false,
-        validateBeforeSave: true,
-    }
+    config.model_schema_options
 )
 
-const Competition_Model = db.model('Competition', Competition_Schema)
+const Competition_Model = db.model(
+    'Competition',
+    Competition_Schema
+)
 
 module.exports = Competition_Model

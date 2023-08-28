@@ -3,7 +3,9 @@ const user_authorizer = (data, verb, user) => {
     const rules = {
         _id: {
             create: {},
-            find: {},
+            find: {
+                SERVER: { rule: 'optional' },
+            },
             project: {
                 SERVER: { rule: 'optional' },
             },
@@ -54,7 +56,9 @@ const user_authorizer = (data, verb, user) => {
         roles: {
             create: {},
             find: {},
-            project: {},
+            project: {
+                SERVER: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},

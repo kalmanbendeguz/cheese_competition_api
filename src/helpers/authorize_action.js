@@ -1,4 +1,7 @@
 const authorize_action = (action, user) => {
+
+    /// should only return true or false!
+
     const authorized_roles = require(`../authorizers/actions/${action}`)
 
     const role = user?.role ?? 'UNAUTHENTICATED'

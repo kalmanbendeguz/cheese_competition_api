@@ -1,3 +1,4 @@
+const config = require('../../../config/schema')
 const { Schema } = require('mongoose')
 
 const Billing_Information_Schema = new Schema(
@@ -27,12 +28,7 @@ const Billing_Information_Schema = new Schema(
             type: String,
         },
     },
-    {
-        minimize: false,
-        strict: true,
-        strictQuery: false,
-        validateBeforeSave: true,
-    }
+    config.schema_options
 )
 
 module.exports = Billing_Information_Schema

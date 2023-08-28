@@ -2,15 +2,21 @@ const active_password_reset_authorizer = (data, verb, user) => {
     const rules = {
         _id: {
             create: {},
-            find: {},
+            find: {
+                SERVER: { rule: 'optional' },
+            },
             project: {},
             updatable: {},
             update: {},
             remove: {},
         },
         user_id: {
-            create: {},
-            find: {},
+            create: {
+                SERVER: { rule: 'required' },
+            },
+            find: {
+                SERVER: { rule: 'optional' },
+            },
             project: {},
             updatable: {},
             update: {},
@@ -19,7 +25,9 @@ const active_password_reset_authorizer = (data, verb, user) => {
         restore_id: {
             create: {},
             find: {},
-            project: {},
+            project: {
+                SERVER: { rule: 'optional' },
+            },
             updatable: {},
             update: {},
             remove: {},

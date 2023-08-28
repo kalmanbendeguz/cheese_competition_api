@@ -1,3 +1,4 @@
+const config = require('../../../config/schema')
 const { Schema } = require('mongoose')
 
 const Rating_Aspect_Schema = new Schema(
@@ -23,12 +24,7 @@ const Rating_Aspect_Schema = new Schema(
             type: String,
         },
     },
-    {
-        minimize: false,
-        strict: true,
-        strictQuery: false,
-        validateBeforeSave: true,
-    }
+    config.schema_options
 )
 
 module.exports = Rating_Aspect_Schema

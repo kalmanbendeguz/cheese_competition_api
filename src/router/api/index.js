@@ -61,8 +61,11 @@ router.use('/user', user)
 const confirm_registration = require('./confirm_registration')
 router.use('/confirm_registration', confirm_registration)
 
-const get_role = require('./get_role')
-router.use('/get_role', get_role)
+const forget_password = require('./forget_password')
+router.use('/forget_password', forget_password)
+
+const current_role = require('./current_role')
+router.use('/current_role', current_role)
 
 const login = require('./login')
 router.use('/login', login)

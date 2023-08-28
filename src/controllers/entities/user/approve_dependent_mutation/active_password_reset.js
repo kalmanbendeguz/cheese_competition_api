@@ -46,7 +46,9 @@ const approve_active_password_reset_mutation = async (active_password_resets, us
             },
             projection: {
                 _id: 1,
-                registration_temporary: 1
+                email: 1,
+                roles: 1
+                //registration_temporary: 1
             }
         },
         { role: 'SERVER' },
@@ -63,18 +65,20 @@ const approve_active_password_reset_mutation = async (active_password_resets, us
     }
 
     // All users must be activated users.
-    if (users.some(u => u.registration_temporary === true)) {
-        return {
-            approved: false,
-            reason: 'temporary_user_can_not_have_a_belonging_active_password_reset'
-        }
-    }
+    // This should not be a criteria!
+    // if (users.some(u => u.registration_temporary === true)) {
+    //     return {
+    //         approved: false,
+    //         reason: 'temporary_user_can_not_have_a_belonging_active_password_reset'
+    //     }
+    // }
 
     // 4. Based on User's dependencies, is this mutation possible?
     // The dependencies will only see that User has changed, they won't know anything about Active_Password_Reset.
     const dependencies = ['allowed_role', 'competition']
     const dependency_approvers = dependencies.map(dependency => require(`../../${dependency}/approve_dependent_mutation/user`))
 
+    console.log(users)
     const dependency_approver_promises = []
     for (const dependency_approver of dependency_approvers) {
         dependency_approver_promises.push(

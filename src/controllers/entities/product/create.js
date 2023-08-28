@@ -1,41 +1,162 @@
-const create = async (body, user, parent_session) => {
+const create = async (products, actor, session) => {
 
-    // 1. Validate body
-    const create_product_validator = require('../../../validators/requests/api/product/create')
-    try {
-        await create_product_validator.validateAsync(body)
-    } catch (err) {
-        return { code: 400, data: err.details }
-    }
-
-    // 2. Arrayize
-    body = Array.isArray(body) ? body : [body]
-
-    // 3. Authorize create
-    const authorizer = require('../../../authorizers/entities/product')
-    try {
-        body = body.map((product) => authorizer(product, 'create', user))
-    } catch (reason) {
-        return {
-            code: 403,
-            data: reason
-        }
-    }
-
-    // 4. Start session and transaction if they don't exist
     const Product_Model = require('../../../models/Product')
-    const session = parent_session ?? await Product_Model.startSession()
-    if (!session.inTransaction()) session.startTransaction()
-
-    // 5. Create locally
-    // Generate public_ids and secret_ids
     const randomstring = require('randomstring')
     const forbidden_id_parts = require('../../../static/forbidden_id_parts.json')
+    const find = require('../find.js')
+    const find_competition = find('competition')
+    const find_user = find('user')
+    const tree_to_flat_array = require('../../../helpers/tree_to_flat_array')
 
-    let existing_product
-    let is_forbidden_part
+    // NEW RULE: product id and secret id can be duplicate. but not in the same competition
 
-    for (const product of body) {
+    for (const product of products) {
+
+        
+        // Check dependencies, and uniqueness too if needed!
+        // Competition:
+        // competition_id should belong to a real competition
+
+        const find_competition_result = await find_competition(
+            {
+                filter: {
+                    _id: product.competition_id.toString()
+                },
+                projection: {
+                    _id: 1,
+                    product_category_tree: 1,
+                    entry_opened: 1,
+                    payment_needed: 1,
+                    association_members_need_to_pay: 1
+                }
+            },
+            { role: 'SERVER' },
+            session
+        )
+
+        // return from here if find_competition_result status code is not OK?
+
+        const competition = find_competition_result?.data?.[0] ?? null
+        if (!competition) {
+            return {
+                code: 403,
+                json: {
+                    message: 'provided_competition_id_does_not_belong_to_a_real_competition'
+                },
+            }
+        }
+        // entry should be opened
+        if (!competition.entry_opened) {
+            return {
+                code: 403,
+                json: {
+                    message: 'competition_entry_is_closed'
+                },
+            }
+        }
+
+        // product_category_id should be ok
+        const product_category_array = tree_to_flat_array(competition.product_category_tree)
+        if (!product_category_array.some(node => node.node_id === product.product_category_id)) {
+            return {
+                code: 403,
+                json: {
+                    message: 'product_category_id_is_not_a_route_in_competition_product_category_tree'
+                },
+            }
+        }
+
+        // approval type cannot be payment if competition does not need payment
+        if (product.approval_type === 'payment' && !competition.payment_needed) {
+            return {
+                code: 403,
+                json: {
+                    message: 'product_approval_type_is_payment_but_competition_does_not_need_payment'
+                },
+            }
+        }
+
+        // approval type cannot be association member if association members need to pay too
+        if (product.approval_type === 'association_member' && competition.association_members_need_to_pay) {
+            return {
+                code: 403,
+                json: {
+                    message: 'product_approval_type_is_association_member_but_for_competition_association_members_also_need_to_pay'
+                },
+            }
+        }
+
+        // User:
+        // competitor_id should belong to a real user
+        const find_user_result = await find_user(
+            {
+                filter: {
+                    _id: product.competitor_id.toString(),
+                },
+                projection: {
+                    registration_temporary: 1,
+                    roles: 1,
+                    association_member: 1
+                }
+            },
+            { role: 'SERVER' },
+            session
+        )
+
+        const user = find_user_result?.data?.[0] ?? null
+        if (!user) {
+            return {
+                code: 403,
+                json: {
+                    message: 'provided_competitor_id_does_not_belong_to_a_real_user'
+                },
+            }
+        }
+        // return from here if find_user_result status code is not OK?
+
+        // user should be activated
+        if (user.registration_temporary) {
+            return {
+                code: 403,
+                json: {
+                    message: 'user_is_not_activated'
+                },
+            }
+        }
+
+        // user should be competitor
+        if (!user.roles.includes('competitor')) {
+            return {
+                code: 403,
+                json: {
+                    message: 'user_is_not_a_competitor'
+                },
+            }
+        }
+
+        // if approval type is association member, then user should be association member
+        if (product.approval_type = 'association_member' && !user.association_member) {
+            return {
+                code: 403,
+                json: {
+                    message: 'product_approval_type_is_association_member_but_competitor_is_not_association_member'
+                },
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+        // Create without saving
+        let existing_product
+        let is_forbidden_part
+
         let public_id
         do {
             const letters = randomstring.generate({
@@ -79,33 +200,43 @@ const create = async (body, user, parent_session) => {
             is_forbidden_part = forbidden_id_parts.includes(letters)
         } while (existing_product || is_forbidden_part)
         product.secret_id = secret_id
-    }
 
-    // This is an interesting part. Because we can find out the approval state based on the competition and the user, this means
-    // that we shouldn't even store it, because it is redundant. And using this anti-pattern (asking the 
-    // competition and user controllers) is a very good indicator of the fact that we have redundant data.
-    // But for now, this won't be changed.
-    const find_competition = require('../competition/find')
-    const find_user = require('../user/find')
-    const competitions_of_products = (await find_competition(
-        { _id: { $in: body.map(product => product.competition_id.toString()) } },
-        { role: 'SERVER' },
-        session
-    ))?.data ?? []
-    const users_of_products = (await find_user(
-        { _id: { $in: body.map(product => product.competitor_id.toString()) } },
-        { role: 'SERVER' },
-        session
-    ))?.data ?? []
 
-    for (const product of body) {
-        const competition_of_product = competitions_of_products.find(competition => competition._id.toString() === product.competition_id.toString())
-        const user_of_product = users_of_products.find(user => user._id.toString() === product.competitor_id.toString())
-        if (!competition_of_product || !user_of_product) continue;
-        if (competition_of_product.payment_needed) {
+
+
+
+        const _product = {
+            competition_id: product.competition_id, // required
+            competitor_id: product.competitor_id, // required
+            public_id: product.public_id, // GENERATED
+            secret_id: product.secret_id, // GENERATED
+            product_name: product.product_name, // required
+            ...(product.anonimized_product_name && { // optional
+                anonimized_product_name: product.anonimized_product_name, // optional
+            }),
+            factory_name: product.factory_name, // required
+            maturation_time_type: product.maturation_time_type, // required
+            ...(product.maturation_time_type === 'matured' && { // required
+                maturation_time_quantity: product.maturation_time_quantity, // required
+            }),
+            ...(product.maturation_time_type === 'matured' && { // required
+                maturation_time_unit: product.maturation_time_unit, // required
+            }),
+            milk_type: product.milk_type, // required
+            product_category_id: product.product_category_id, // required
+            product_description: product.product_description, // required
+            ...(product.anonimized_product_description && { // optional
+                anonimized_product_description: product.anonimized_product_description, // optional
+            }),
+            ...(product.approved && { approved: product.approved }), // GENERATED
+            ...(product.approved && { approval_type: product.approval_type }), // GENERATED
+            ...(product.handed_in && { handed_in: product.handed_in }), // optional
+        }
+
+        if (competition.payment_needed) {
             if (
-                !competition_of_product.association_members_need_to_pay &&
-                user_of_product.association_member
+                !competition.association_members_need_to_pay &&
+                user.association_member
             ) {
                 product.approved = true
                 product.approval_type = 'association_member'
@@ -115,95 +246,46 @@ const create = async (body, user, parent_session) => {
             product.approval_type = 'bypass'
         }
         // Otherwise, the approved will be the default, "false", but this needs to be tested.
-    }
 
-    const _products = body.map((product) => ({
-        competition_id: product.competition_id, // required
-        competitor_id: product.competitor_id, // required
-        public_id: product.public_id, // GENERATED
-        secret_id: product.secret_id, // GENERATED
-        product_name: product.product_name, // required
-        ...(product.anonimized_product_name && { // optional
-            anonimized_product_name: product.anonimized_product_name, // optional
-        }),
-        factory_name: product.factory_name, // required
-        maturation_time_type: product.maturation_time_type, // required
-        ...(product.maturation_time_type === 'matured' && { // required
-            maturation_time_quantity: product.maturation_time_quantity, // required
-        }),
-        ...(product.maturation_time_type === 'matured' && { // required
-            maturation_time_unit: product.maturation_time_unit, // required
-        }),
-        milk_type: product.milk_type, // required
-        product_category_id: product.product_category_id, // required
-        product_description: product.product_description, // required
-        ...(product.anonimized_product_description && { // optional
-            anonimized_product_description: product.anonimized_product_description, // optional
-        }),
-        ...(product.approved && { approved: product.approved }), // GENERATED
-        ...(product.approved && { approval_type: product.approval_type }), // GENERATED
-        ...(product.handed_in && { handed_in: product.handed_in }), // optional
-    }))
+        const created_product = new Product_Model(_product)
 
-    const products = _products.map((product) => new Product_Model(product))
-
-    // 6. Validate created documents
-    const product_validator = require('../../../validators/schemas/Product')
-    try {
-        const validator_promises = products.map((product) =>
-            product_validator.validateAsync(product)
-        )
-        await Promise.all(validator_promises)
-    } catch (err) {
-        if (!parent_session) {
-            if (session.inTransaction()) await session.abortTransaction()
-            await session.endSession()
+        // 6. Validate created documenT
+        const product_validator = require('../../../validators/schemas/Product')
+        try {
+            await product_validator.validateAsync(created_product)
+        } catch (error) {
+            return {
+                code: 400,
+                json: {
+                    message: error.details
+                    // maybe validation error should return the document itself to see what was wrong?
+                }
+            }
         }
-        return { code: 400, data: err.details }
+
+        // 7. save document
+        await created_product.save({ session: session })
+
+        // 8. Update dependents
+        // Nothing needs to be updated.
+
+
+
     }
 
-    // 7. Check dependencies: Ask all dependencies if this creation is possible.
-    const dependencies = ['competition', 'user']
-    const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/product`))
 
-    const dependency_approver_promises = []
-    for (const dependency_approver of dependency_approvers) {
-        dependency_approver_promises.push(dependency_approver(products.map(product => ({ old: null, new: product })), user, session))
-    }
-    const dependency_approver_results = await Promise.all(dependency_approver_promises)
-
-    const unapproved = dependency_approver_results.find(dependency_approver_result => !dependency_approver_result.approved)
-    if (unapproved) {
-        if (!parent_session) {
-            if (session.inTransaction()) await session.abortTransaction()
-            await session.endSession()
-        }
-        return {
-            code: 403,
-            data: unapproved.reason
-        }
-    }
-
-    // 8. Check collection integrity
-    // Nothing needs to be checked, public_id and secret_id uniqueness is ensured at creation.
-
-    // 9. Save created documents
-    await Product_Model.bulkSave(products, { session: session })
-
-    // 10. Update dependents
-    // Nothing needs to be updated.
-
-    // 11. Commit transaction and end session.
-    if (!parent_session) {
-        if (session.inTransaction()) await session.commitTransaction()
-        await session.endSession()
-    }
-
-    // 12. Reply
+    // 9. reply
     return {
         code: 201,
-        data: undefined,
+        json: {
+            // we should return the created documents in an array, projected by the allowed projected fields for actor role
+            // we should do it in the GLOBAL create.js
+            // DO NOT REMOVE THIS COMMENT UNTIL ITS DONE!
+            data: products
+        }
     }
+
+
 }
 
-module.exports = create
+module.exports = create 

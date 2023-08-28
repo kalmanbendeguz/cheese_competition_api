@@ -1,4 +1,5 @@
 const create = async (body, user, parent_session) => {
+    console.log('ITTT1')
 
     // 1. Validate body
     const create_active_password_reset_validator = require('../../../validators/requests/api/active_password_reset/create')
@@ -7,10 +8,10 @@ const create = async (body, user, parent_session) => {
     } catch (err) {
         return { code: 400, data: err.details }
     }
-
+    console.log('ITTT2')
     // 2. Arrayize
     body = Array.isArray(body) ? body : [body]
-
+    console.log('ITTT3')
     // 3. Authorize create
     const authorizer = require('../../../authorizers/entities/active_password_reset')
     try {
@@ -21,12 +22,12 @@ const create = async (body, user, parent_session) => {
             data: reason
         }
     }
-
+    console.log('ITTT4')
     // 4. Start session and transaction if they don't exist
     const Active_Password_Reset_Model = require('../../../models/Active_Password_Reset')
     const session = parent_session ?? await Active_Password_Reset_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
-
+    console.log('ITTT5')
     // 5. Create locally
     const randomstring = require('randomstring')
 
@@ -47,7 +48,7 @@ const create = async (body, user, parent_session) => {
         )
         active_password_reset.restore_id = restore_id
     }
-
+    console.log('ITTT6')
     const _active_password_resets = body.map((active_password_reset) => ({
         user_id: active_password_reset.user_id,
         restore_id: active_password_reset.restore_id,
@@ -109,7 +110,6 @@ const create = async (body, user, parent_session) => {
         if (session.inTransaction()) await session.commitTransaction()
         await session.endSession()
     }
-
     // 12. Reply
     return {
         code: 201,

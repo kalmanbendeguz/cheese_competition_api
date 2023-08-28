@@ -1,3 +1,4 @@
+const config = require('../../../config/schema')
 const { Schema } = require('mongoose')
 
 const File_Schema = new Schema(
@@ -15,12 +16,7 @@ const File_Schema = new Schema(
             type: Number,
         },
     },
-    {
-        minimize: false,
-        strict: true,
-        strictQuery: false,
-        validateBeforeSave: true,
-    }
+    config.schema_options
 )
 
 module.exports = File_Schema

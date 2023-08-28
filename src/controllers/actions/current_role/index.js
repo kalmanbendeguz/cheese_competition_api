@@ -1,4 +1,4 @@
-const get_role = async (req, res, next) => {
+const current_role = async (req, res, next) => {
 
     return res.status(200).json({
         role: req.user.role
@@ -74,4 +74,4 @@ const get_role = async (req, res, next) => {
     //return res.status(200).json(`confirm_registration_successful`)
 }
 
-module.exports = get_role
+module.exports = current_role

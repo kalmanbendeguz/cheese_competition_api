@@ -1,4 +1,4 @@
-const remove = async (query, user, parent_session) => {
+const remove = async (query, actor, parent_session) => {
 
     // 1. Validate query
     const remove_product_validator = require('../../../validators/requests/api/product/remove')
@@ -11,7 +11,7 @@ const remove = async (query, user, parent_session) => {
     // 2. Authorize remove
     const authorizer = require('../../../authorizers/entities/product')
     try {
-        query = authorizer(query, 'remove', user)
+        query = authorizer(query, 'remove', actor)
     } catch (reason) {
         return {
             code: 403,
@@ -53,13 +53,14 @@ const remove = async (query, user, parent_session) => {
         return { code: 500, data: err.details }
     }
 
+
     // 6. Check dependencies: Ask all dependencies if this remove is possible.
     const dependencies = ['user', 'competition']
     const dependency_approvers = dependencies.map(dependency => require(`../${dependency}/approve_dependent_mutation/product`))
 
     const dependency_approver_promises = []
     for (const dependency_approver of dependency_approvers) {
-        dependency_approver_promises.push(dependency_approver(products.map(product => ({ old: product, new: null })), user, session))
+        dependency_approver_promises.push(dependency_approver(products.map(product => ({ old: product, new: null })), actor, session))
     }
     const dependency_approver_results = await Promise.all(dependency_approver_promises)
 
@@ -107,14 +108,14 @@ const remove = async (query, user, parent_session) => {
             {
                 product_ids: { $in: [product._id.toString()] },
             },
-            user,
+            actor,
             session
         ))
         update_dependent_promises.push(remove_rating(
             {
                 product_id: product._id.toString(),
             },
-            user,
+            actor,
             session
         ))
     }

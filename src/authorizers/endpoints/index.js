@@ -61,7 +61,10 @@ const rules = {
         confirm_registration: {
             GET: ['UNAUTHENTICATED'],
         },
-        get_role: {
+        forget_password: {
+            POST: ['UNAUTHENTICATED']
+        },
+        current_role: {
             GET: ['competitor', 'judge', 'organizer', 'receiver', 'ROLELESS', 'UNAUTHENTICATED']
         },
         login: {

@@ -43,6 +43,10 @@ const login = async (req, res, next) => {
         return res.status(200).json(`no_such_user`)
     }
 
+    if(find_user_result[0].registration_temporary === true) {
+        return res.status(200).json(`user_not_activated_yet`)
+    }
+
     const bcrypt = require('bcrypt')
     const password_correct = await bcrypt.compare(req.body.plain_password, find_user_result[0].hashed_password)
     if(!password_correct) {

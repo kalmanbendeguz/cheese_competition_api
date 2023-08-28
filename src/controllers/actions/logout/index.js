@@ -1,5 +1,19 @@
 const logout = async (req, res, next) => {
 
+    ///
+    //const action = require('../action')
+    //const validator = action.validator('logout')
+
+    // SHOULD RETURN: 
+    //  {
+    //      code: ...
+    //      json: ...
+    //  }
+
+    ///
+
+    // CANNOT ALTER THE SESSION, ONLY USE IT!
+
     // 1. Validate request
     const logout_validator = require('../../../validators/requests/api/logout')
     try {

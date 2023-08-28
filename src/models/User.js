@@ -1,18 +1,28 @@
-const { Schema: Schema, Schema: { Types: { ObjectId }, }, } = require('mongoose')
+const config = require('../config/schema')
 const db = require('../config/db')
-const Billing_Information_Schema = require('./schemas/Billing_Information')
-const Competition_Model = require('./Competition')
+const { Schema: Schema, Schema: { Types: { Mixed } } } = require('mongoose')
 
 const User_Schema = new Schema(
     {
+        // Cannot be changed
         email: {
             type: String,
         },
+
+        // Can be changed independently
         username: {
             type: String,
         },
         hashed_password: {
             type: String,
+        },
+        full_name: {
+            type: String,
+        },
+
+        // Can be changed independently, but something depends on it
+        registration_temporary: {
+            type: Boolean,
         },
         roles: {
             type: [
@@ -21,53 +31,27 @@ const User_Schema = new Schema(
                 },
             ],
         },
-        full_name: {
+
+        // Can be changed but depends on something
+        confirm_registration_id: {
             type: String,
         },
         contact_phone_number: {
             type: String,
         },
         billing_information: {
-            type: Billing_Information_Schema,
+            type: Mixed,
         },
         association_member: {
             type: Boolean,
         },
-        registration_temporary: {
-            type: Boolean,
-            default: true,
-        },
-        confirm_registration_id: {
-            type: String,
-        },
-        table_leader: {
-            type: [
-                {
-                    type: ObjectId,
-                    ref: Competition_Model,
-                },
-            ],
-            default: undefined
-        },
-        arrived: {
-            type: [
-                {
-                    type: ObjectId,
-                    ref: Competition_Model,
-                },
-            ],
-            default: undefined
-        },
     },
-    {
-        timestamps: true,
-        minimize: false,
-        strict: true,
-        strictQuery: false,
-        validateBeforeSave: true,
-    }
+    config.model_schema_options
 )
 
-const User_Model = db.model('User', User_Schema)
+const User_Model = db.model(
+    'User',
+    User_Schema
+)
 
 module.exports = User_Model
