@@ -1,4 +1,23 @@
 const allowed_role_authorizer = (data, verb, user) => {
+
+    const abc = {
+        competitor: {
+            create: {
+                bound: {field1: user._id.toString(), field2: user.email.toString()},
+                required: ['field3', 'field4'],
+                forbidden: ['field5', 'field6'],
+                // everything else is optional
+            },
+            find: {
+                bound: {},
+                required: '*' // everything is required
+                // everything else is optional
+            },
+            '*': {} // every other action
+        },
+        '*': {} // everyone else
+    }
+
     const rules = {
         _id: {
             create: {},

@@ -20,7 +20,7 @@ router.use('/',
     convert_email_to_username,
     passport_authenticate,
     assign_special_role,
-    validate_api_endpoint,
+    validate_api_endpoint, // this should be at top! or not?
     //(req, res, next) => { console.log(req.session); console.log(req.cookies); return next(); },
     authorize_endpoint,
 )

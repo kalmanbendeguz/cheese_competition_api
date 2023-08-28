@@ -1,45 +1,27 @@
 const active_password_reset_authorizer = (data, verb, user) => {
+    // competitor, judge, organizer, receiver, ROLELESS, UNAUTHENTICATED, SERVER
+    // only required and bound should throw error. forbidden can be filtered. optional is "as-is"
+
     const rules = {
-        _id: {
-            create: {},
-            find: {
-                SERVER: { rule: 'optional' },
-            },
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        user_id: {
+        SERVER: {
             create: {
-                SERVER: { rule: 'required' },
+                // the order does not matter, always the last rule is the real rule for a field
+                // ONLY THE LAST rule can be '*'
+                // if a field is not provided, it is optional
+                required: ['user_id'], // user_id is required for creation
+                forbidden: '*', // everything else is forbidden
             },
             find: {
-                SERVER: { rule: 'optional' },
+                optional: '*' // everything is allowed for find (so we allow everything but nothing is necessary)
             },
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        restore_id: {
-            create: {},
-            find: {},
-            project: {
-                SERVER: { rule: 'optional' },
+            update: {
+                forbidden: '*' // everything is forbidden for update
             },
-            updatable: {},
-            update: {},
-            remove: {},
+            remove: {
+                optional: '*' // everything is allowed for remove (so we allow everything but nothing is necessary)
+            }
         },
-        expiring_started: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
+        '*': 'forbidden' // everyone else is forbidden to do any operation with active_password_reset
     }
 
     const authorize_entity = require('../../helpers/authorize_entity')
