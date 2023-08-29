@@ -1,23 +1,20 @@
 const entity_authorizer = (actor, verb, data) => {
 
     const rules = {
-        'competitor judge receiver ROLELESS': {
-            find: {
-                bound: { email: actor.email },
+        'receiver': {
+            'find': {
+                bound: { receiver_id: actor._id.toString() },
                 optional: '*'
             },
             '*': 'forbidden'
         },
         'organizer SERVER': {
-            create: {
-                required: ['email', 'allowed_roles'],
+            'create': {
+                required: ['receiver_id', 'competition_id'],
                 forbidden: '*'
             },
-            update: {
-                optional: ['allowed_roles'],
-                forbidden: '*',
-            },
-            '*': 'optional'
+            'find remove': 'optional',
+            '*': 'forbidden'
         },
         '*': 'forbidden'
     }
