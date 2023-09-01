@@ -1,7 +1,7 @@
 const entity_authorizer = (actor, verb, data) => {
 
     const rules = {
-        'organizer': { // RUD
+        'organizer': {
             'update': {
                 optional: ['anonymous', 'aspects', 'overall_impression'],
                 forbidden: '*'
@@ -12,9 +12,9 @@ const entity_authorizer = (actor, verb, data) => {
         'judge': {
             'create': {
                 bound: { judge_id: actor._id.toString() },
-                forbidden: ['_id'],
+                required: ['competition_id', 'product_id', 'aspects', 'overall_impression'],
                 optional: ['anonymous'],
-                required: '*',
+                forbidden: '*',
             },
             'update': {
                 optional: ['anonymous', 'aspects', 'overall_impression'],
@@ -27,9 +27,9 @@ const entity_authorizer = (actor, verb, data) => {
         },
         'SERVER': {
             'create': {
-                forbidden: ['_id'],
+                required: ['competition_id', 'product_id', 'judge_id', 'aspects', 'overall_impression'],
                 optional: ['anonymous'],
-                required: '*',
+                forbidden: '*',
             },
             'update': {
                 optional: ['anonymous', 'aspects', 'overall_impression'],

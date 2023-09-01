@@ -1,166 +1,45 @@
-const competition_authorizer = (data, verb, user) => {
+const entity_authorizer = (actor, verb, data) => {
+
     const rules = {
-        _id: {
-            create: {},
-            find: {
-                SERVER: { rule: 'optional' },
+        'competitor': {
+            'find': {
+                forbidden: ['ignore_extreme_values', 'certificate_template', 'rating_map', 'rating_sheets', 'last_entry_open_date', 'last_entry_close_date', 'last_competition_open_date', 'last_competition_close_date'],
+                optional: '*'
             },
-            project: {
-                SERVER: { rule: 'optional' },
+            '*': 'forbidden'
+        },
+        'judge': {
+            'find': {
+                optional: ['_id', 'creation_date', 'name', 'place', 'product_category_tree', 'archived', 'rating_map', 'entry_opened', 'competition_opened', 'rating_sheets', 'archival_date'],
+                forbidden: '*'
             },
-            updatable: {},
-            update: {},
-            remove: {},
+            '*': 'forbidden'
         },
-        name: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
+        'organizer SERVER': {
+            'create': {
+                required: ['name', 'place'],
+                forbidden: ['_id', 'creation_date', 'archived', 'archival_date', 'last_entry_open_date', 'last_entry_close_date', 'last_competition_open_date', 'last_competition_close_date'],
+                optional: '*'
+            },
+            'update': {
+                forbidden: ['_id', 'creation_date', 'archival_date', 'last_entry_open_date', 'last_entry_close_date', 'last_competition_open_date', 'last_competition_close_date'],
+                optional: '*'
+            },
+            '*': 'optional'
         },
-        place: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
+        'receiver': {
+            'find': {
+                forbidden: ['ignore_extreme_values', 'certificate_template', 'rating_map', 'rating_sheets'],
+                optional: '*'
+            },
+            '*': 'forbidden'
         },
-        creation_date: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        entry_opened: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        last_entry_open_date: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        last_entry_close_date: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        competition_opened: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        last_competition_open_date: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        last_competition_close_date: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        archived: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        archival_date: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        payment_needed: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        association_members_need_to_pay: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        entry_fee_amount: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        entry_fee_currency: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        product_category_tree: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        certificate_template: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        ignore_extreme_values: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
+        '*': 'forbidden',
     }
 
     const authorize_entity = require('../../helpers/authorize_entity')
-    data = authorize_entity(data, verb, user, rules)
+    data = authorize_entity(actor, verb, data, rules)
     return data
 }
 
-module.exports = competition_authorizer
+module.exports = entity_authorizer

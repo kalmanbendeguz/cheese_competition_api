@@ -1,162 +1,96 @@
-const product_authorizer = (data, verb, user) => {
+const entity_authorizer = (actor, verb, data) => {
+
+    //competitor: CRUD
+    //judge: R
+
+    //organizer: RUD
+    //receiver: RU
+    //roleless: -
+    //server: CRUD
+    //unauthenticated: -
+    const Joi = require('joi')
 
     const rules = {
-        _id: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        competition_id: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        competitor_id: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        public_id: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        secret_id: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        product_name: {
-            create: {},
-            find: {},
-            project: {
-                organizer: { rule: 'optional' },
+        'competitor': {
+            'create': {
+                bound: { competitor_id: actor._id.toString() },
+                required: ['competition_id', 'product_category_id', 'product_name', 'factory_name', 'product_description', 'maturation_time_type'],
+                optional: ['maturation_time_quantity', 'maturation_time_unit'],
+                forbidden: '*'
             },
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        anonimized_product_name: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        factory_name: {
-            create: {},
-            find: {},
-            project: {
-                organizer: { rule: 'optional' },
+            'find remove': {
+                bound: { competitor_id: actor._id.toString() },
+                forbidden: ['_id', 'secret_id', 'anonimized_product_name', 'anonimized_product_description'],
+                optional: '*'
             },
-            updatable: {},
-            update: {},
-            remove: {},
+            'update': {
+                optional: ['product_category_id', 'product_name', 'factory_name', 'product_description', 'maturation_time_type', 'maturation_time_quantity', 'maturation_time_unit'],
+                forbidden: '*'
+            },
         },
-        maturation_time_type: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
+        'judge': {
+            'find': {
+                pattern: { secret_id: Joi.string().allow('') },
+                optional: ['competition_id', 'product_category_id', 'anonimized_product_name', 'anonimized_product_description', 'maturation_time_type', 'maturation_time_quantity', 'maturation_time_unit'],
+                forbidden: '*'
+            },
+            '*': 'forbidden'
         },
-        maturation_time_quantity: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
+
+
+        'organizer': {
+            'find': {
+                bound: { registration_temporary: false },
+                forbidden: ['hashed_password', 'confirm_registration_id', 'confirm_registration_id'],
+                optional: '*'
+            },
+            'update': {
+                optional: ['username', 'hashed_password', 'full_name', 'association_member'],
+                forbidden: '*'
+            },
+            '*': 'forbidden'
         },
-        maturation_time_unit: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
+        'receiver': {
+            'find': {
+                bound: { roles: { $in: ['competitor', 'receiver'] } },
+                forbidden: ['hashed_password', 'registration_temporary', 'confirm_registration_id'],
+                optional: '*'
+            },
+            'update': {
+                optional: ['username', 'hashed_password', 'full_name'],
+                forbidden: '*'
+            },
+            '*': 'forbidden'
         },
-        milk_type: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
+        'ROLELESS': {
+            'find': {
+                bound: { _id: actor._id.toString(), email: actor.email, username: actor.username },
+                optional: ['full_name', 'roles'],
+                forbidden: '*'
+            },
+            'update': {
+                optional: ['username', 'hashed_password', 'full_name'],
+                forbidden: '*'
+            },
+            '*': 'forbidden'
         },
-        product_category_id: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
+        'SERVER': {
+            'create': {
+                required: ['email', 'username', 'hashed_password', 'full_name'],
+                forbidden: '*'
+            },
+            'find remove': 'optional',
+            'update': {
+                forbidden: ['_id', 'email', 'confirm_registration_id'],
+                optional: '*'
+            },
         },
-        product_description: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        anonimized_product_description: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        approved: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        approval_type: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        // TODOS: 
-        // it is not possible to remove handed_in products for COMPETITOR
-        // to achieve this, handed_in should be bound for COMPETITOR to FALSE
-        handed_in: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
+        '*': 'forbidden',
     }
 
     const authorize_entity = require('../../helpers/authorize_entity')
-    data = authorize_entity(data, verb, user, rules)
+    data = authorize_entity(actor, verb, data, rules)
     return data
 }
 
-module.exports = product_authorizer
+module.exports = entity_authorizer

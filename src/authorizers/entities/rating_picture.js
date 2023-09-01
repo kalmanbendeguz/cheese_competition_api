@@ -9,7 +9,7 @@ const entity_authorizer = (actor, verb, data) => {
             'create': {
                 bound: { judge_id: actor._id.toString() },
                 required: ['competition_id', 'product_id', 'rating_id', 'picture'],
-                forbidden: ['_id'],
+                forbidden: '*',
             },
             'update': {
                 optional: ['picture'],
@@ -22,8 +22,8 @@ const entity_authorizer = (actor, verb, data) => {
         },
         'SERVER': {
             'create': {
-                forbidden: ['_id'],
-                required: '*',
+                required: ['competition_id', 'judge_id', 'product_id', 'rating_id', 'picture'],
+                forbidden: '*',
             },
             'update': {
                 optional: ['picture'],

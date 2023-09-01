@@ -1,145 +1,83 @@
-const user_authorizer = (data, verb, user) => {
-    // TODO: project _id sometimes need to be BOUND to 0 (the number ZERO)
+const entity_authorizer = (actor, verb, data) => {
+
     const rules = {
-        _id: {
-            create: {},
-            find: {
-                SERVER: { rule: 'optional' },
+        'competitor': {
+            'find': {
+                bound: { _id: actor._id.toString(), email: actor.email, username: actor.username },
+                forbidden: ['hashed_password', 'registration_temporary', 'confirm_registration_id'],
+                optional: '*'
             },
-            project: {
-                SERVER: { rule: 'optional' },
+            'update': {
+                optional: ['username', 'hashed_password', 'full_name', 'contact_phone_number', 'billing_information'],
+                forbidden: '*'
             },
-            updatable: {},
-            update: {},
-            remove: {},
+            '*': 'forbidden'
         },
-        email: {
-            create: {
-                SERVER: { rule: 'required' },
+        'judge': {
+            'find': {
+                bound: { _id: actor._id.toString(), email: actor.email, username: actor.username },
+                optional: ['full_name', 'roles'],
+                forbidden: '*'
             },
-            find: {
-                SERVER: { rule: 'optional' },
+            'update': {
+                optional: ['username', 'hashed_password', 'full_name'],
+                forbidden: '*'
             },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {},
-            update: {},
-            remove: {},
+            '*': 'forbidden'
         },
-        username: {
-            create: {
-                SERVER: { rule: 'required' },
+        'organizer': {
+            'find': {
+                bound: { registration_temporary: false },
+                forbidden: ['hashed_password', 'confirm_registration_id', 'confirm_registration_id'],
+                optional: '*'
             },
-            find: {
-                SERVER: { rule: 'optional' },
+            'update': {
+                optional: ['username', 'hashed_password', 'full_name', 'association_member'],
+                forbidden: '*'
             },
-            project: {
-                SERVER: { rule: 'optional' },
+            '*': 'forbidden'
+        },
+        'receiver': {
+            'find': {
+                bound: { roles: { $in: ['competitor', 'receiver'] } },
+                forbidden: ['hashed_password', 'registration_temporary', 'confirm_registration_id'],
+                optional: '*'
             },
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        hashed_password: {
-            create: {
-                SERVER: { rule: 'required' },
+            'update': {
+                optional: ['username', 'hashed_password', 'full_name'],
+                forbidden: '*'
             },
-            find: {},
-            project: {
-                SERVER: { rule: 'optional' },
+            '*': 'forbidden'
+        },
+        'ROLELESS': {
+            'find': {
+                bound: { _id: actor._id.toString(), email: actor.email, username: actor.username },
+                optional: ['full_name', 'roles'],
+                forbidden: '*'
             },
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        roles: {
-            create: {},
-            find: {},
-            project: {
-                SERVER: { rule: 'optional' },
+            'update': {
+                optional: ['username', 'hashed_password', 'full_name'],
+                forbidden: '*'
             },
-            updatable: {},
-            update: {},
-            remove: {},
+            '*': 'forbidden'
         },
-        full_name: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        contact_phone_number: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        billing_information: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        association_member: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        registration_temporary: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {
-                SERVER: { rule: 'optional' },
+        'SERVER': {
+            'create': {
+                required: ['email', 'username', 'hashed_password', 'full_name'],
+                forbidden: '*'
             },
-            remove: {},
-        },
-        confirm_registration_id: {
-            create: {},
-            find: {
-                SERVER: { rule: 'optional' },
+            'find remove': 'optional',
+            'update': {
+                forbidden: ['_id', 'email', 'confirm_registration_id'],
+                optional: '*'
             },
-            project: {
-                SERVER: { rule: 'optional' },
-            },
-            updatable: {
-                SERVER: { rule: 'optional' },
-            },
-            update: {},
-            remove: {},
         },
-        table_leader: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
-        arrived: {
-            create: {},
-            find: {},
-            project: {},
-            updatable: {},
-            update: {},
-            remove: {},
-        },
+        '*': 'forbidden',
     }
 
     const authorize_entity = require('../../helpers/authorize_entity')
-    data = authorize_entity(data, verb, user, rules)
+    data = authorize_entity(actor, verb, data, rules)
     return data
 }
 
-module.exports = user_authorizer
+module.exports = entity_authorizer
