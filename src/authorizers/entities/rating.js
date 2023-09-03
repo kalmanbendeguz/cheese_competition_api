@@ -1,13 +1,5 @@
 const entity_authorizer = async (actor, verb, data, session) => {
 
-    // competitor: -
-    // judge: CRUD
-    // organizer: RUD
-    // receiver: -
-    // ROLELESS: -
-    // SERVER: CRUD
-    // UNAUTHENTICATED:-
-
     let rules = {
 
         'judge': {

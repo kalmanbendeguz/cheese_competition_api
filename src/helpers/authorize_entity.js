@@ -1,3 +1,5 @@
+// "project" should be a verb too !! but only in this method, not in the authorizers!!!
+
 const authorize_entity = (actor, verb, data, rules) => {
 
     for (const key in data) {

@@ -1,8 +1,8 @@
-const db = require('../../config/db')
-const config = require('../../config/schema')
+const db = require('../config/db')
+const config = require('../config/schema')
 const { Schema: Schema, Schema: { Types: { ObjectId }, }, } = require('mongoose')
-const Competition_Model = require('../Competition')
-const User_Model = require('../User')
+const Competition_Model = require('./Competition')
+const User_Model = require('./User')
 
 const Organizer_Of_Competition_Schema = new Schema(
     {
