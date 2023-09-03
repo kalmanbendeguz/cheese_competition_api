@@ -1,17 +1,17 @@
-const entity_authorizer = (actor, verb, data) => {
+const entity_authorizer = async (actor, verb, data, session) => {
 
-    const rules = {
+    let rules = {
         'competitor': {
             'find': {
-                forbidden: ['ignore_extreme_values', 'certificate_template', 'rating_map', 'rating_sheets', 'last_entry_open_date', 'last_entry_close_date', 'last_competition_open_date', 'last_competition_close_date'],
+                forbidden: ['ignore_extreme_values', 'certificate_template', 'rating_map', 'rating_sheets'],
                 optional: '*'
             },
             '*': 'forbidden'
         },
         'judge': {
             'find': {
-                optional: ['_id', 'creation_date', 'name', 'place', 'product_category_tree', 'archived', 'rating_map', 'entry_opened', 'competition_opened', 'rating_sheets', 'archival_date'],
-                forbidden: '*'
+                forbidden: ['ignore_extreme_values', 'certificate_template', 'payment_needed', 'association_members_need_to_pay', 'entry_fee_amount', 'entry_fee_currency'],
+                optional: '*'
             },
             '*': 'forbidden'
         },
@@ -35,6 +35,25 @@ const entity_authorizer = (actor, verb, data) => {
             '*': 'forbidden'
         },
         '*': 'forbidden',
+    }
+
+    if (['judge', 'organizer', 'receiver'].includes(actor.role)) {
+        const find_user_of_competition = (require('../../controllers/entities/find'))(`${actor.role}_of_competition`)
+        const competitions_of_user = ((await find_user_of_competition(
+            { projection: ['competition_id'] }, actor, session
+        ))?.data ?? []).map(user_of_competition => user_of_competition.competition_id.toString())
+
+        const _id_rule = {
+            [`${actor.role}`]: {
+                find: {
+                    bound: { _id: { $in: competitions_of_user } },
+                    optional: '*'
+                }
+            }
+        }
+
+        const insert_rule = require('../../helpers/insert_rule')
+        rules = insert_rule(_id_rule, rules)
     }
 
     const authorize_entity = require('../../helpers/authorize_entity')

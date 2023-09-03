@@ -1,9 +1,8 @@
-const entity_authorizer = (actor, verb, data) => {
+const entity_authorizer = async (actor, verb, data, session) => {
 
-    const rules = {
+    let rules = {
         'SERVER': {
             'create': {
-                bound: { pending: true },
                 required: ['product_ids', 'pos_transaction_id', 'confirm_payment_id'],
                 forbidden: '*',
             },

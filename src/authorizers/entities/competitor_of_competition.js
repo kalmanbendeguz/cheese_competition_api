@@ -1,6 +1,6 @@
-const entity_authorizer = (actor, verb, data) => {
+const entity_authorizer = async (actor, verb, data, session) => {
 
-    const rules = {
+    let rules = {
         'organizer': {
             'find remove': 'optional',
             '*': 'forbidden'

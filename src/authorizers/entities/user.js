@@ -1,6 +1,6 @@
-const entity_authorizer = (actor, verb, data) => {
-
-    const rules = {
+const entity_authorizer = async (actor, verb, data, session) => {
+    
+    let rules = {
         'competitor': {
             'find': {
                 bound: { _id: actor._id.toString(), email: actor.email, username: actor.username },
@@ -28,7 +28,7 @@ const entity_authorizer = (actor, verb, data) => {
         'organizer': {
             'find': {
                 bound: { registration_temporary: false },
-                forbidden: ['hashed_password', 'confirm_registration_id', 'confirm_registration_id'],
+                forbidden: ['hashed_password', 'confirm_registration_id'],
                 optional: '*'
             },
             'update': {
