@@ -1,3 +1,6 @@
+// // You can not remove the last allowed organizer from the system
+
+
 const remove = async (query, user, parent_session) => {
 
     // 1. Validate query

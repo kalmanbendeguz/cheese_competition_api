@@ -14,7 +14,6 @@ const remove = async (query, actor, session) => {
 
         // 4. Update dependents
         // There are no dependents of Active_Password_Reset.
-
     }
 
     // 5. Reply

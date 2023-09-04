@@ -46,7 +46,7 @@ const find = (entity) => async (query, actor, parent_session) => {
         query.projection = await authorizer(actor, 'project', query.projection ?? {}, session)
     } catch (reason) {
         return {
-            code: 403,
+            code: 500,
             json: {
                 message: `find_entity_projection_authorization_error`,
                 details: {

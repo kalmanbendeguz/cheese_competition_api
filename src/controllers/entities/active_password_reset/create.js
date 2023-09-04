@@ -1,5 +1,9 @@
 const create = async (active_password_resets, actor, session) => {
 
+    const Active_Password_Reset_Model = require('../../../models/Active_Password_Reset')
+    const active_password_reset_validator = require('../../../validators/schemas/models/Active_Password_Reset')
+    const find_user = require('../find')('user')
+
     const randomstring = require('randomstring')
     const created_active_password_resets = []
 
@@ -8,7 +12,6 @@ const create = async (active_password_resets, actor, session) => {
         // Dependencies: [User]
 
         // Provided user_id should belong to an existing User.
-        const find_user = require('../find')('user')
         const user_of_active_password_reset = (await find_user(
             { filter: { _id: active_password_reset.user_id.toString() } },
             actor, session
@@ -30,8 +33,6 @@ const create = async (active_password_resets, actor, session) => {
         }
 
         // 2. Create locally
-        const Active_Password_Reset_Model = require('../../../models/Active_Password_Reset')
-
         let restore_id
         do {
             restore_id = randomstring.generate({
@@ -54,12 +55,11 @@ const create = async (active_password_resets, actor, session) => {
         })
 
         // 3. Validate created document
-        const active_password_reset_validator = require('../../../validators/schemas/models/Active_Password_Reset')
         try {
             await active_password_reset_validator.validateAsync(active_password_reset)
         } catch (error) {
             return {
-                code: 400,
+                code: 500,
                 json: {
                     message: `create_model_validation_error`,
                     details: {

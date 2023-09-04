@@ -78,7 +78,7 @@ const update = (entity) => async (data, actor, parent_session) => {
         )
     } catch (reason) {
         return {
-            code: 403,
+            code: 500,
             json: {
                 message: `update_entity_projection_authorization_error`,
                 details: {

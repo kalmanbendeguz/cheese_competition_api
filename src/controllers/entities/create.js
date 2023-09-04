@@ -64,7 +64,7 @@ const create = (entity) => async (body, actor, parent_session) => {
         )
     } catch (reason) {
         return {
-            code: 403,
+            code: 500,
             json: {
                 message: `create_entity_projection_authorization_error`,
                 details: {
