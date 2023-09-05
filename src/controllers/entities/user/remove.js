@@ -15,9 +15,25 @@ const remove = async (query, actor, session) => {
 
     for (const user of users) {
         // 2. Check dependencies
-        // Dependencies: [Allowed_Role, Competition]
-        // Nothing needs to be checked.
-
+        // Dependencies: [User, Allowed_Role]
+        // It is not allowed to remove the last organizer from the system.
+        if (user.roles.includes('organizer')) {
+            const number_of_organizers = await User_Model.countDocuments({ roles: { $in: ['organizer'] } }, { session: session })
+            if (number_of_organizers === 1) {
+                return {
+                    code: 403,
+                    json: {
+                        message: `check_dependency_error`,
+                        details: {
+                            entity: 'user',
+                            dependency: 'user',
+                            error: 'forbidden_to_remove_the_last_organizer_from_the_database'
+                        }
+                    }
+                }
+            }
+        }
+        
         // 3. Remove
         await user.deleteOne({ session: session })
 

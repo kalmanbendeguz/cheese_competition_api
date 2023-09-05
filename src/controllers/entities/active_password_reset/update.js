@@ -9,7 +9,7 @@ const update = async (data, actor, session) => {
 
     for (const active_password_reset of active_password_resets) {
         // 2. Check dependencies
-        // Dependencies: [User]
+        // Dependencies: [Active_Password_Reset, User]
         // Nothing needs to be checked.
 
         // 3. Update locally
@@ -27,7 +27,7 @@ const update = async (data, actor, session) => {
             await active_password_reset_validator.validateAsync(active_password_reset)
         } catch (error) {
             return {
-                code: 500,
+                code: 400,
                 json: {
                     message: `update_model_validation_error`,
                     details: {

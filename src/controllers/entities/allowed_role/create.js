@@ -50,7 +50,7 @@ const create = async (body, user, parent_session) => {
     }
 
     // 7. Check dependencies: Ask all dependencies if this creation is possible.
-    // Allowed_Role has no dependencies.
+    // Dependencies: [Allowed_Role]
 
     // 8. Check collection integrity
     // email should be unique

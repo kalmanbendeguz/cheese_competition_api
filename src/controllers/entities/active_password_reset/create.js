@@ -9,7 +9,7 @@ const create = async (active_password_resets, actor, session) => {
 
     for (const active_password_reset of active_password_resets) {
         // 1. Check dependencies
-        // Dependencies: [User]
+        // Dependencies: [Active_Password_Reset, User]
 
         // Provided user_id should belong to an existing User.
         const user_of_active_password_reset = (await find_user(
@@ -59,7 +59,7 @@ const create = async (active_password_resets, actor, session) => {
             await active_password_reset_validator.validateAsync(active_password_reset)
         } catch (error) {
             return {
-                code: 500,
+                code: 400,
                 json: {
                     message: `create_model_validation_error`,
                     details: {

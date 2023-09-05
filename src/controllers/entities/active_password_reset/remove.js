@@ -6,7 +6,7 @@ const remove = async (query, actor, session) => {
 
     for (const active_password_reset of active_password_resets) {
         // 2. Check dependencies
-        // Dependencies: [User]
+        // Dependencies: [Active_Password_Reset, User]
         // Nothing needs to be checked.
 
         // 3. Remove
