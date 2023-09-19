@@ -64,7 +64,7 @@ const entity_authorizer = async (actor, verb, data, session) => {
     }
 
     if (['judge', 'organizer', 'receiver'].includes(actor.role)) {
-        const find_user_of_competition = (require('../../controllers/entities/find'))(`${actor.role}_of_competition`)
+        const find_user_of_competition = (require('../../controllers/entities/find'))(`user_of_competition`)
         const competitions_of_user = ((await find_user_of_competition(
             { projection: ['competition_id'] }, actor, session
         ))?.data ?? []).map(user_of_competition => user_of_competition.competition_id.toString())

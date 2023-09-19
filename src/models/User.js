@@ -1,15 +1,17 @@
 const config = require('../config/schema')
 const db = require('../config/db')
 const { Schema: Schema, Schema: { Types: { Mixed } } } = require('mongoose')
+const Allowed_Role_Model = require('./Allowed_Role')
 
 const User_Schema = new Schema(
     {
-        // Cannot be changed
+        allowed_role_id: {
+            type: ObjectId,
+            ref: Allowed_Role_Model,
+        },
         email: {
             type: String,
         },
-
-        // Can be changed independently
         username: {
             type: String,
         },
@@ -19,10 +21,8 @@ const User_Schema = new Schema(
         full_name: {
             type: String,
         },
-
-        // Can be changed independently, but something depends on it
-        registration_temporary: {
-            type: Boolean,
+        registration: {
+            type: Mixed,
         },
         roles: {
             type: [
@@ -30,11 +30,6 @@ const User_Schema = new Schema(
                     type: String,
                 },
             ],
-        },
-
-        // Can be changed but depends on something
-        confirm_registration_id: {
-            type: String,
         },
         contact_phone_number: {
             type: String,

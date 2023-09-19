@@ -92,3 +92,14 @@ const registration = async (req, res, next) => {
 }
 
 module.exports = registration
+module.exports[abc] = abc
+
+// (require('../../authorizers').entities.product
+//(require('../../authorizers')['entities'].['product']
+try{
+    module.exports[param] = require(`./${param}`) 
+} catch (e) {
+
+} finally {
+
+}

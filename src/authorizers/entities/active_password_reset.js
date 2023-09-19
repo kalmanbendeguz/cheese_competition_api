@@ -1,3 +1,5 @@
+// should be like: (verb) => (actor,data,session) => {...}
+
 const entity_authorizer = async (actor, verb, data, session) => {
 
     let rules = {

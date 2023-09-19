@@ -1,18 +1,18 @@
 const config = require('../config/schema')
 const db = require('../config/db')
 const { Schema: Schema, Schema: { Types: { ObjectId, Decimal128 }, }, } = require('mongoose')
-const Product_Model = require('./Product')
+const User_Model = require('./User')
+const Competition_Model = require('./Competition')
 
 const Entry_Fee_Payment_Schema = new Schema(
     {
-        // Cannot be changed
-        product_ids: {
-            type: [
-                {
-                    type: ObjectId,
-                    ref: Product_Model,
-                },
-            ],
+        user_id: {
+            type: ObjectId,
+            ref: User_Model,
+        },
+        competition_id: {
+            type: ObjectId,
+            ref: Competition_Model,
         },
         pos_transaction_id: {
             type: String,
@@ -20,13 +20,9 @@ const Entry_Fee_Payment_Schema = new Schema(
         confirm_payment_id: {
             type: String,
         },
-        
-        // Can be changed independently, but something depends on it
         pending: {
             type: Boolean,
         },
-
-        // Can be changed but depends on something
         barion_payment_id: {
             type: String,
         },
@@ -42,8 +38,8 @@ const Entry_Fee_Payment_Schema = new Schema(
         expiring_started: {
             type: Date,
             default: Date.now,
-            expires: 15 * 60, 
-        },   
+            expires: 15 * 60,
+        },
     },
     config.model_schema_options
 )

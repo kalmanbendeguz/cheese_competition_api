@@ -1,5 +1,6 @@
 const authorize_endpoint = (req, res, next) => {
-
+    // ONLY AUTH AND UNAUTH CHECK!
+    
     const url = new URL(`${req.protocol}://${req.get('host')}${req.originalUrl}`)
     const full_path = url.pathname
     const full_path_array = full_path.split('/').slice(1)

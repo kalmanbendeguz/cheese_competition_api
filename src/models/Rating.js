@@ -4,10 +4,10 @@ const { Schema: Schema, Schema: { Types: { Mixed, ObjectId } } } = require('mong
 const Competition_Model = require('./Competition')
 const Product_Model = require('./Product')
 const User_Model = require('./User')
+const Competition__User_Model = require('./Competition__User')
 
 const Rating_Schema = new Schema(
     {
-        // Cannot be changed
         competition_id: {
             type: ObjectId,
             ref: Competition_Model,
@@ -16,25 +16,26 @@ const Rating_Schema = new Schema(
             type: ObjectId,
             ref: Product_Model,
         },
-        judge_id: {
+        user_id: {
             type: ObjectId,
             ref: User_Model,
         },
-
-        // Can be changed independently
+        competition__user_id: {
+            type: ObjectId,
+            ref: Competition__User_Model,
+        },
         anonymous: {
             type: Boolean,
         },
         aspects: {
-            type: [
-                {
-                    type: Mixed,
-                },
-            ],
+            type: Mixed,
         },
         overall_impression: {
             type: String,
         },
+        weight: {
+            type: Number
+        }
     },
     config.model_schema_options
 )

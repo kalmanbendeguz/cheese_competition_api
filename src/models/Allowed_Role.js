@@ -4,12 +4,9 @@ const { Schema } = require('mongoose')
 
 const Allowed_Role_Schema = new Schema(
     {
-        // Cannot be changed
         email: {
             type: String,
         },
-
-        // Can be changed independently
         allowed_roles: {
             type: [
                 {

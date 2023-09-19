@@ -37,8 +37,8 @@ const entity_authorizer = async (actor, verb, data, session) => {
     const insert_rule = require('../../helpers/insert_rule')
 
     if (actor.role === 'judge') {
-        const find_judge_of_competition = (require('../../controllers/entities/find'))(`judge_of_competition`)
-        const competitions_of_judge = ((await find_judge_of_competition(
+        const find_user_of_competition = (require('../../controllers/entities/find'))(`user_of_competition`)
+        const competitions_of_judge = ((await find_user_of_competition(
             { projection: ['competition_id'] }, actor, session
         ))?.data ?? []).map(judge_of_competition => judge_of_competition.competition_id.toString())
 
@@ -55,8 +55,8 @@ const entity_authorizer = async (actor, verb, data, session) => {
     }
 
     if (actor.role === 'organizer') {
-        const find_organizer_of_competition = (require('../../controllers/entities/find'))(`organizer_of_competition`)
-        const competitions_of_organizer = ((await find_organizer_of_competition(
+        const find_user_of_competition = (require('../../controllers/entities/find'))(`user_of_competition`)
+        const competitions_of_organizer = ((await find_user_of_competition(
             { projection: ['competition_id'] }, actor, session
         ))?.data ?? []).map(organizer_of_competition => organizer_of_competition.competition_id.toString())
 

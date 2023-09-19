@@ -5,7 +5,6 @@ const User_Model = require('./User')
 
 const Active_Password_Reset_Schema = new Schema(
     {
-        // Cannot be changed
         user_id: {
             type: ObjectId,
             ref: User_Model,
