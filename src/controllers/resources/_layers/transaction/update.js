@@ -34,5 +34,3 @@ const update_transaction = (/* No specific start_session logic. */ access_update
 }
 
 module.exports = update_transaction
-
-// error should add a property és ezáltal azonosítja be a hibakezelo!

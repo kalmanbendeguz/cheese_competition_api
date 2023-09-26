@@ -11,7 +11,7 @@ const user_of_competition_validator = Joi.object({
             Joi.string().valid(...valid_roles)
         )
         .unique()
-        .min(1)
+        .min(0)
         .required(),
 
     arrived: Joi.boolean().when('roles', {

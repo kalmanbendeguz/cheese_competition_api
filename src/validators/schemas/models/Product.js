@@ -1,10 +1,14 @@
 const Joi = require('joi')
 const { mongoose: { Types: { ObjectId }, }, } = require('mongoose')
 const forbidden_id_parts = require('../../../static/forbidden_id_parts.json')
+const Maturation_Time_Validator = require('../fields/Product/Maturation_Time')
+const State_Validator = require('../fields/Product/State')
 
 const product_validator = Joi.object({
     competition_id: Joi.object().instance(ObjectId).required(),
-    competitor_id: Joi.object().instance(ObjectId).required(),
+    user_id: Joi.object().instance(ObjectId).optional(),
+    entry_fee_payment_id: Joi.object().instance(ObjectId).optional(),
+
     public_id: Joi.string()
         .trim()
         .required()
@@ -37,13 +41,13 @@ const product_validator = Joi.object({
         .trim()
         .required()
         .min(3)
-        .max(50)
+        .max(100)
         .prefs({ convert: false }),
     anonimized_product_name: Joi.string()
         .trim()
         .optional()
         .min(3)
-        .max(50)
+        .max(100)
         .prefs({ convert: false }),
     factory_name: Joi.string()
         .trim()
@@ -64,42 +68,8 @@ const product_validator = Joi.object({
         .max(1000)
         .prefs({ convert: false }),
 
-    maturation_time_type: Joi.string()
-        .trim()
-        .required()
-        .valid('fresh', 'matured')
-        .prefs({ convert: false }),
-    approved: Joi.boolean().required(),
-
-    maturation_time_quantity: Joi.number().integer().positive()
-        .when('maturation_time_type', {
-            is: 'matured',
-            then: Joi.required(),
-            otherwise: Joi.forbidden(),
-        }),
-    maturation_time_unit: Joi.string()
-        .trim()
-        .required()
-        .valid('day', 'week', 'month')
-        .prefs({ convert: false })
-        .when('maturation_time_type', {
-            is: 'matured',
-            then: Joi.required(),
-            otherwise: Joi.forbidden(),
-        }),
-    approval_type: Joi.when('approved', {
-        is: true,
-        then: Joi.string()
-            .trim()
-            .required()
-            .valid('payment', 'association_member', 'bypass')
-            .prefs({ convert: false }),
-        otherwise: Joi.forbidden(),
-    }),
-    handed_in: Joi.boolean().when('approved', {
-        is: false,
-        then: Joi.valid(false),
-    }).required(),
+    maturation_time: Maturation_Time_Validator.required(),
+    state: State_Validator.required(),
 }).unknown(true)
 
 module.exports = product_validator

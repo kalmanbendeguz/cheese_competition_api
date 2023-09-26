@@ -1,3 +1,5 @@
+// we need: module.exports.middleware = ...
+
 const confirm_registration = async (req, res, next) => {
 
     // 1. Validate request

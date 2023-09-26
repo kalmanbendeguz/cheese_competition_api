@@ -20,7 +20,7 @@ const remove = async (query, user, parent_session) => {
     }
 
     // 3. Start session and transaction if they don't exist
-    const Entry_Fee_Payment_Model = require('../../../models/Entry_Fee_Payment')
+    const Entry_Fee_Payment_Model = require('../../../../models/Entry_Fee_Payment')
     const session = parent_session ?? await Entry_Fee_Payment_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 

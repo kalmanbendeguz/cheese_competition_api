@@ -6,7 +6,7 @@ const allowed_role_validator = Joi.object({
     allowed_roles: Joi.array()
         .items(Joi.string().valid(...limited_roles))
         .unique()
-        .min(1)
+        .min(0)
         .required(),
 }).unknown(true)
 

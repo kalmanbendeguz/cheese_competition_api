@@ -1,7 +1,7 @@
-const create = async (active_password_resets, actor, session) => {
+const create = async (active_password_reset, actor, session) => {
 
-    const Active_Password_Reset_Model = require('../../../models/Active_Password_Reset')
-    const active_password_reset_validator = require('../../../validators/schemas/models/Active_Password_Reset')
+    const Active_Password_Reset_Model = require('../../../../models/Active_Password_Reset')
+    const active_password_reset_validator = require('../../../../validators/schemas/models/Active_Password_Reset')
     const find_user = require('../find')('user')
 
     const randomstring = require('randomstring')

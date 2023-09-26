@@ -1,4 +1,11 @@
-const create = async (body, user, parent_session) => {
+const create = async (content, actor, session) => {
+
+    // 1. Check dependencies
+    // Dependencies : [Rating_Picture, Competition, Competition__User, Product, Rating, User]
+    // Competition should exist.
+    // Competition__User should exist and its roles should include 'judge', he should be arrived and should be table leader.
+    // Competition__User's user_id should match the user_id and competition_id_should match the competition_id.
+    
 
     // 1. Validate body
     const create_rating_picture_validator = require('../../../validators/requests/api/rating_picture/create')
@@ -23,7 +30,7 @@ const create = async (body, user, parent_session) => {
     }
 
     // 4. Start session and transaction if they don't exist
-    const Rating_Picture_Model = require('../../../models/Rating_Picture')
+    const Rating_Picture_Model = require('../../../../models/Rating_Picture')
     const session = parent_session ?? await Rating_Picture_Model.startSession()
     if (!session.inTransaction()) session.startTransaction()
 

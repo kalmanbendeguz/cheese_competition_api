@@ -1,6 +1,6 @@
 const config = require('../config/schema')
 const db = require('../config/db')
-const { Schema: Schema, Schema: { Types: { ObjectId, Decimal128 }, }, } = require('mongoose')
+const { Schema: Schema, Schema: { Types: { Mixed, ObjectId }, }, } = require('mongoose')
 const User_Model = require('./User')
 const Competition_Model = require('./Competition')
 
@@ -17,23 +17,14 @@ const Entry_Fee_Payment_Schema = new Schema(
         pos_transaction_id: {
             type: String,
         },
-        confirm_payment_id: {
-            type: String,
+        confirmation: {
+            type: Mixed,
         },
-        pending: {
-            type: Boolean,
+        barion_state: {
+            type: Mixed,
         },
-        barion_payment_id: {
-            type: String,
-        },
-        barion_transaction_id: {
-            type: String,
-        },
-        amount: {
-            type: Decimal128,
-        },
-        currency: {
-            type: String,
+        value: {
+            type: Mixed,
         },
         expiring_started: {
             type: Date,

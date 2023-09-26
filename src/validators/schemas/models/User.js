@@ -1,9 +1,12 @@
 const Joi = require('joi')
-const Billing_Information_Validator = require('./Billing_Information')
+const Billing_Information_Validator = require('../fields/User/Billing_Information')
+const Registration_Validator = require('../fields/User/Registration')
 const { mongoose: { Types: { ObjectId }, }, } = require('mongoose')
-const valid_roles = require('../../../static/valid_roles.json')
+const user_roles = require('../../../static/user_roles.json')
 
 const user_validator = Joi.object({
+    allowed_role_id: Joi.object().instance(ObjectId).optional(),
+    
     email: Joi.string().email().required(),
 
     username: Joi.string()
@@ -20,42 +23,30 @@ const user_validator = Joi.object({
         .required()
         .prefs({ convert: false }),
 
-    registration_temporary: Joi.boolean().required(),
+    registration: Registration_Validator.required(),
+
     roles: Joi.array()
         .items(
-            Joi.string().valid(...valid_roles)
+            Joi.string().valid(...user_roles)
         )
         .unique()
         .min(0)
         .required(),
 
-    confirm_registration_id: Joi.when('registration_temporary', {
-        is: true,
-        then: Joi.string()
-            .trim()
-            .lowercase()
-            .length(32)
-            .alphanum()
-            .required()
-            .prefs({ convert: false }),
-        otherwise: Joi.forbidden(),
-    }),
-    contact_phone_number: Joi.when('roles', {
+    contact_phone_number: Joi.string().pattern(/^\+?\d+$/).when('roles', {
         is: Joi.array().items(Joi.string().invalid('competitor')),
-        then: Joi.forbidden(),
-        otherwise: Joi.string()
-            .pattern(/^\+?\d+$/) // One optional "+" sign at the beginning, then only numbers
-            .optional(),
+        then: Joi.optional(),
+        otherwise: Joi.required()
     }),
     billing_information: Billing_Information_Validator.when('roles', {
         is: Joi.array().items(Joi.string().invalid('competitor')),
-        then: Joi.forbidden(),
+        then: Joi.optional(),
         otherwise: Joi.required(),
     }),
-    association_member: Joi.when('roles', {
+    association_member: Joi.boolean().when('roles', {
         is: Joi.array().items(Joi.string().invalid('competitor')),
-        then: Joi.forbidden(),
-        otherwise: Joi.boolean().required(),
+        then: Joi.optional(),
+        otherwise: Joi.required(),
     }),
 }).unknown(true)
 

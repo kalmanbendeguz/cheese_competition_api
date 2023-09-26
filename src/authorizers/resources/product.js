@@ -1,5 +1,12 @@
 const entity_authorizer = async (actor, verb, data, session) => {
 
+    // bound
+    // required
+    // optional
+    // forbidden
+    // pattern
+    // conditional
+
     const Joi = require('joi')
 
     let rules = {
