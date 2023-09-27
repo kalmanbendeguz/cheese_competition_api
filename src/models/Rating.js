@@ -1,6 +1,6 @@
 const config = require('../config/schema')
 const db = require('../config/db')
-const { Schema: Schema, Schema: { Types: { Mixed, ObjectId } } } = require('mongoose')
+const { Schema: Schema, Schema: { Types: { Mixed, ObjectId, Decimal128 } } } = require('mongoose')
 const Competition_Model = require('./Competition')
 const Product_Model = require('./Product')
 const User_Model = require('./User')
@@ -34,7 +34,7 @@ const Rating_Schema = new Schema(
             type: String,
         },
         weight: {
-            type: Number
+            type: Decimal128
         }
     },
     config.model_schema_options

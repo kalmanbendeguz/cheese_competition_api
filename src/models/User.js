@@ -1,6 +1,6 @@
 const config = require('../config/schema')
 const db = require('../config/db')
-const { Schema: Schema, Schema: { Types: { Mixed } } } = require('mongoose')
+const { Schema: Schema, Schema: { Types: { Mixed, ObjectId } } } = require('mongoose')
 const Allowed_Role_Model = require('./Allowed_Role')
 
 const User_Schema = new Schema(

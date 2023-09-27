@@ -14,13 +14,16 @@ const Entry_Fee_Payment_Schema = new Schema(
             type: ObjectId,
             ref: Competition_Model,
         },
+        barion_state: {
+            type: Mixed,
+        },
         pos_transaction_id: {
             type: String,
         },
-        confirmation: {
+        billing_information: {
             type: Mixed,
         },
-        barion_state: {
+        confirmation: {
             type: Mixed,
         },
         value: {
