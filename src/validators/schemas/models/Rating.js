@@ -9,8 +9,8 @@ const rating_validator = Joi.object({
     competition__user_id: Joi.object().instance(ObjectId).required(),
 
     anonymous: Joi.boolean().required(),
-    aspects: Joi.array().items(Aspect_Validator).min(1).required(),
-    overall_impression: Joi.string().trim().min(25).max(1000).prefs({ convert: false }).required(),
+    aspects: Joi.array().items(Aspect_Validator(false)).min(1).required(),
+    overall_impression: Joi.string().trim().min(20).max(1000).prefs({ convert: false }).required(),
     weight: Joi.object().instance(Decimal128).required(),
 }).unknown(true)
 

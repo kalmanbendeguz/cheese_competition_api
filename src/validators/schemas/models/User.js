@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const Billing_Information_Validator = require('../fields/User/Billing_Information')
+const Billing_Information_Validator = require('../fields/Billing_Information')
 const Registration_Validator = require('../fields/User/Registration')
 const { mongoose: { Types: { ObjectId }, }, } = require('mongoose')
 const user_roles = require('../../../static/user_roles.json')
@@ -20,10 +20,11 @@ const user_validator = Joi.object({
     full_name: Joi.string()
         .trim()
         .min(1)
+        .max(5000)
         .required()
         .prefs({ convert: false }),
 
-    registration: Registration_Validator.required(),
+    registration: Registration_Validator(false).required(),
 
     roles: Joi.array()
         .items(
@@ -38,7 +39,7 @@ const user_validator = Joi.object({
         then: Joi.optional(),
         otherwise: Joi.required()
     }),
-    billing_information: Billing_Information_Validator.when('roles', {
+    billing_information: Billing_Information_Validator(false).when('roles', {
         is: Joi.array().items(Joi.string().invalid('competitor')),
         then: Joi.optional(),
         otherwise: Joi.required(),

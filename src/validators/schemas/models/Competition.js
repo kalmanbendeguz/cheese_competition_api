@@ -16,13 +16,12 @@ const competition_validator = Joi.object({
         .min(1)
         .max(1000)
         .prefs({ convert: false })
-        // at schemas, there should be convert:false, because the validator cannot modify a document, it just checks.
         .required(),
     ignore_extreme_values: Joi.boolean().required(),
-    certificate_template: File_Validator.required(),
-    category_configuration: Category_Configuration_Validator.required(),
-    approval_configuration: Approval_Configuration_Validator.required(),
-    state: State_Validator.required(),
+    certificate_template: File_Validator(false).required(),
+    category_configuration: Category_Configuration_Validator(false).required(),
+    approval_configuration: Approval_Configuration_Validator(false).required(),
+    state: State_Validator(false).required(),
 }).unknown(true)
 
 module.exports = competition_validator

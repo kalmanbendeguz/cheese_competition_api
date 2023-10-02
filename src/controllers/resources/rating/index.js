@@ -8,8 +8,8 @@ const save = async (document_to_save, session) => {
 }
 
 const Model = require('../../../models/Rating')
-const filter_validator = require('../../../validators/controllers/entities/product/filter')
-const content_validator = require('../../../validators/controllers/entities/product/content')
+const filter_validator = require('../../../validators/controllers/resources/product/filter')
+const content_validator = require('../../../validators/controllers/resources/product/content')
 const schema_validator = require('../../../validators/schemas/models/Product')
 const authorizer = require('../../../authorizers/resources/rating')
 
