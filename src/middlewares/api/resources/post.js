@@ -1,25 +1,31 @@
-// this is what surely handles request and surely sends a response
-const convert_exception_to_http_response = require('../../helpers/convert_exception_to_http_response')
+const post = (create_validator, transaction_create) => async (req, res, next) => {
 
-const post = (validator, create) => async (req, res, next) => {
     let validated_request
     try {
-        validated_request = await validator(req)
+        validated_request = await create_validator(req)
     } catch (error) {
         return res.status(400).json({
-            type: 'validate_request_error',
+            type: 'validate_post_resource_request_error',
             details: {
-                req: req,
+                body: req.body,
                 error: error
             }
         })
     }
 
+    validated_request.body ??= {}
+    validated_request.body.content ??= {}
+    const contents = Array.isArray(validated_request.body.content) ? validated_request.body.content : [validated_request.body.content]
+
     try {
-        const response = await create(validated_request)
+        const response = await transaction_create(
+            contents,
+            req.user
+        )
         return res.status(201).json(response)
     } catch (error) {
         try {
+            const convert_exception_to_http_response = require('../../../helpers/convert_exception_to_http_response')
             const http_response = convert_exception_to_http_response(error)
             return res.status(http_response.status).json(http_response.json)
         } catch (error) {

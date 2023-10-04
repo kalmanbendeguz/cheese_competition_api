@@ -10,7 +10,9 @@ const create_validator = (content_validator) => {
     )
 
     const _create_validator = Joi.object({
-        body: alternatives_validator.optional(), // we can just create a document if there are no required fields.
+        body: Joi.object({
+            content: alternatives_validator.optional() // we can just create a document if there are no required fields.
+        }).optional(),
     }).required()
 
     return _create_validator

@@ -33,16 +33,21 @@ controller.access_update = access_update(authorizer, controller.alter_update)
 controller.access_remove = access_remove(authorizer, controller.alter_remove)
 
 // TR gets: data, actor
+// data = doc | array
 controller.transaction_create = transaction_create(controller.access_create)
+// data = filter, projection, options
 controller.transaction_find = transaction_find(controller.access_find)
+// data = filter, projection, options
 controller.transaction_find_one = transaction_find_one(controller.access_find_one)
+// data = filter, content
 controller.transaction_update = transaction_update(controller.access_update)
+// data = filter
 controller.transaction_remove = transaction_remove(controller.access_remove)
 
 // MW gets: req
 controller.post = post(content_validator, controller.transaction_create)
 controller.get = get(filter_validator, controller.transaction_find)
 controller.put = put(filter_validator, content_validator, controller.transaction_update)
-controller.delete = _delete(filter_validator, controller.transaction_remove)
+controller._delete = _delete(filter_validator, controller.transaction_remove)
 
 module.exports = controller

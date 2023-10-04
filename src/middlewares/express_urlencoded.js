@@ -1,6 +1,6 @@
 const express = require('express')
 
-const express_urlencoded = express.urlencoded({
+const express_urlencoded_mw = express.urlencoded({
     extended: true,
     inflate: true,
     limit: '100kb',
@@ -9,4 +9,4 @@ const express_urlencoded = express.urlencoded({
     verify: undefined,
 })
 
-module.exports = express_urlencoded
+module.exports = express_urlencoded_mw

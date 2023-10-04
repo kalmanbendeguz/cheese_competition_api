@@ -1,26 +1,25 @@
-const get = (find_validator, transaction_find) => async (req, res, next) => {
+const post = (action_post_validator, access_action_post) => async (req, res, next) => {
 
     let validated_request
     try {
-        validated_request = await find_validator(req)
+        validated_request = await action_post_validator(req)
     } catch (error) {
         return res.status(400).json({
-            type: 'validate_get_resource_request_error',
+            type: 'validate_post_action_request_error',
             details: {
                 query: req.query,
+                body: req.body,
                 error: error
             }
         })
     }
 
-    const filter = validated_request.query?.filter ?? null
-    const projection = validated_request.query?.projection ?? null
-    const options = validated_request.query?.options ?? null
+    const query = validated_request.query ?? null
+    const body = validated_request.body ?? null
     try {
-        const response = await transaction_find(
-            filter,
-            projection,
-            options,
+        const response = await access_action_post(
+            query,
+            body,
             req.user
         )
         return res.status(200).json(response)
@@ -35,4 +34,4 @@ const get = (find_validator, transaction_find) => async (req, res, next) => {
     }
 }
 
-module.exports = get
+module.exports = post

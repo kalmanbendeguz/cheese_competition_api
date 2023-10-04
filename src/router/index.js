@@ -1,23 +1,20 @@
 const express = require('express')
+const router_options = require('../config/router')
 
 const express_urlencoded = require('../middlewares/express_urlencoded')
 const express_json = require('../middlewares/express_json')
 const cors = require('../middlewares/cors')
-const decode_query_q = require('../middlewares/decode_query_q')
-const cookie_parser = require('../middlewares/cookie_parser') 
+const decode_query_json = require('../middlewares/decode_query_json')
+const cookie_parser = require('../middlewares/cookie_parser')
 
-const router = express.Router({
-    caseSensitive: true,
-    mergeParams: true,
-    strict: false,
-})
+const router = express.Router(router_options)
 
 // Application-level middlewares
 router.use(
     cors,
     express_urlencoded,
     express_json,
-    decode_query_q,
+    decode_query_json,
     cookie_parser,
 )
 

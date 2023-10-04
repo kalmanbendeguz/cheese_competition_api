@@ -1,5 +1,7 @@
-const decode_query_json = async (req, res, next) => {
+const decode_query_json_mw = async (req, res, next) => {
     const decode_uri_component = (await import('decode-uri-component')).default
+
+    // If req.query.json is an array, then it will be ignored.
 
     if (typeof req.query?.json !== 'string') return next()
 
@@ -16,4 +18,4 @@ const decode_query_json = async (req, res, next) => {
     return next()
 }
 
-module.exports = decode_query_json
+module.exports = decode_query_json_mw

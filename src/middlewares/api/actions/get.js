@@ -1,11 +1,11 @@
-const get = (find_validator, transaction_find) => async (req, res, next) => {
+const get = (action_get_validator, access_action_get) => async (req, res, next) => {
 
     let validated_request
     try {
-        validated_request = await find_validator(req)
+        validated_request = await action_get_validator(req)
     } catch (error) {
         return res.status(400).json({
-            type: 'validate_get_resource_request_error',
+            type: 'validate_get_action_request_error',
             details: {
                 query: req.query,
                 error: error
@@ -13,14 +13,10 @@ const get = (find_validator, transaction_find) => async (req, res, next) => {
         })
     }
 
-    const filter = validated_request.query?.filter ?? null
-    const projection = validated_request.query?.projection ?? null
-    const options = validated_request.query?.options ?? null
+    const query = validated_request.query ?? null
     try {
-        const response = await transaction_find(
-            filter,
-            projection,
-            options,
+        const response = await access_action_get(
+            query,
             req.user
         )
         return res.status(200).json(response)
