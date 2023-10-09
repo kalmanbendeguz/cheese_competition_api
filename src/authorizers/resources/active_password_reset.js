@@ -1,8 +1,25 @@
 // should be like: (verb) => (actor,data,session) => {...}
+// ANYTHING THAT IS THE SAME FOR EVERY ROLE, DOESNT BELONG HERE
 
-const entity_authorizer = async (actor, verb, data, session) => {
+// _id
+// user_id
+// restore_id
+// expiring_started
+
+// UNAUTHENTICATED: create, find, remove
+// SERVER: create, find, remove
+
+const entity_authorizer = (verb) => async (data, actor, session) => {
 
     let rules = {
+        'UNAUTHENTICATED': {
+            'create': {
+                required: ['user_id'],
+                forbidden: '*',
+            },
+            'update': 'forbidden',
+            '*': 'optional'
+        },
         'SERVER': {
             'create': {
                 required: ['user_id'],

@@ -6,6 +6,7 @@ const content_validator = Joi.object({
     judge_id: Joi.string().trim().min(1).optional(),
     product_id: Joi.string().trim().min(1).optional(),
     rating_id: Joi.string().trim().min(1).optional(),
+    competition__user_id: Joi.string().trim().min(1).optional(),
 
     picture: File_Validator(true).optional(),
 })

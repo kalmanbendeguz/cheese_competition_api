@@ -33,7 +33,6 @@ controller.access_update = access_update(authorizer, controller.alter_update)
 controller.access_remove = access_remove(authorizer, controller.alter_remove)
 
 // TR gets: data, actor
-// TR DOES THE FOR LOOP FOR THE ARRAY!
 // data = doc | array
 controller.transaction_create = transaction_create(controller.access_create)
 // data = filter, projection, options

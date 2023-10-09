@@ -1,15 +1,25 @@
-const Model = require('../../../models/Entry_Fee_Payment')
-const authorizer = require('../../../authorizers/resources/entry_fee_payment')
-const filter_validator = require('../../../validators/requests/api/resources/entry_fee_payment/filter')
-const content_validator = require('../../../validators/requests/api/resources/entry_fee_payment/content')
-// const schema_validator = require('../../../validators/schemas/models/Entry_Fee_Payment')
-// schema validator not needed because the alter function will import it.
+const Model = require('../../../models/Product')
+const authorizer = require('../../../authorizers/resources/product')
+const filter_validator = require('../../../validators/requests/api/resources/product/filter')
+const content_validator = require('../../../validators/requests/api/resources/product/content')
+
+const alter_create = require('./alter/create')
+const alter_find = require('../_layers/alter/find')
+const alter_find_one = require('../_layers/alter/find_one')
+const alter_update = require('./alter/update')
+const alter_remove = require('./alter/remove')
 
 const access_create = require('../_layers/access/create')
 const access_find = require('../_layers/access/find')
 const access_find_one = require('../_layers/access/find_one')
 const access_update = require('../_layers/access/update')
 const access_remove = require('../_layers/access/remove')
+
+const transaction_create = require('../_layers/transaction/create')
+const transaction_find = require('../_layers/transaction/find')
+const transaction_find_one = require('../_layers/transaction/find_one')
+const transaction_update = require('../_layers/transaction/update')
+const transaction_remove = require('../_layers/transaction/remove')
 
 const post = require('../../../middlewares/api/resources/post')
 const get = require('../../../middlewares/api/resources/get')
@@ -19,11 +29,11 @@ const _delete = require('../../../middlewares/api/resources/delete')
 const controller = {}
 
 // ALTER gets: data, actor, session
-controller.alter_create = require('./alter/create')
-controller.alter_find = require('../_layers/alter/find')(Model)
-controller.alter_find_one = require('../_layers/alter/find_one')(Model)
-controller.alter_update = require('./alter/update')
-controller.alter_remove = require('./alter/remove')
+controller.alter_create = alter_create
+controller.alter_find = alter_find(Model)
+controller.alter_find_one = alter_find_one(Model)
+controller.alter_update = alter_update
+controller.alter_remove = alter_remove
 
 // ACCESS gets: data, actor, session
 controller.access_create = access_create(authorizer, controller.alter_create)
