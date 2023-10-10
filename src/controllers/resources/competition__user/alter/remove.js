@@ -25,7 +25,9 @@ const remove = async (competition__user, actor, session) => {
     } catch (error) {
         throw {
             type: 'alter_remove_competition__user_error',
-            document: competition__user
+            details: {
+                document: competition__user
+            }
         }
     }
 }

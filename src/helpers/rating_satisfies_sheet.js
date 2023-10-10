@@ -50,7 +50,9 @@ const rating_satisfies_sheet = (rating_aspects, rating_sheet_aspects) => {
     } catch (error) {
         throw {
             type: 'rating_satisfies_sheet_error',
-            error: error
+            details: {
+                error: error
+            }
         }
     }
 }

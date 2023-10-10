@@ -1,7 +1,5 @@
-const current_role = async (/* ...data */ actor, /* session */) => {
-
-    return actor.role ?? 'UNAUTHENTICATED'
-
+const action = (req) => {
+    return req?.user?.role ?? 'UNAUTHENTICATED'
 }
 
-module.exports = current_role
+module.exports = action

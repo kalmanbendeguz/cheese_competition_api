@@ -7,7 +7,9 @@ const update_transaction = (/* No specific start_session logic. */ access_update
     } catch (error) {
         throw {
             type: 'start_transaction_error',
-            error: error
+            details: {
+                error: error
+            }
         }
     }
 
@@ -26,7 +28,9 @@ const update_transaction = (/* No specific start_session logic. */ access_update
     } catch (error) {
         throw {
             type: 'commit_transaction_error',
-            error: error
+            details: {
+                error: error
+            }
         }
     }
 
