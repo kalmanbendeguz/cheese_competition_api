@@ -3,7 +3,7 @@ const validate_api_endpoint = async function (req, res, next) {
         const api_request_validator = require('../../validators/requests/api')
 
         try {
-            await api_request_validator.validateAsync(req)
+            req = await api_request_validator.validateAsync(req)
         } catch (validation_error) {
             return res.status(400).json({
                 type: `api_endpoint_validation_error`,
@@ -15,8 +15,8 @@ const validate_api_endpoint = async function (req, res, next) {
         }
 
         return next()
-    } catch (err) {
-        return next(err)
+    } catch (error) {
+        return next(error)
     }
 }
 

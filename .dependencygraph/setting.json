@@ -1,0 +1,15 @@
+{
+  "entryFilePath": "src\\app.js",
+  "alias": {},
+  "resolveExtensions": [
+    ".js",
+    ".jsx",
+    ".ts",
+    ".tsx",
+    ".vue",
+    ".scss",
+    ".less",
+    ".json",
+    ".env"
+  ]
+}

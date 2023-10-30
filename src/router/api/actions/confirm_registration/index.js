@@ -4,6 +4,6 @@ const router = express.Router(router_options)
 
 const controller = require('../../../../controllers/actions/confirm_registration')
 
-router.get('/', controller.get)
+router.get('/', controller.middlewares.get)
 
 module.exports = router

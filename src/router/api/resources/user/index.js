@@ -4,9 +4,9 @@ const router = express.Router(router_options)
 
 const controller = require('../../../../controllers/resources/user')
 
-router.post('/', controller.post)
-router.get('/', controller.get)
-router.put('/', controller.put)
-router.delete('/', controller._delete)
+router.post('/', controller.middlewares.post)
+router.get('/', controller.middlewares.get)
+router.put('/', controller.middlewares.put)
+router.delete('/', controller.middlewares._delete)
 
 module.exports = router

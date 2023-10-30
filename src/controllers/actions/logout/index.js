@@ -1,65 +1,28 @@
-const logout = async (req, res, next) => {
+const authorizer = require('../../../authorizers/actions/logout')
+const validator = require('../../../validators/requests/api/actions/logout')
 
-    ///
-    //const action = require('../action')
-    //const validator = action.validator('logout')
+const action = require('./action')
 
-    // SHOULD RETURN: 
-    //  {
-    //      code: ...
-    //      json: ...
-    //  }
+const access_write = require('../_layers/access/write')
+const transaction_write = require('../_layers/transaction/write')
 
-    ///
+const post = require('../../../middlewares/api/actions/post')
 
-    // CANNOT ALTER THE SESSION, ONLY USE IT!
+const controller = {}
 
-    // 1. Validate request
-    const logout_validator = require('../../../validators/requests/api/logout')
-    try {
-        await logout_validator.validateAsync(req)
-    } catch (err) {
-        return res.status(400).json(`logout_validation_error: ${err.details}`)
-    }
+// action(write) gets: query, body, actor, session
+controller.action = action
 
-    // 2. Authorize action
-    const authorize_action = require('../../../helpers/authorize_action')
-    try {
-        authorize_action('logout', req.user)
-    } catch (reason) {
-        return res.status(403).json(reason)
-    }
+// transaction_write gets: query, body, actor, session
+controller.transaction = {}
+controller.transaction.write = transaction_write(controller.action)
 
-    // 3. Start session and transaction
-    const db = require('../../../config/db')
-    const session = await db.startSession()
-    if (!session.inTransaction()) session.startTransaction()
+// access_write gets: query, body, actor
+controller.access = {}
+controller.access.write = access_write(authorizer, controller.transaction.write)
 
-    // 4. Action
-    const logout_promise = new Promise((resolve, reject) => {
-        req.logout(function (error) {
-            if (error) {
-                reject(error)
-            } else {
-                resolve()
-            }
-        })
-    })
+// MW gets: req
+controller.middlewares = {}
+controller.middlewares.post = post(validator, controller.access.write)
 
-    try {
-        await logout_promise
-    } catch (error) {
-        if (session.inTransaction()) await session.abortTransaction()
-        await session.endSession()
-        return res.status(500).json(`logout_error: ${JSON.stringify(error)}`)
-    }
-
-    // 5. Commit transaction and end session
-    if (session.inTransaction()) await session.commitTransaction()
-    await session.endSession()
-
-    // 6. Reply
-    return res.status(200).json(`logout_successful`)
-}
-
-module.exports = logout
+module.exports = controller

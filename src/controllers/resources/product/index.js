@@ -29,36 +29,39 @@ const _delete = require('../../../middlewares/api/resources/delete')
 const controller = {}
 
 // ALTER gets: data, actor, session
-controller.alter_create = alter_create
-controller.alter_find = alter_find(Model)
-controller.alter_find_one = alter_find_one(Model)
-controller.alter_update = alter_update
-controller.alter_remove = alter_remove
+controller.alter = {}
+controller.alter.create = alter_create
+controller.alter.find = alter_find(Model)
+controller.alter.find_one = alter_find_one(Model)
+controller.alter.update = alter_update
+controller.alter.remove = alter_remove
 
 // ACCESS gets: data, actor, session
-controller.access_create = access_create(authorizer, controller.alter_create)
-controller.access_find = access_find(authorizer, controller.alter_find)
-controller.access_find_one = access_find_one(authorizer, controller.alter_find_one)
-controller.access_update = access_update(authorizer, controller.alter_update)
-controller.access_remove = access_remove(authorizer, controller.alter_remove)
+controller.access = {}
+controller.access.create = access_create(authorizer, controller.alter.create)
+controller.access.find = access_find(authorizer, controller.alter.find)
+controller.access.find_one = access_find_one(authorizer, controller.alter.find_one)
+controller.access.update = access_update(authorizer, controller.alter.update)
+controller.access.remove = access_remove(authorizer, controller.alter.remove)
 
 // TR gets: data, actor
-// TR DOES THE FOR LOOP FOR THE ARRAY!
-// data = doc | array
-controller.transaction_create = transaction_create(controller.access_create)
+// data = content | array
+controller.transaction = {}
+controller.transaction.create = transaction_create(controller.access.create)
 // data = filter, projection, options
-controller.transaction_find = transaction_find(controller.access_find)
+controller.transaction.find = transaction_find(controller.access.find)
 // data = filter, projection, options
-controller.transaction_find_one = transaction_find_one(controller.access_find_one)
+controller.transaction.find_one = transaction_find_one(controller.access.find_one)
 // data = filter, content
-controller.transaction_update = transaction_update(controller.access_update)
+controller.transaction.update = transaction_update(controller.access.update)
 // data = filter
-controller.transaction_remove = transaction_remove(controller.access_remove)
+controller.transaction.remove = transaction_remove(controller.access.remove)
 
 // MW gets: req
-controller.post = post(content_validator, controller.transaction_create)
-controller.get = get(filter_validator, controller.transaction_find)
-controller.put = put(filter_validator, content_validator, controller.transaction_update)
-controller._delete = _delete(filter_validator, controller.transaction_remove)
+controller.middlewares = {}
+controller.middlewares.post = post(content_validator, controller.transaction.create)
+controller.middlewares.get = get(filter_validator, controller.transaction.find)
+controller.middlewares.put = put(filter_validator, content_validator, controller.transaction.update)
+controller.middlewares._delete = _delete(filter_validator, controller.transaction.remove)
 
 module.exports = controller

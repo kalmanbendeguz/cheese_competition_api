@@ -27,9 +27,9 @@ const create = async (content, actor, session) => {
         }
     }
 
+    // Generate locally
     const randomstring = require('randomstring')
 
-    // Generate locally
     let restore_id
     do {
         restore_id = randomstring.generate({

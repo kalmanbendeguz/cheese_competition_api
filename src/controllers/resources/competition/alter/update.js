@@ -1,3 +1,218 @@
+const update = async (document, content, actor, session) => {
+
+    // 1. Check dependencies
+    // Dependencies: [Competition]
+    // Nothing needs to be checked.
+
+    // 2. Generate
+    const update = content
+    const remove = []
+
+    // 3. Clone
+    const old = document.$clone()
+
+    // 4. Update locally
+    document.set(update)
+
+    for (const key of remove) {
+        document[key] = undefined
+    }
+
+    // 4. Validate
+    const validator = require('../../../../validators/schemas/models/Competition')
+    try {
+        await validator.validateAsync(document)
+    } catch (error) {
+        throw {
+            type: 'schema_validation_error',
+            error: error.details
+        }
+    }
+
+    // 5. Save
+    const updated = await document.save({ session: session })
+
+    // 6. Update dependents
+    // Dependents: [Competition__User, Entry_Fee_Payment, Product, Rating, Rating_Picture]
+    // Competition__User doesn't need to be updated.
+    // Entry_Fee_Payment doesn't need to be updated.
+
+    // Product:
+    // If we change product_category_tree, then all products non-conforming to the new tree, need to be removed.
+    if (!is_subtree(
+        old.category_configuration.product_category_tree,
+        updated.category_configuration.product_category_tree)
+    ) {
+        const product = require('../../product')
+        const products_of_competition = await product.access_find(
+            { competition_id: updated._id.toString() },
+            null, null, actor, session)
+        const category_id_in_category_tree = require('../../../../helpers/category_id_in_category_tree')
+        const products_to_remove = products_of_competition.filter(product => !(category_id_in_category_tree(product.product_category_id)))
+        await product.access_remove(
+            { _id: { $in: products_to_remove.map(product => product._id.toString()) } },
+            actor,
+            session
+        )
+    }
+
+
+    // If we change approval_configuration, ...
+    // --: not possible, -: leave intact
+    // 0,0 -> pn:           -unapp-,  -payment-,  --assmember--,      bypass->unapp|assmember
+    // 0,0 -> pn, amnp:     -unapp-,    -payment-,   assmember->unapp,  bypass->unapp
+    // 1,0 -> 0,0:          unapp->bypass, -payment-,   -assmember-,    -bypass-
+    // 1,0 -> pn, amnp:     -unapp-,    -payment-,  assmember->unapp,   bypass->unapp
+    // 1,1 -> 0,0:          unapp->bypass, -payment-,   --assmember--,  -bypass-
+    // 1,1 -> pn:           unapp->[assmember], -payment-,  --assmember--,  -bypass-
+
+
+
+
+
+
+
+
+    // 7. Return
+    return competition?.C
+
+
+
+    // Check dependencies
+    // Dependencies: [Allowed_Role]
+    const user = require('../../active_password_reset')
+
+    // Check dependencies
+    // Dependencies: [Active_Password_Reset, User]
+    // Cannot remove the last allowed organizer.
+
+    const allowed_organizers = await user.alter_find(
+        { filter: { _id: content.user_id.toString() } },
+        actor,
+        session
+    )
+
+    if (!user_of_active_password_reset) {
+        throw {
+            type: 'check_dependency_error',
+            details: {
+                resource: 'active_password_reset',
+                method: 'create',
+                user_id: content.user_id.toString(),
+                error: 'provided_user_id_does_not_belong_to_an_existing_user'
+            }
+        }
+    }
+    // Nothing needs to be checked.
+
+    // Remove document
+    await document.deleteOne({ session: session })
+
+    // Update dependents
+    // Dependents: [Allowed_Role]
+
+    // Return
+    return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // 6. Check dependencies: Ask all dependencies if this remove is possible.
+    // Allowed_Role has no dependencies.
+
+    // 7. Check collection integrity
+    // Nothing needs to be checked.
+
+    // 8. Remove documents
+    const ids_to_delete = allowed_roles.map((allowed_role) => allowed_role._id)
+    await Allowed_Role_Model.deleteMany({
+        _id: { $in: ids_to_delete },
+    }, {
+        session: session
+    })
+
+    // 9. Update dependents
+    // Only dependent: User.
+    // We need to remove the roles from the Users who had these allowed roles.
+    const update_user = require('../user/update')
+    const update_dependent_promises = []
+
+    for (const allowed_role of allowed_roles) {
+        // This check is only for safety, it is not necessary
+        if (allowed_role.allowed_roles.length !== 0) {
+            const modifier_string = `-${allowed_role.allowed_roles.join(' -')}`
+
+            update_dependent_promises.push(update_user(
+                {
+                    query: {
+                        email: allowed_role.email
+                    },
+                    body: {
+                        roles: modifier_string
+                    }
+                },
+                user,
+                session
+            ))
+        }
+    }
+
+    const update_dependent_results = await Promise.all(update_dependent_promises)
+    const failed_operation = update_dependent_results.find(result =>
+        !(typeof result.code === 'number' && result.code >= 200 && result.code <= 299)
+    )
+
+    if (failed_operation) {
+        if (!parent_session) {
+            if (session.inTransaction()) await session.abortTransaction()
+            await session.endSession()
+        }
+        return failed_operation
+    }
+
+    // 10. Commit transaction and end session
+    if (!parent_session) {
+        if (session.inTransaction()) await session.commitTransaction()
+        await session.endSession()
+    }
+
+    // 11. Reply
+    return {
+        code: 200,
+        data: undefined,
+    }
+}
+
+module.exports = update
+
+
+
+
+
+
+
+
+
+
+
 const update = async (data, user, parent_session) => {
 
     // 1. Validate data

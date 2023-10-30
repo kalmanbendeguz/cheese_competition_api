@@ -1,63 +1,61 @@
-// // You can not remove the last allowed organizer from the system
+const remove = async (document, actor, session) => {
 
+    // Check dependencies
+    // Dependencies: [Allowed_Role]
+    const user = require('../../active_password_reset')
 
-const remove = async (query, user, parent_session) => {
+    // Check dependencies
+    // Dependencies: [Active_Password_Reset, User]
+    // Cannot remove the last allowed organizer.
 
-    // 1. Validate query
-    const remove_allowed_role_validator = require('../../../validators/requests/api/allowed_role/remove')
-    try {
-        await remove_allowed_role_validator.validateAsync(query)
-    } catch (err) {
-        return { code: 400, data: err.details }
-    }
+    const allowed_organizers = await user.alter_find(
+        { filter: { _id: content.user_id.toString() } },
+        actor,
+        session
+    )
 
-    // 2. Authorize remove
-    const authorizer = require('../../../authorizers/entities/allowed_role')
-    try {
-        query = authorizer(query, 'remove', user)
-    } catch (reason) {
-        return {
-            code: 403,
-            data: reason
+    if (!user_of_active_password_reset) {
+        throw {
+            type: 'check_dependency_error',
+            details: {
+                resource: 'active_password_reset',
+                method: 'create',
+                user_id: content.user_id.toString(),
+                error: 'provided_user_id_does_not_belong_to_an_existing_user'
+            }
         }
     }
+    // Nothing needs to be checked.
 
-    // 3. Start session and transaction if they don't exist
-    const Allowed_Role_Model = require('../../../models/Allowed_Role')
-    const session = parent_session ?? await Allowed_Role_Model.startSession()
-    if (!session.inTransaction()) session.startTransaction()
+    // Remove document
+    await document.deleteOne({ session: session })
 
-    // 4. Find
-    const filter = query
-    const allowed_roles = await Allowed_Role_Model.find(filter, null, { session: session })
-    if (allowed_roles.length === 0) {
-        if (!parent_session) {
-            if (session.inTransaction()) await session.commitTransaction()
-            await session.endSession()
-        }
-        return {
-            code: 200,
-            data: 'no_documents_found_to_remove',
-        }
-    }
+    // Update dependents
+    // Dependents: [Allowed_Role]
 
-    // 5. Validate documents
-    const allowed_role_validator = require('../../../validators/schemas/Allowed_Role')
-    try {
-        const validator_promises = allowed_roles.map(
-            (allowed_role) =>
-                allowed_role_validator.validateAsync(
-                    allowed_role
-                )
-        )
-        await Promise.all(validator_promises)
-    } catch (err) {
-        if (!parent_session) {
-            if (session.inTransaction()) await session.abortTransaction()
-            await session.endSession()
-        }
-        return { code: 500, data: err.details }
-    }
+    // Return
+    return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // 6. Check dependencies: Ask all dependencies if this remove is possible.
     // Allowed_Role has no dependencies.

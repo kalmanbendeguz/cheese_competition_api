@@ -1,12 +1,13 @@
 const express = require('express')
 const router_options = require('../../config/router')
 
+const validate = require('../../middlewares/api/validate')
+const session = require('../../middlewares/api/session')
+const passport_initialize = require('../../middlewares/api/passport_initialize')
+const passport_authenticate = require('../../middlewares/api/passport_authenticate')
 const assign_special_role = require('../../middlewares/api/assign_special_role')
 const authorize_endpoint = require('../../middlewares/api/authorize_endpoint')
-const passport_authenticate = require('../../middlewares/api/passport_authenticate')
-const passport_initialize = require('../../middlewares/api/passport_initialize')
-const session = require('../../middlewares/api/session')
-const validate = require('../../middlewares/api/validate')
+
 
 const router = express.Router(router_options)
 

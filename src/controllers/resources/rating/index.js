@@ -1,77 +1,67 @@
-// resource specific things
-
-const post = (require('../_crud/create')).post(content_validator, create_controller)
-
-
-const save = async (document_to_save, session) => {
-    const result = await document_to_save.save({ session: session })
-}
-
 const Model = require('../../../models/Rating')
-const filter_validator = require('../../../validators/controllers/resources/product/filter')
-const content_validator = require('../../../validators/controllers/resources/product/content')
-const schema_validator = require('../../../validators/schemas/models/Product')
 const authorizer = require('../../../authorizers/resources/rating')
+const filter_validator = require('../../../validators/requests/api/resources/rating/filter')
+const content_validator = require('../../../validators/requests/api/resources/rating/content')
 
-check_create_dependencies
-generate_create_logic
+const alter_create = require('./alter/create')
+const alter_find = require('../_layers/alter/find')
+const alter_find_one = require('../_layers/alter/find_one')
+const alter_update = require('./alter/update')
+const alter_remove = require('./alter/remove')
 
-//export:
-/**
- * 
- * MWS:
- * post: postmw(validator)
- * get: getmw(validator)
- * put
- * delete
- * 
- * CONSISTENCY_LAYERS: (in this folder)
- * create
- * update
- * remove
- */
+const access_create = require('../_layers/access/create')
+const access_find = require('../_layers/access/find')
+const access_find_one = require('../_layers/access/find_one')
+const access_update = require('../_layers/access/update')
+const access_remove = require('../_layers/access/remove')
 
-post_rating_middleware = require(post_middleware)(rating_content_validator_logic, transaction_create_rating)
-// this is the middleware
-// in middlewares/api/resources
+const transaction_create = require('../_layers/transaction/create')
+const transaction_find = require('../_layers/transaction/find')
+const transaction_find_one = require('../_layers/transaction/find_one')
+const transaction_update = require('../_layers/transaction/update')
+const transaction_remove = require('../_layers/transaction/remove')
 
-transaction_create_rating = require(transaction_create)(rating_data, access_create_rating)
-// in api_layers/transaction folder
+const post = require('../../../middlewares/api/resources/post')
+const get = require('../../../middlewares/api/resources/get')
+const put = require('../../../middlewares/api/resources/put')
+const _delete = require('../../../middlewares/api/resources/delete')
 
-access_create_rating = require(access_create)(rating_authorizer_logic, authorized_create_rating_document) // (data, actor,session)
-// in api_layers/access folder
-
-authorized_create_rating_document = (require(authorized_create))(rating_authorizer_logic, create_rating_document) // (data, actor, session)
-// in api_layers/authorized folder
-
-create_rating_document = require(create_rating_document) // data, session 
-// in this folder
-
-/////////////////////////////// 9. 19.
+const controller = {}
 
 // ALTER gets: data, actor, session
-//controller.alter_create = require('./alter/create')
-//////controller.alter_find = require('../_layers/alter/find') (rating)
-//////controller.alter_find_one = require('../_layers/alter/find_one')
-//controller.alter_update = require('./alter/update')
-//controller.alter_remove = require('./alter/remove')
+controller.alter = {}
+controller.alter.create = alter_create
+controller.alter.find = alter_find(Model)
+controller.alter.find_one = alter_find_one(Model)
+controller.alter.update = alter_update
+controller.alter.remove = alter_remove
 
 // ACCESS gets: data, actor, session
-//controller.access_create = access_create(authorizer_logic, controller.alter_create)
-//////controller.access_find_one = access_find_one(authorizer_logic, alter_find_one)
-//////controller.access_find = access_find_many(authorizer_logic, alter_find)
-//controller.access_update = access_update(authorizer_logic, controller.alter_update)
-//controller.access_remove = access_remove(authorizer_logic, controller.alter_remove)
+controller.access = {}
+controller.access.create = access_create(authorizer, controller.alter.create)
+controller.access.find = access_find(authorizer, controller.alter.find)
+controller.access.find_one = access_find_one(authorizer, controller.alter.find_one)
+controller.access.update = access_update(authorizer, controller.alter.update)
+controller.access.remove = access_remove(authorizer, controller.alter.remove)
 
 // TR gets: data, actor
-//controller.transaction_create = transaction_create(controller.access_create)
-//////controller.transaction_find = transaction_find(access_find_rating)
-//////controller.transaction_find_one = transaction_find_one(access_find_one_rating)
-//controller.transaction_update = transaction_update(controller.access_update)
-//controller.transaction_remove = transaction_remove(controller.access_remove)
+// data = content | array
+controller.transaction = {}
+controller.transaction.create = transaction_create(controller.access.create)
+// data = filter, projection, options
+controller.transaction.find = transaction_find(controller.access.find)
+// data = filter, projection, options
+controller.transaction.find_one = transaction_find_one(controller.access.find_one)
+// data = filter, content
+controller.transaction.update = transaction_update(controller.access.update)
+// data = filter
+controller.transaction.remove = transaction_remove(controller.access.remove)
 
 // MW gets: req
-//controller.post = post(validator_logic, controller.transaction_create )
-//////controller.get = get(validator_logic, find_transaction)
-//controller.put = put(validator_logic, controller.transaction_update)
-//controller.delete = delete(validator_logic, controller.transaction_remove)
+controller.middlewares = {}
+controller.middlewares.post = post(content_validator, controller.transaction.create)
+controller.middlewares.get = get(filter_validator, controller.transaction.find)
+controller.middlewares.put = put(filter_validator, content_validator, controller.transaction.update)
+controller.middlewares._delete = _delete(filter_validator, controller.transaction.remove)
+
+module.exports = controller

@@ -1,5 +1,3 @@
-
-
 const Joi = require('joi')
 
 const maturation_time_validator = (convert) => Joi.object({
